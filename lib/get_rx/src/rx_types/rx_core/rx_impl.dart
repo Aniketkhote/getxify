@@ -86,6 +86,17 @@ mixin RxObjectMixin<T> on GetListenable<T> {
     super.value = val;
   }
 
+  /// Same as the [value] setter but without its `==` short-circuit — see
+  /// [GetListenable.forceValue]. Keeps the setter's disposal guard and stream
+  /// bookkeeping so the two stay interchangeable in every other respect.
+  @override
+  void forceValue(T val) {
+    if (isDisposed) return;
+    firstRebuild = false;
+    sentToStream = true;
+    super.forceValue(val);
+  }
+
   /// Returns a [StreamSubscription] similar to [listen], but with the
   /// added benefit that it primes the stream with the current [value], rather
   /// than waiting for the next [value]. This should not be called in [onInit]
