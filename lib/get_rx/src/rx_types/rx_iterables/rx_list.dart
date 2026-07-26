@@ -502,21 +502,29 @@ class RxList<E> extends GetListenable<List<E>>
 extension ListExtension<E> on List<E> {
   RxList<E> get obs => RxList<E>(this);
 
-  /// Add [item] to [List<E>] only if [item] is not null.
+  /// Add [item] to [List<E>] only if [condition] is true.
   void addNonNull(E item) {
     if (item != null) add(item);
   }
 
   /// Add [item] to [List<E>] only if [condition] is true.
   void addIf(Object? condition, E item) {
-    if (condition is Condition) condition = condition();
-    if (condition is bool && condition) add(item);
+    final isTrue = switch (condition) {
+      bool b => b,
+      Condition c => c(),
+      _ => false,
+    };
+    if (isTrue) add(item);
   }
 
   /// Adds [Iterable<E>] to [List<E>] only if [condition] is true.
   void addAllIf(Object? condition, Iterable<E> items) {
-    if (condition is Condition) condition = condition();
-    if (condition is bool && condition) addAll(items);
+    final isTrue = switch (condition) {
+      bool b => b,
+      Condition c => c(),
+      _ => false,
+    };
+    if (isTrue) addAll(items);
   }
 
   /// Replaces all existing items of this list with [item]
@@ -527,10 +535,7 @@ extension ListExtension<E> on List<E> {
   /// `List.empty().obs` or `const [].obs`), and listeners are notified
   /// exactly once.
   void assign(E item) {
-    if (this is RxList) {
-      final rx = this as RxList;
-      // toList() preserves the backing list's runtime element type while
-      // always producing a growable, mutable copy.
+    if (this case final RxList<E> rx) {
       rx.value = rx.value.toList()
         ..clear()
         ..add(item);
@@ -548,8 +553,7 @@ extension ListExtension<E> on List<E> {
   /// `List.empty().obs` or `const [].obs`), and listeners are notified
   /// exactly once.
   void assignAll(Iterable<E> items) {
-    if (this is RxList) {
-      final rx = this as RxList;
+    if (this case final RxList<E> rx) {
       rx.value = rx.value.toList()
         ..clear()
         ..addAll(items);

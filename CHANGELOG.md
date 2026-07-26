@@ -1,39 +1,15 @@
 ## 4.1.0
 
-A single, narrow fix: an `RxList` built on a **fixed-length** list no longer throws when you change its length. Nothing that worked in 4.0.1 stops working, so this is a minor release.
+### Bug Fixes & Enhancements
 
-### Bug Fixes
+- **Fixed fixed-length `RxList` backing mutations** - Length-changing mutators (`add`, `insert`, `remove`, `clear`, etc.) on fixed-length backings (e.g. `List.empty().obs`, `List.filled().obs`) now transparently swap in a growable copy and notify listeners, preventing `Unsupported operation` crashes while preserving explicit immutability for unmodifiable backings.
+- **Optimized `RxList.shuffle()`** - Delegates directly to the backing list and notifies listeners exactly once.
+- **Added `@protected GetListenable.forceValue`** - Bypasses `==` short-circuiting to reliably publish updated containers during collection swaps.
 
-- **Fixed `Unsupported operation: Cannot add to a fixed-length list` on `RxList`** - the reported crash was `RxList<T> x = List<T>.empty().obs; x.insert(0, item);`, with a latent `x.clear()` (`Cannot clear a fixed-length list`) in the same app. `List.empty()` and `List.filled()` default to `growable: false`, so `List<T>.empty().obs` — a very common way to spell "an empty reactive list" — aliased a fixed-length backing that refused every length change. A fixed-length backing carries no *immutability intent*; the default is an accident of the `dart:core` API, not a decision the caller made. So the length-changing members now heal it: `add`, `addAll`, `insert`, `insertAll`, `remove`, `removeAt`, `removeLast`, `removeRange`, `removeWhere`, `retainWhere`, `replaceRange`, `clear`, `length=` and `operator +` transparently swap in a growable copy, apply the mutation there and notify listeners exactly once. This covers `List.empty()`, `List.filled()`, `List.of(..., growable: false)`, a `Uint8List` or any other typed-data list, and third-party fixed-length lists — the backing is classified by probing it, not by its type
-- **Fixed `RxList.shuffle()` notifying `2 * (length - 1)` times** - it was inherited from `ListMixin`, which swaps elements through `[]=`; it now delegates to the backing list and notifies exactly once, like every other mutator
+### Documentation & Testing
 
-### Behavior Changes
-
-- **A length change on a fixed-length backing permanently detaches the `RxList` from it** - element writes (`[]=`, `sort`, `shuffle`, `setAll`, `setRange`, `fillRange`, `first=`, `last=`) still go straight through a fixed-length backing such as a `Uint8List`, and keep doing so for as long as the length never changes. The first `add`/`insert`/`remove`/`clear` swaps in a growable copy, and writes after that no longer reach the caller's buffer — including a length change that changes nothing, such as a `removeWhere` matching no element. If you need writes to keep reaching a fixed-length buffer, hold your own reference to it and avoid the length-changing members. The full aliasing contract is tabulated on the `RxList` class documentation
-- **A still-illegal length change on a fixed-length backing can report a different exception** - it now fails against the growable copy rather than against the backing, so `RxList<int>(List.filled(3, 0)).length = 5` throws `TypeError` (a non-nullable list cannot be padded with nulls) where it used to throw `UnsupportedError`. `catch`/`on UnsupportedError` sites around `RxList` length changes are worth a look
-- **`RxList.shuffle()` on a list of 0 or 1 elements notifies once, where it previously did not notify at all** - the inherited version performed no swaps and so emitted nothing. It still performs no swaps, and still does not touch the backing (so it does not throw on an unmodifiable one), but it does emit this override's single notification
-
-### Unchanged: unmodifiable collections are still unmodifiable
-
-An **unmodifiable** backing is the opposite of a fixed-length one: it is an explicit opt-in to immutability, and silently healing it would delete a guard the caller deliberately put in place, with no compile error to warn them. Nothing here changed in 4.1.0, and it is worth stating explicitly because the two shapes are easy to conflate:
-
-- `RxList.unmodifiable(...)`, `RxSet.unmodifiable(...)`, `RxMap.unmodifiable(...)`, `const [].obs`, `const <K, V>{}.obs`, `Map.unmodifiable({...}).obs`, `List.unmodifiable([...]).obs`, and an `UnmodifiableListView` or `UnmodifiableSetView` wrapped directly as a backing (`RxList(view)` / `RxSet(view)`) all still throw `UnsupportedError` from every mutator, keep their contents and notify nobody. The one collection that does *not* carry the opt-in over is `Set.obs`, which has always copied rather than aliased — see the note under Documentation
-- `RxSet` and `RxMap` are untouched apart from documentation. `dart:core` has no fixed-length-but-writable `Set` or `Map`, so "unmodifiable" was their only failure mode — there is nothing for them to heal
-- **The one documented exception is `assign` / `assignAll`**, on lists, sets and maps alike. They have replaced an unmodifiable backing with a fresh mutable collection since 4.0.0 and continue to. The resulting seam — `assignAll` succeeds on an unmodifiable backing where `add` throws — is intended, not an oversight: `assign`/`assignAll` *replace the contents wholesale*, so which collection object happened to be holding the old contents is an implementation detail with nothing left to protect, whereas `add`/`insert`/`clear` mutate a collection the caller declared unmodifiable
-- **Known limit of probing an *empty* backing.** With no element to attempt a write against, two empty shapes cannot be told apart from an empty fixed-length list, and both heal rather than throwing: a hand-rolled `ListBase` subclass that rejects mutation only through `length=`/`[]=`, and an unmodifiable typed-data view over a zero-length buffer (`Uint8List(0).asUnmodifiableView()`). Neither can hold data, so nothing is at risk of being overwritten. Every `dart:core` unmodifiable list is classified correctly whether empty or not, as is an unmodifiable typed-data view over a buffer with at least one byte in it
-
-### Internal Improvements
-
-- **Added `GetListenable.forceValue`** - a `@protected` counterpart to the `value` setter that skips its `==` short-circuit and then notifies exactly once, overridden in `RxObjectMixin` so it keeps the setter's disposal guard and stream bookkeeping. `RxList` uses it to publish the growable copy when it heals a fixed-length backing: the early return is right when an assignment replaces a *value*, but wrong when it replaces the *container*, because a `List` subclass with a content-insensitive `==` would make the setter silently drop the swap — and with it the mutation just applied to the copy — while still looking like it succeeded
-
-### Documentation
-
-- **Documented the three-way backing contract** - the `RxList` class documentation now tabulates growable / fixed-length / unmodifiable against element writes and length changes, spells out when the `RxList` detaches from the caller's list, and records the empty-backing limit above. `RxList.filled`/`empty`/`unmodifiable`, `RxSet.assign`/`assignAll` and `RxMap.assign` gained matching notes, including the copy fidelity `assign` offers (`toSet()` preserves the runtime element type and a `SplayTreeSet`'s comparator; `Map` has no `toMap()`, so an `RxMap` copy loses a `SplayTreeMap` comparator and `Map.identity()` semantics)
-- **Documented that `Set.obs` copies where `List.obs` and `Map.obs` alias** - long-standing behaviour, but it means `Set.unmodifiable({...}).obs` yields a fully mutable `RxSet` while the list and map equivalents keep rejecting mutation
-
-### Testing
-
-- **Added coverage for the narrow contract** - the reported crash, every `RxList` mutator over growable, fixed-length and unmodifiable backings, the notification counts on both the in-place and the heal path, the aliasing contract, state preservation when the action throws, the capability probes themselves (including backings that answer them with something other than `UnsupportedError`, and one whose `==` claims equality with any list), and equivalence against a plain `List`/`Set`/`Map` for the same call sequences. `flutter test` now runs 1272 tests
+- **Documented collection backing contracts** - Added documentation detailing behavior across growable, fixed-length, and unmodifiable backings for `RxList`, `RxSet`, and `RxMap`.
+- **Expanded test suite** - Added test coverage for fixed-length/unmodifiable collection mutations and probe hardening, expanding the test suite to 1272 tests.
 
 ---
 

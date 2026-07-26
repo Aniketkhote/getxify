@@ -129,14 +129,22 @@ extension SetExtension<E> on Set<E> {
 
   /// Add [item] to [Set<E>] only if [condition] is true.
   void addIf(Object? condition, E item) {
-    if (condition is Condition) condition = condition();
-    if (condition is bool && condition) add(item);
+    final isTrue = switch (condition) {
+      bool b => b,
+      Condition c => c(),
+      _ => false,
+    };
+    if (isTrue) add(item);
   }
 
   /// Adds [Iterable<E>] to [Set<E>] only if [condition] is true.
   void addAllIf(Object? condition, Iterable<E> items) {
-    if (condition is Condition) condition = condition();
-    if (condition is bool && condition) addAll(items);
+    final isTrue = switch (condition) {
+      bool b => b,
+      Condition c => c(),
+      _ => false,
+    };
+    if (isTrue) addAll(items);
   }
 
   /// Replaces all existing items of this set with [item]
@@ -156,8 +164,7 @@ extension SetExtension<E> on Set<E> {
   /// `LinkedHashSet`, so the copy is one as well and later additions append
   /// rather than sorting themselves in.
   void assign(E item) {
-    if (this is RxSet) {
-      final rx = this as RxSet;
+    if (this case final RxSet<E> rx) {
       rx.value = rx.value.toSet()
         ..clear()
         ..add(item);
@@ -176,8 +183,7 @@ extension SetExtension<E> on Set<E> {
   ///
   /// The copy has the same fidelity as the one described on [assign].
   void assignAll(Iterable<E> items) {
-    if (this is RxSet) {
-      final rx = this as RxSet;
+    if (this case final RxSet<E> rx) {
       rx.value = rx.value.toSet()
         ..clear()
         ..addAll(items);

@@ -471,11 +471,11 @@ extension GetInstanceExt on GetInterface {
   /// `MyController? c = Get.put(MyController());`) shares the same key
   /// as `Get.put<MyController>(...)` and `Get.find<MyController>()`.
   String _getKey(Type type, String? name) {
-    var typeName = type.toString();
-    if (typeName.endsWith('?')) {
-      typeName = typeName.substring(0, typeName.length - 1);
-    }
-    return name == null ? typeName : typeName + name;
+    final typeName = type.toString();
+    final cleanType = typeName.endsWith('?')
+        ? typeName.substring(0, typeName.length - 1)
+        : typeName;
+    return name == null ? cleanType : '$cleanType$name';
   }
 
   /// Delete registered Class Instance [S] (or [tag]) and, closes any open
@@ -743,16 +743,8 @@ extension GetInstanceExt on GetInterface {
   /// - [tag] Optional tag to identify the lazy instance.
   bool isPrepared<S>({String? tag}) {
     final newKey = _getKey(S, tag);
-
     final builder = _getDependency<S>(tag: tag, key: newKey);
-    if (builder == null) {
-      return false;
-    }
-
-    if (!builder.isInit) {
-      return true;
-    }
-    return false;
+    return builder != null && !builder.isInit;
   }
 }
 
@@ -820,14 +812,13 @@ class _InstanceBuilderFactory<S> {
 
   /// Gets the actual instance by its [builderFunc] or the persisted instance.
   S getDependency() {
-    if (isSingleton == true) {
-      if (dependency == null) {
-        _showInitLog();
-        dependency = builderFunc();
+    if (isSingleton ?? false) {
+      if (dependency case final dep?) {
+        return dep;
       }
-      return dependency!;
-    } else {
-      return builderFunc();
+      _showInitLog();
+      return dependency = builderFunc();
     }
+    return builderFunc();
   }
 }

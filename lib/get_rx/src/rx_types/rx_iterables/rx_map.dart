@@ -119,16 +119,24 @@ extension MapExtension<K, V> on Map<K, V> {
 
   /// Adds [key] and [value] to map if [condition] is true.
   void addIf(Object? condition, K key, V value) {
-    if (condition is Condition) condition = condition();
-    if (condition is bool && condition) {
+    final isTrue = switch (condition) {
+      bool b => b,
+      Condition c => c(),
+      _ => false,
+    };
+    if (isTrue) {
       this[key] = value;
     }
   }
 
   /// Adds all [values] to map if [condition] is true.
   void addAllIf(Object? condition, Map<K, V> values) {
-    if (condition is Condition) condition = condition();
-    if (condition is bool && condition) addAll(values);
+    final isTrue = switch (condition) {
+      bool b => b,
+      Condition c => c(),
+      _ => false,
+    };
+    if (isTrue) addAll(values);
   }
 
   /// Replaces all existing items of this map with [key] and [val].
