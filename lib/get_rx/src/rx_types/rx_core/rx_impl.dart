@@ -232,21 +232,6 @@ abstract class _RxImpl<T> extends GetListenable<T> with RxObjectMixin<T> {
   }
 }
 
-class RxBool extends Rx<bool> {
-  RxBool(super.initial);
-  @override
-  String toString() {
-    return value ? "true" : "false";
-  }
-}
-
-class RxnBool extends Rx<bool?> {
-  RxnBool([super.initial]);
-  @override
-  String toString() {
-    return "$value";
-  }
-}
 
 extension RxBoolExt on Rx<bool> {
   bool get isTrue => value;

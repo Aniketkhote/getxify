@@ -114,15 +114,6 @@ class RxSet<E> extends GetListenable<Set<E>>
 
 extension SetExtension<E> on Set<E> {
   /// Wraps this set in an [RxSet].
-  ///
-  /// Unlike `List.obs` and `Map.obs`, which adopt the receiver as the backing
-  /// collection, this **copies** into a fresh mutable set. Long-standing
-  /// behaviour, kept for compatibility, but worth knowing: it means
-  /// `Set.unmodifiable({1, 2}).obs` and `const {1, 2}.obs` produce a fully
-  /// mutable [RxSet], where the list and map equivalents keep the caller's
-  /// unmodifiable collection and go on rejecting mutation. Wrap the receiver
-  /// explicitly — `RxSet(Set.unmodifiable({1, 2}))` — if you want the opt-in
-  /// carried over.
   RxSet<E> get obs {
     return RxSet<E>(<E>{})..addAll(this);
   }
@@ -148,21 +139,6 @@ extension SetExtension<E> on Set<E> {
   }
 
   /// Replaces all existing items of this set with [item]
-  ///
-  /// On an [RxSet] the backing set is replaced with a fresh mutable set
-  /// rather than mutated in place, so this works even when the set was
-  /// created from an unmodifiable source (e.g. `const {}` or
-  /// `Set.unmodifiable`), and listeners are notified exactly once.
-  ///
-  /// The copy is `toSet()` of the current backing, which always produces a
-  /// mutable set and preserves as much of the backing as the backing exposes:
-  /// its runtime element type always, and its ordering discipline only when
-  /// the backing has one to preserve — `UnmodifiableSetView.toSet()` forwards
-  /// to its source, so a view over a `SplayTreeSet` copies to a
-  /// `SplayTreeSet`, comparator included. `Set.unmodifiable` and `const {}`
-  /// forward too, but their source is already a plain insertion-ordered
-  /// `LinkedHashSet`, so the copy is one as well and later additions append
-  /// rather than sorting themselves in.
   void assign(E item) {
     if (this case final RxSet<E> rx) {
       rx.value = rx.value.toSet()
@@ -175,13 +151,6 @@ extension SetExtension<E> on Set<E> {
   }
 
   /// Replaces all existing items of this set with [items]
-  ///
-  /// On an [RxSet] the backing set is replaced with a fresh mutable set
-  /// rather than mutated in place, so this works even when the set was
-  /// created from an unmodifiable source (e.g. `const {}` or
-  /// `Set.unmodifiable`), and listeners are notified exactly once.
-  ///
-  /// The copy has the same fidelity as the one described on [assign].
   void assignAll(Iterable<E> items) {
     if (this case final RxSet<E> rx) {
       rx.value = rx.value.toSet()

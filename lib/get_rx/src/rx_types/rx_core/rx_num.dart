@@ -2,6 +2,18 @@ part of '../rx_types.dart';
 
 /// Extension on [Rx<num>] providing basic operators.
 extension RxNumExt<T extends num> on Rx<T> {
+  /// Addition operator.
+  num operator +(num other) {
+    value = (value + other) as T;
+    return value;
+  }
+
+  /// Subtraction operator.
+  num operator -(num other) {
+    value = (value - other) as T;
+    return value;
+  }
+
   /// Multiplication operator.
   num operator *(num other) => value * other;
 
@@ -32,6 +44,24 @@ extension RxNumExt<T extends num> on Rx<T> {
 
 /// Extension on [Rx<num?>] providing basic operators.
 extension RxnNumExt<T extends num> on Rx<T?> {
+  /// Addition operator.
+  num? operator +(num other) {
+    if (value != null) {
+      value = (value! + other) as T;
+      return value;
+    }
+    return null;
+  }
+
+  /// Subtraction operator.
+  num? operator -(num other) {
+    if (value != null) {
+      value = (value! - other) as T;
+      return value;
+    }
+    return null;
+  }
+
   /// Multiplication operator.
   num? operator *(num other) => value != null ? value! * other : null;
 
@@ -60,93 +90,7 @@ extension RxnNumExt<T extends num> on Rx<T?> {
   bool? operator >=(num other) => value != null ? value! >= other : null;
 }
 
-/// Rx class for `num` type.
-class RxNum extends Rx<num> {
-  RxNum(super.initial);
 
-  /// Addition operator.
-  num operator +(num other) {
-    value += other;
-    return value;
-  }
-
-  /// Subtraction operator.
-  num operator -(num other) {
-    value -= other;
-    return value;
-  }
-}
-
-/// Rx class for nullable `num` type.
-class RxnNum extends Rx<num?> {
-  RxnNum([super.initial]);
-
-  /// Addition operator.
-  num? operator +(num other) {
-    if (value != null) {
-      value = value! + other;
-      return value;
-    }
-    return null;
-  }
-
-  /// Subtraction operator.
-  num? operator -(num other) {
-    if (value != null) {
-      value = value! - other;
-      return value;
-    }
-    return null;
-  }
-}
-
-/// Rx class for `double` type.
-class RxDouble extends Rx<double> {
-  RxDouble(super.initial);
-}
-
-/// Rx class for nullable `double` type.
-class RxnDouble extends Rx<double?> {
-  RxnDouble([super.initial]);
-}
-
-/// Rx class for `int` type.
-class RxInt extends Rx<int> {
-  RxInt(super.initial);
-
-  /// Addition operator.
-  RxInt operator +(int other) {
-    value = value + other;
-    return this;
-  }
-
-  /// Subtraction operator.
-  RxInt operator -(int other) {
-    value = value - other;
-    return this;
-  }
-}
-
-/// Rx class for nullable `int` type.
-class RxnInt extends Rx<int?> {
-  RxnInt([super.initial]);
-
-  /// Addition operator.
-  RxnInt operator +(int other) {
-    if (value != null) {
-      value = value! + other;
-    }
-    return this;
-  }
-
-  /// Subtraction operator.
-  RxnInt operator -(int other) {
-    if (value != null) {
-      value = value! - other;
-    }
-    return this;
-  }
-}
 
 /// Extension on [Rx<double>] providing basic double operators.
 extension RxDoubleExt on Rx<double> {
@@ -216,26 +160,17 @@ extension RxnDoubleExt on Rx<double?> {
 
 /// Extension on [Rx<int>] providing basic integer operators.
 extension RxIntExt on Rx<int> {
-  /// Bit-wise and operator.
-  int operator &(int other) => value & other;
+  /// Addition operator.
+  Rx<int> operator +(int other) {
+    value = value + other;
+    return this;
+  }
 
-  /// Bit-wise or operator.
-  int operator |(int other) => value | other;
-
-  /// Bit-wise xor operator.
-  int operator ^(int other) => value ^ other;
-
-  /// Bit-wise negate operator.
-  int operator ~() => ~value;
-
-  /// Bit-wise shift left operator.
-  int operator <<(int shiftAmount) => value << shiftAmount;
-
-  /// Bit-wise shift right operator.
-  int operator >>(int shiftAmount) => value >> shiftAmount;
-
-  /// Bit-wise unsigned shift right operator.
-  int operator >>>(int shiftAmount) => value >>> shiftAmount;
+  /// Subtraction operator.
+  Rx<int> operator -(int other) {
+    value = value - other;
+    return this;
+  }
 
   /// Division operator.
   double operator /(num other) => value / other;
@@ -246,29 +181,21 @@ extension RxIntExt on Rx<int> {
 
 /// Extension on [Rx<int?>] providing basic integer operators.
 extension RxnIntExt on Rx<int?> {
-  /// Bit-wise and operator.
-  int? operator &(int other) => value != null ? value! & other : null;
+  /// Addition operator.
+  Rx<int?> operator +(int other) {
+    if (value != null) {
+      value = value! + other;
+    }
+    return this;
+  }
 
-  /// Bit-wise or operator.
-  int? operator |(int other) => value != null ? value! | other : null;
-
-  /// Bit-wise xor operator.
-  int? operator ^(int other) => value != null ? value! ^ other : null;
-
-  /// Bit-wise negate operator.
-  int? operator ~() => value != null ? ~value! : null;
-
-  /// Bit-wise shift left operator.
-  int? operator <<(int shiftAmount) =>
-      value != null ? value! << shiftAmount : null;
-
-  /// Bit-wise shift right operator.
-  int? operator >>(int shiftAmount) =>
-      value != null ? value! >> shiftAmount : null;
-
-  /// Bit-wise unsigned shift right operator.
-  int? operator >>>(int shiftAmount) =>
-      value != null ? value! >>> shiftAmount : null;
+  /// Subtraction operator.
+  Rx<int?> operator -(int other) {
+    if (value != null) {
+      value = value! - other;
+    }
+    return this;
+  }
 
   /// Division operator.
   double? operator /(num other) => value != null ? value! / other : null;

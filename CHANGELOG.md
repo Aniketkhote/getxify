@@ -1,3 +1,14 @@
+## [Unreleased]
+
+### Internal Improvements & Refactoring
+
+- **Unified Reactive Primitives** - Replaced custom wrapper classes (`RxInt`, `RxBool`, `RxString`, etc.) with Dart 3 `typedef`s to consolidate the core `Rx<T>` architecture.
+- **Moved operators to extensions** - Shifted primitive operators (`+`, `-`, etc.) into their respective extension classes (e.g. `RxIntExt`, `RxNumExt`) to preserve 100% backward compatibility while drastically simplifying the internal class hierarchy.
+- **Removed extraneous bitwise operators** - Removed unused and out-of-scope bitwise logic and shift operators from numeric extensions.
+- **Cleaned up documentation bloat** - Removed excessively long internal documentation blocks from `rx_iterables` (`rx_list.dart`, `rx_map.dart`, `rx_set.dart`) to keep the codebase cleaner.
+
+---
+
 ## 4.1.0
 
 ### Bug Fixes & Enhancements

@@ -40,20 +40,20 @@ In v5.0, breaking changes are strictly confined to **removing internal legacy ba
   - Simplify dependency lifecycles by binding controller scopes directly to the Flutter widget element tree (`InheritedWidget` / `State.dispose`).
   - Deprecate obscure configuration flags in favor of automatic, predictable element-tree lifecycle cleanup.
 
-### 5. Unified Reactive Primitives via Dart 3 Records & Sealed Types
+### 5. Unified Reactive Primitives via Dart 3 `typedef`s [✅ COMPLETED]
 * **Current State (v4.x)**: Maintains separate specialized wrapper classes for every primitive type (`RxInt`, `RxDouble`, `RxString`, `RxBool`, `RxnBool`).
-* **v5.0 Proposal**:
-  - Consolidate primitive wrappers using Dart 3 sealed types and records.
-  - Retain `.obs` ergonomics (`count.obs`, `name.obs`) while streamlining the underlying class hierarchy.
+* **v5.0 Implementation**:
+  - Consolidated primitive wrappers using Dart 3 `typedef`s (e.g., `typedef RxInt = Rx<int>`), completely removing redundant classes.
+  - Moved operators to generic extensions (e.g., `RxNumExt`), eliminating boilerplate while retaining `.obs` ergonomics (`count.obs`, `name.obs`).
 
 ---
 
 ## Summary of Architectural Improvements
 
-| Subsystem | v4.x Implementation | v5.0 Proposed Replacement | Primary Benefit |
+| Subsystem | v4.x Implementation | v5.0 Proposed Replacement | Status |
 | :--- | :--- | :--- | :--- |
-| **Navigation** | Global `Get.key` Navigator Key | Dual Mode: `Get.to()` + `context.to()` | Simple contextless syntax + scoped nested navigation support |
-| **Routing** | Custom `ParseRouteTree` regex matcher | Native `Uri` & Flutter `RouterDelegate` | Eliminates ~2,000 lines of custom route tree matching |
-| **State Management** | Custom `ListNotifier` mixin | Flutter native `ListenableBuilder` engine | Direct framework alignment & zero custom listener bloat |
-| **Dependency Injection** | Complex `SmartManagement` flags | Element-tree bound scope nodes | Automatic lifecycle cleanup without obscure configuration flags |
-| **Reactive Types** | Primitive wrappers (`RxInt`, `RxBool`) | Dart 3 Sealed Types & Records | Cleaner class hierarchy with 100% `.obs` syntax preservation |
+| **Navigation** | Global `Get.key` Navigator Key | Dual Mode: `Get.to()` + `context.to()` | ⏳ Pending |
+| **Routing** | Custom `ParseRouteTree` regex matcher | Native `Uri` & Flutter `RouterDelegate` | ⏳ Pending |
+| **State Management** | Custom `ListNotifier` mixin | Flutter native `ListenableBuilder` engine | ⏳ Pending |
+| **Dependency Injection** | Complex `SmartManagement` flags | Element-tree bound scope nodes | ⏳ Pending |
+| **Reactive Types** | Primitive wrappers (`RxInt`, `RxBool`) | Dart 3 `typedef`s & Extensions | ✅ **Completed** |

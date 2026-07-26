@@ -16,3 +16,14 @@ part 'rx_core/rx_string.dart';
 part 'rx_iterables/rx_list.dart';
 part 'rx_iterables/rx_map.dart';
 part 'rx_iterables/rx_set.dart';
+
+typedef RxString = Rx<String>;
+typedef RxnString = Rx<String?>;
+typedef RxInt = Rx<int>;
+typedef RxnInt = Rx<int?>;
+typedef RxDouble = Rx<double>;
+typedef RxnDouble = Rx<double?>;
+typedef RxBool = Rx<bool>;
+typedef RxnBool = Rx<bool?>;
+typedef RxNum = Rx<num>;
+typedef RxnNum = Rx<num?>;
