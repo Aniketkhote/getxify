@@ -137,6 +137,11 @@ extension MapExtension<K, V> on Map<K, V> {
   /// rather than mutated in place, so this works even when the map was
   /// created from an unmodifiable source (e.g. `const {}` or
   /// `Map.unmodifiable`), and listeners are notified exactly once.
+  ///
+  /// `Map` has no runtime-type-preserving copy the way [Iterable.toList] and
+  /// [Iterable.toSet] have, so the fresh map is a plain insertion-ordered map
+  /// parameterised by this map's own [K] and [V]: a `SplayTreeMap`'s
+  /// comparator and `Map.identity` semantics are not carried over.
   void assign(K key, V val) {
     if (this is RxMap<K, V>) {
       (this as RxMap<K, V>).value = <K, V>{key: val};

@@ -204,6 +204,24 @@ class GetListenable<T> extends ListNotifierSingle implements RxInterface<T> {
     _notify();
   }
 
+  /// Replaces the held value **without** the `==` short-circuit that the
+  /// [value] setter applies, then notifies listeners exactly once.
+  ///
+  /// The setter's early return is right when the assignment replaces a
+  /// *value* — nothing observable changed, so nothing needs announcing. It is
+  /// wrong when the assignment replaces the *container*: `RxList` swapping a
+  /// fixed-length backing list for a growable copy, say. There the old
+  /// container may well report itself `==` to the copy (a `List` subclass with
+  /// a content-insensitive `==`), and honouring that would silently discard
+  /// the mutation just applied to the copy while still looking like it worked.
+  ///
+  /// Use [value] for value changes; this is only for backing replacement.
+  @protected
+  void forceValue(T newValue) {
+    _value = newValue;
+    _notify();
+  }
+
   /// Gets or sets the value when called as a function.
   T? call([T? v]) {
     if (v != null) {
