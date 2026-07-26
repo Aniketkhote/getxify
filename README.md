@@ -8,23 +8,17 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-purple.svg)](https://opensource.org/licenses/MIT)
 [![style: flutter_lints](https://img.shields.io/badge/style-flutter__lints-40c4ff.svg)](https://pub.dev/packages/flutter_lints)
 
-**GetXify** is a modernized, actively maintained fork of [GetX](https://github.com/jonataslaw/getx) — an extra-light and powerful solution for Flutter. It brings high-performance state management, intelligent dependency injection, and route management while staying fully API-compatible with GetX.
+**GetXify** is a modernized, streamlined, and actively maintained fork of [GetX](https://github.com/jonataslaw/getx) — focused purely on high-performance reactive state management, intelligent dependency injection, and route management for Flutter without extra bloat.
 
 ---
 
-## What's new in v4.0.0
+## What is GetXify?
 
-v4.0.0 is a landmark release, contributed entirely by [@Baghdady92](https://github.com/Baghdady92), who resolved **111 issues** from the upstream GetX tracker and grew the test suite from 144 to **494 passing tests**. Key areas improved:
+GetXify combines three core pillars of Flutter development into a single, cohesive framework:
 
-- **Routing & navigation** — `preventDuplicates`, nested `GetRouterOutlet`, middleware pipeline, browser back, predictive back, and deep links all fixed
-- **System back & pop** — `PopScope` / `WillPopScope` / `canPop` respected on Android, Web, and iOS edge-swipe
-- **Dependency injection** — deferred disposal, fenix registrations, route-scoped controllers, and `Get.putAsync` restored
-- **State management** — `GetBuilder` tag changes, `RxList`/`RxSet`/`RxMap` default constructors, `bindStream` leak fixed
-- **Dialogs, sheets & snackbars** — `Get.close()` result forwarding, idempotent `SnackbarController`, queue robustness
-- **Reactive types** — `assign`/`assignAll` notify exactly once, unmodifiable backing collections handled
-- **Internationalization** — `scriptCode` lookup, explicit locale vs device locale, CLDR plural categories
-
-See the full [CHANGELOG](CHANGELOG.md) for details.
+1. **State Management** — High-performance reactive state management (`.obs` + `Obx`) and simple state management (`GetBuilder`).
+2. **Dependency Injection** — Smart, lifecycle-aware dependency management (`Get.put`, `Get.lazyPut`, `Get.find`, `GetxService`).
+3. **Route Management** — Contextless navigation (`Get.to`, `Get.back`), named routes, nested outlets (`GetRouterOutlet`), middleware guards, and deep links.
 
 ---
 
@@ -35,8 +29,8 @@ See the full [CHANGELOG](CHANGELOG.md) for details.
 | Dart SDK | legacy | ^3.12.2 |
 | Flutter | legacy | >=3.44.2 |
 | Deprecated APIs | present | removed |
-| Test suite | 144 tests | 494 tests |
-| Upstream bug fixes | — | 111 resolved |
+| Test suite | 144 tests | **1,272 tests** |
+| Upstream bug fixes | — | 111+ resolved |
 | GetConnect (HTTP) | included | removed* |
 
 \* Use `dio` or `http` instead — keeping GetXify focused on its core.
@@ -47,7 +41,7 @@ See the full [CHANGELOG](CHANGELOG.md) for details.
 
 ```yaml
 dependencies:
-  getxify: ^4.0.0
+  getxify: ^4.1.0
 ```
 
 ```dart
@@ -73,7 +67,7 @@ dependencies:
 
 # After
 dependencies:
-  getxify: ^4.0.0
+  getxify: ^4.1.0
 ```
 
 ---
