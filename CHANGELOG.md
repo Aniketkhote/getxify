@@ -6,6 +6,13 @@
 - **Optimized `RxList.shuffle()`** - Delegates directly to the backing list and notifies listeners exactly once.
 - **Added `@protected GetListenable.forceValue`** - Bypasses `==` short-circuiting to reliably publish updated containers during collection swaps.
 
+### Internal Improvements & Refactoring
+
+- **Modernized collection extensions** - Updated `ListExtension`, `SetExtension`, and `MapExtension` (`addIf`, `addAllIf`, `assign`, `assignAll`) to use Dart 3 pattern matching and switch expressions.
+- **Upgraded listener notification engine** - Refactored `ListNotifierSingleMixin` to leverage Flutter's native `ChangeNotifier` engine under the hood for $O(1)$ native listener dispatch.
+- **Cleaned up dependency injection & route tree parsing** - Modernized singleton lookup resolution in `extension_instance.dart` and path parameter parsing in `parse_route.dart`.
+- **Added v5.0 Architectural Roadmap** - Created `V5_ROADMAP.md` outlining the migration path to native Flutter `RouterDelegate` and `ListenableBuilder`.
+
 ### Documentation & Testing
 
 - **Documented collection backing contracts** - Added documentation detailing behavior across growable, fixed-length, and unmodifiable backings for `RxList`, `RxSet`, and `RxMap`.
