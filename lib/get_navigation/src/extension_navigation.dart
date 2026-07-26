@@ -1371,27 +1371,24 @@ extension GetNavigationExt on GetInterface {
   }
 
   GetDelegate searchDelegate(String? k) {
-    GetDelegate key;
-    if (k == null) {
-      key = Get.rootController.rootDelegate;
-    } else {
+    if (k != null) {
       if (!keys.containsKey(k)) {
         throw RouteNotFoundException('Route id ($k) not found');
       }
-      key = keys[k]!;
+      return keys[k]!;
     }
 
-    // if (_key.listenersLength == 0 && !testMode) {
-    //   throw """You are trying to use contextless navigation without
-    //   a GetMaterialApp or Get.key.
-    //   If you are testing your app, you can use:
-    //   [Get.testMode = true], or if you are running your app on
-    //   a physical device or emulator, you must exchange your [MaterialApp]
-    //   for a [GetMaterialApp].
-    //   """;
-    // }
+    final currentContext = context;
+    if (currentContext != null) {
+      try {
+        final router = Router.of(currentContext);
+        if (router.routerDelegate is GetDelegate) {
+          return router.routerDelegate as GetDelegate;
+        }
+      } catch (_) {}
+    }
 
-    return key;
+    return Get.rootController.rootDelegate;
   }
 
   /// give name from current route

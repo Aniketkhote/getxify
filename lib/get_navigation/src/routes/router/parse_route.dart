@@ -100,7 +100,7 @@ class ParseRouteTree {
     if (treeBranch.isNotEmpty && treeBranch.last.key == cumulativePaths.last) {
       //route is found, do further parsing to get nested query params
       final lastRoute = treeBranch.last;
-      final parsedParams = _parseParams(name, lastRoute.value.path);
+      final parsedParams = _parseParams(name, lastRoute.value.name);
       if (parsedParams.isNotEmpty) {
         params.addAll(parsedParams);
       }
@@ -306,27 +306,48 @@ class ParseRouteTree {
   }
 
   GetPage? _findRoute(String name) {
+    final uri = Uri.parse(name);
     final value = routes.firstWhereOrNull(
-      (route) => route.path.regex.hasMatch(name),
+      (route) => _matchesPath(route.name, uri.path),
     );
 
     return value;
   }
 
-  Map<String, String> _parseParams(String path, PathDecoded routePath) {
+  bool _matchesPath(String routeName, String path) {
+    final routeSegments = Uri.parse(routeName).pathSegments;
+    final pathSegments = Uri.parse(path).pathSegments;
+
+    if (routeSegments.length != pathSegments.length) return false;
+
+    for (var i = 0; i < routeSegments.length; i++) {
+      final routeSegment = routeSegments[i];
+      if (routeSegment.startsWith(':')) continue;
+      if (routeSegment != pathSegments[i]) return false;
+    }
+    return true;
+  }
+
+  Map<String, String> _parseParams(String path, String routeName) {
     final params = <String, String>{};
     final uri = Uri.tryParse(path);
     if (uri == null) return params;
     if (path.contains('?')) {
       params.addAll(uri.queryParameters);
     }
-    final paramsMatch = routePath.regex.firstMatch(uri.path);
-    if (paramsMatch == null) {
-      return params;
-    }
-    for (var i = 0; i < routePath.keys.length; i++) {
-      final param = Uri.decodeQueryComponent(paramsMatch[i + 1]!);
-      params[routePath.keys[i]!] = param;
+
+    final routeSegments = Uri.parse(routeName).pathSegments;
+    final pathSegments = uri.pathSegments;
+
+    for (var i = 0; i < routeSegments.length; i++) {
+      if (i < pathSegments.length) {
+        final routeSegment = routeSegments[i];
+        if (routeSegment.startsWith(':')) {
+          params[routeSegment.substring(1)] = Uri.decodeQueryComponent(
+            pathSegments[i],
+          );
+        }
+      }
     }
     return params;
   }

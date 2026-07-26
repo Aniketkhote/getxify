@@ -7,6 +7,16 @@
 - **Removed extraneous bitwise operators** - Removed unused and out-of-scope bitwise logic and shift operators from numeric extensions.
 - **Cleaned up documentation bloat** - Removed excessively long internal documentation blocks from `rx_iterables` (`rx_list.dart`, `rx_map.dart`, `rx_set.dart`) to keep the codebase cleaner.
 
+### Navigation & Routing
+
+- **FEAT**: Introduce `ContextNavigationExt` on `BuildContext`, adding `.to()`, `.toNamed()`, `.offNamed()`, etc. to enable fully context-aware, deeply-nested routing logic seamlessly.
+- **REFACTOR**: Modernized the routing engine in `ParseRouteTree`. Entirely removed custom `RegExp` based `PathDecoded` route matching in favor of native `Uri` string segment iterations, massively reducing processing overhead during route resolution and nested parameter extraction.
+- **REFACTOR**: Updated `searchDelegate()` fallback resolver to dynamically look up the local router scope through `BuildContext` if available instead of falling strictly back to the global `Get.key` root delegate.
+
+- **Native ListenableBuilder Integration** - `GetBuilder` and `BindElement` now utilize Flutter's native `ListenableBuilder` and `ChangeNotifier` engines, permanently removing custom `_updaters` array management from GetX's simple state management core.
+- **Fixed DI Scope Rebinding Timing Bug** - Fixed a closure-capture timing gap when `GetBuilder` dynamically changes tags (`tag: oldTag` -> `tag: newTag`), preventing memory leaks and erroneous controller deletion by safely awaiting descendant widget cleanup using `scheduleMicrotask`.
+- **Fixed Rx Cyclic Dependency Stack Overflow** - Shifted `Notifier.read` deduplication from hashing (`Set`) to object identity (`Set.identity()`), completely eliminating `StackOverflowError` crashes caused by cyclical `hashCode` lookups when `Obx` binds to multiple observable collections.
+
 ---
 
 ## 4.1.0

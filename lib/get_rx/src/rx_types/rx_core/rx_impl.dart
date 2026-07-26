@@ -232,7 +232,6 @@ abstract class _RxImpl<T> extends GetListenable<T> with RxObjectMixin<T> {
   }
 }
 
-
 extension RxBoolExt on Rx<bool> {
   bool get isTrue => value;
 

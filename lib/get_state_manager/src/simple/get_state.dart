@@ -24,6 +24,54 @@ extension ReadExt on BuildContext {
   }
 }
 
+class _GetBuilderInner<T extends GetxController> extends StatefulWidget {
+  final T controller;
+  final Object? id;
+  final Object Function(T value)? filter;
+  final GetControllerBuilder<T> builder;
+
+  const _GetBuilderInner({
+    required this.controller,
+    required this.id,
+    required this.filter,
+    required this.builder,
+  });
+
+  @override
+  State<_GetBuilderInner<T>> createState() => _GetBuilderInnerState<T>();
+}
+
+class _GetBuilderInnerState<T extends GetxController>
+    extends State<_GetBuilderInner<T>> {
+  Object? _lastFilterValue;
+  Widget? _cachedWidget;
+
+  @override
+  Widget build(BuildContext context) {
+    Listenable listenable;
+    if (widget.id != null) {
+      listenable = widget.controller.ensureGroupListenable(widget.id!);
+    } else {
+      listenable = widget.controller;
+    }
+
+    return ListenableBuilder(
+      listenable: listenable,
+      builder: (context, _) {
+        if (widget.filter != null) {
+          final newFilter = widget.filter!(widget.controller);
+          if (newFilter == _lastFilterValue && _cachedWidget != null) {
+            return _cachedWidget!;
+          }
+          _lastFilterValue = newFilter;
+        }
+        _cachedWidget = widget.builder(widget.controller);
+        return _cachedWidget!;
+      },
+    );
+  }
+}
+
 class GetBuilder<T extends GetxController> extends StatelessWidget {
   final GetControllerBuilder<T> builder;
   final bool global;
@@ -63,17 +111,20 @@ class GetBuilder<T extends GetxController> extends StatelessWidget {
       autoRemove: autoRemove,
       assignId: assignId,
       initState: initState,
-      filter: filter,
       tag: tag,
       dispose: dispose,
-      id: id,
       lazy: false,
       didChangeDependencies: didChangeDependencies,
       didUpdateWidget: didUpdateWidget,
       child: Builder(
         builder: (context) {
-          final controller = Bind.of<T>(context, rebuild: true);
-          return builder(controller);
+          final controller = Bind.of<T>(context, rebuild: false);
+          return _GetBuilderInner<T>(
+            controller: controller,
+            id: id,
+            filter: filter,
+            builder: builder,
+          );
         },
       ),
     );
@@ -89,10 +140,8 @@ abstract class Bind<T> extends StatelessWidget {
     this.autoRemove = true,
     this.assignId = false,
     this.initState,
-    this.filter,
     this.tag,
     this.dispose,
-    this.id,
     this.didChangeDependencies,
     this.didUpdateWidget,
   });
@@ -100,11 +149,9 @@ abstract class Bind<T> extends StatelessWidget {
   final InitBuilder<T>? init;
 
   final bool global;
-  final Object? id;
   final String? tag;
   final bool autoRemove;
   final bool assignId;
-  final Object Function(T value)? filter;
   final void Function(BindElement<T> state)? initState,
       dispose,
       didChangeDependencies;
@@ -226,9 +273,7 @@ abstract class Bind<T> extends StatelessWidget {
     bool global = true,
     bool autoRemove = true,
     bool assignId = false,
-    Object Function(T value)? filter,
     String? tag,
-    Object? id,
     void Function(BindElement<T> state)? initState,
     void Function(BindElement<T> state)? dispose,
     void Function(BindElement<T> state)? didChangeDependencies,
@@ -240,10 +285,8 @@ abstract class Bind<T> extends StatelessWidget {
     autoRemove: autoRemove,
     assignId: assignId,
     initState: initState,
-    filter: filter,
     tag: tag,
     dispose: dispose,
-    id: id,
     didChangeDependencies: didChangeDependencies,
     didUpdateWidget: didUpdateWidget,
     child: child,
@@ -283,10 +326,8 @@ class _FactoryBind<T> extends Bind<T> {
     super.autoRemove = true,
     super.assignId = false,
     super.initState,
-    super.filter,
     super.tag,
     super.dispose,
-    super.id,
     super.didChangeDependencies,
     super.didUpdateWidget,
   });
@@ -300,10 +341,8 @@ class _FactoryBind<T> extends Bind<T> {
       autoRemove: autoRemove,
       assignId: assignId,
       initState: initState,
-      filter: filter,
       tag: tag,
       dispose: dispose,
-      id: id,
       didChangeDependencies: didChangeDependencies,
       didUpdateWidget: didUpdateWidget,
       child: child,
@@ -318,10 +357,8 @@ class _FactoryBind<T> extends Bind<T> {
       autoRemove: autoRemove,
       assignId: assignId,
       initState: initState,
-      filter: filter,
       tag: tag,
       dispose: dispose,
-      id: id,
       didChangeDependencies: didChangeDependencies,
       didUpdateWidget: didUpdateWidget,
       child: child!,
@@ -355,10 +392,8 @@ class Binder<T> extends InheritedWidget {
     this.assignId = false,
     this.lazy = true,
     this.initState,
-    this.filter,
     this.tag,
     this.dispose,
-    this.id,
     this.didChangeDependencies,
     this.didUpdateWidget,
     this.create,
@@ -367,12 +402,10 @@ class Binder<T> extends InheritedWidget {
   final InitBuilder<T>? init;
   final InstanceCreateBuilderCallback? create;
   final bool global;
-  final Object? id;
   final String? tag;
   final bool lazy;
   final bool autoRemove;
   final bool assignId;
-  final Object Function(T value)? filter;
   final void Function(BindElement<T> state)? initState,
       dispose,
       didChangeDependencies;
@@ -381,8 +414,7 @@ class Binder<T> extends InheritedWidget {
 
   @override
   bool updateShouldNotify(Binder<T> oldWidget) {
-    return oldWidget.id != id ||
-        oldWidget.tag != tag ||
+    return oldWidget.tag != tag ||
         oldWidget.global != global ||
         oldWidget.autoRemove != autoRemove ||
         oldWidget.assignId != assignId;
@@ -422,7 +454,6 @@ class BindElement<T> extends InheritedElement {
   bool? _needStart = false;
   bool _wasStarted = false;
   VoidCallback? _remove;
-  Object? _filter;
 
   void initState() {
     _resolveController(widget);
@@ -487,10 +518,6 @@ class BindElement<T> extends InheritedElement {
   /// It gets a reference to the remove() callback, to delete the
   /// setState "link" from the Controller.
   void _subscribeToController() {
-    if (widget.filter != null && _controller != null) {
-      _filter = widget.filter!(_controller as T);
-    }
-    final filter = _filter != null ? _filterUpdate : getUpdate;
     final localController = _controller;
 
     if (_needStart == true && localController is GetLifeCycleMixin) {
@@ -499,18 +526,13 @@ class BindElement<T> extends InheritedElement {
       _wasStarted = true;
     }
 
-    if (localController is GetxController) {
+    if (localController is Listenable) {
       _remove?.call();
-      _remove = (widget.id == null)
-          ? localController.addListener(filter)
-          : localController.addListenerId(widget.id, filter);
-    } else if (localController is Listenable) {
-      _remove?.call();
-      localController.addListener(filter);
-      _remove = () => localController.removeListener(filter);
+      localController.addListener(getUpdate);
+      _remove = () => localController.removeListener(getUpdate);
     } else if (localController is StreamController) {
       _remove?.call();
-      final stream = localController.stream.listen((_) => filter());
+      final stream = localController.stream.listen((_) => getUpdate());
       _remove = () => stream.cancel();
     }
 
@@ -536,16 +558,6 @@ class BindElement<T> extends InheritedElement {
     _tickerProvider?.didChangeDependencies(this);
   }
 
-  void _filterUpdate() {
-    if (widget.filter != null && _controller != null) {
-      var newFilter = widget.filter!(_controller as T);
-      if (newFilter != _filter) {
-        _filter = newFilter;
-        getUpdate();
-      }
-    }
-  }
-
   /// Marks controllers whose disposal was requested by their creator
   /// element while other elements were still subscribed, so the last
   /// unsubscribing element can finish the disposal.
@@ -559,20 +571,20 @@ class BindElement<T> extends InheritedElement {
   static bool _hasOtherSubscribers(Object? controller) =>
       controller is ListNotifierSingleMixin &&
       !controller.isDisposed &&
-      controller.listenersLength > 0;
+      controller.hasSubscribers;
 
   /// Finishes a disposal deferred by this controller's creator element:
   /// deletes the controller from the registry when it is still the
   /// registered singleton for this key, otherwise closes the orphaned
   /// instance directly.
-  void _completeDeferredDisposal(Object controller) {
+  void _completeDeferredDisposal(Object controller, String? tag) {
     _deferredDisposal[controller] = null;
-    final info = Get.getInstanceInfo<T>(tag: widget.tag);
+    final info = Get.getInstanceInfo<T>(tag: tag);
     if (info.isRegistered &&
         (info.isSingleton ?? false) &&
         (info.isInit ?? false) &&
-        identical(Get.find<T>(tag: widget.tag), controller)) {
-      Get.delete<T>(tag: widget.tag);
+        identical(Get.find<T>(tag: tag), controller)) {
+      Get.delete<T>(tag: tag);
     } else if (controller is GetLifeCycleMixin) {
       controller.onDelete();
     }
@@ -590,11 +602,19 @@ class BindElement<T> extends InheritedElement {
     _remove = null;
 
     final localController = _controller;
+    final oldTag = widget.tag;
 
     if (_isCreator! || widget.assignId) {
       if (widget.autoRemove && Get.isRegistered<T>(tag: widget.tag)) {
         if (_hasOtherSubscribers(localController)) {
           _deferredDisposal[localController as Object] = true;
+          scheduleMicrotask(() {
+            if (localController is ListNotifierSingleMixin &&
+                _deferredDisposal[localController] == true &&
+                !_hasOtherSubscribers(localController)) {
+              _completeDeferredDisposal(localController, oldTag);
+            }
+          });
         } else {
           Get.delete<T>(tag: widget.tag);
         }
@@ -604,6 +624,13 @@ class BindElement<T> extends InheritedElement {
           !Get.isRegistered<T>(tag: widget.tag)) {
         if (_hasOtherSubscribers(localController)) {
           _deferredDisposal[localController as Object] = true;
+          scheduleMicrotask(() {
+            if (localController is ListNotifierSingleMixin &&
+                _deferredDisposal[localController] == true &&
+                !_hasOtherSubscribers(localController)) {
+              _completeDeferredDisposal(localController, oldTag);
+            }
+          });
         } else {
           localController.onDelete();
         }
@@ -611,7 +638,7 @@ class BindElement<T> extends InheritedElement {
     } else if (localController is ListNotifierSingleMixin &&
         _deferredDisposal[localController] == true &&
         !_hasOtherSubscribers(localController)) {
-      _completeDeferredDisposal(localController);
+      _completeDeferredDisposal(localController, oldTag);
     }
   }
 
@@ -629,7 +656,6 @@ class BindElement<T> extends InheritedElement {
     _controller = null;
     _tickerProvider = null;
     _isCreator = null;
-    _filter = null;
     _needStart = null;
     _controllerBuilder = null;
   }
@@ -650,9 +676,7 @@ class BindElement<T> extends InheritedElement {
     if (widget.tag != newWidget.tag) {
       _rebindController(newWidget);
     } else {
-      final oldNotifier = widget.id;
-      final newNotifier = newWidget.id;
-      if (oldNotifier != newNotifier && _wasStarted) {
+      if (_wasStarted) {
         _subscribeToController();
       }
     }
@@ -676,7 +700,6 @@ class BindElement<T> extends InheritedElement {
     _isCreator = false;
     _needStart = false;
     _wasStarted = false;
-    _filter = null;
     _tickerProvider = null;
     _resolveController(newWidget);
   }

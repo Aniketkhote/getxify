@@ -90,8 +90,6 @@ extension RxnNumExt<T extends num> on Rx<T?> {
   bool? operator >=(num other) => value != null ? value! >= other : null;
 }
 
-
-
 /// Extension on [Rx<double>] providing basic double operators.
 extension RxDoubleExt on Rx<double> {
   /// Addition operator.

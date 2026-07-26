@@ -60,7 +60,6 @@ class GetPage<T> extends Page<T> {
 
   final List<GetPage> children;
   final List<GetMiddleware> middlewares;
-  final PathDecoded path;
   final GetPage? unknownRoute;
   final bool showCupertinoParallax;
 
@@ -104,8 +103,7 @@ class GetPage<T> extends Page<T> {
     super.canPop,
     super.onPopInvoked = _defaultPopInvokedHandler,
     super.restorationId,
-  }) : path = _nameToRegex(name),
-       assert(
+  }) : assert(
          name.startsWith('/'),
          'Invalid route name: "$name". '
          'GetPage route names must start with a slash "/". '
@@ -207,27 +205,6 @@ class GetPage<T> extends Page<T> {
     return page;
   }
 
-  static PathDecoded _nameToRegex(String path) {
-    var keys = <String?>[];
-
-    String recursiveReplace(Match pattern) {
-      var buffer = StringBuffer('(?:');
-
-      if (pattern[1] != null) buffer.write('.');
-      buffer.write('([\\w%+-._~!\$&\'()*,;=:@]+))');
-      if (pattern[3] != null) buffer.write('?');
-
-      keys.add(pattern[2]);
-      return "$buffer";
-    }
-
-    var stringPath = '$path/?'
-        .replaceAllMapped(RegExp(r'(\.)?:(\w+)(\?)?'), recursiveReplace)
-        .replaceAll('//', '/');
-
-    return PathDecoded(RegExp('^$stringPath\$'), keys);
-  }
-
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
@@ -241,23 +218,5 @@ class GetPage<T> extends Page<T> {
   @override
   int get hashCode {
     return key.hashCode;
-  }
-}
-
-@immutable
-class PathDecoded {
-  final RegExp regex;
-  final List<String?> keys;
-  const PathDecoded(this.regex, this.keys);
-
-  @override
-  int get hashCode => regex.hashCode;
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-
-    return other is PathDecoded &&
-        other.regex == regex; // && listEquals(other.keys, keys);
   }
 }

@@ -596,7 +596,7 @@ extension GetInstanceExt on GetInterface {
     final hasSubscribers =
         live is ListNotifierSingleMixin &&
         !live.isDisposed &&
-        live.listenersLength > 0;
+        live.hasSubscribers;
     if (dep.lateRemove != null || !hasSubscribers) {
       delete(key: key);
       return;
@@ -621,7 +621,7 @@ extension GetInstanceExt on GetInterface {
         }
         return;
       }
-      if (!live.isDisposed && live.listenersLength > 0) {
+      if (!live.isDisposed && live.hasSubscribers) {
         // The disposed route marked the key dirty on its way out; the
         // instance is consciously kept alive for its remaining
         // subscribers, so it must not be treated as stale by future
