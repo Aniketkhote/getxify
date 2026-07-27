@@ -2,110 +2,37 @@ import 'package:flutter/widgets.dart';
 
 import '../../../get_core/get_core.dart';
 import '../../../get_instance/get_instance.dart';
-import '../../../get_utils/get_utils.dart';
-import 'get_state.dart';
-import 'get_widget_cache.dart';
 
-/// GetView is a great way of quickly access your Controller
-/// without having to call `Get.find<AwesomeController>()` yourself.
+/// [GetView] is a lightweight [StatelessWidget] providing easy access to a controller
+/// registered in dependency injection without calling `Get.find<Controller>()` manually.
 ///
-/// Sample:
-/// ```
+/// Example:
+/// ```dart
 /// class AwesomeController extends GetxController {
 ///   final String title = 'My Awesome View';
 /// }
 ///
 /// class AwesomeView extends GetView<AwesomeController> {
-///   /// if you need you can pass the tag for
-///   /// Get.find<AwesomeController>(tag:"myTag");
-///   @override
-///   final String tag = "myTag";
-///
-///   AwesomeView({super.key});
+///   const AwesomeView({super.key});
 ///
 ///   @override
 ///   Widget build(BuildContext context) {
 ///     return Container(
-///       padding: EdgeInsets.all(20),
-///       child: Text( controller.title ),
+///       padding: const EdgeInsets.all(20),
+///       child: Text(controller.title),
 ///     );
 ///   }
 /// }
-///``
+/// ```
 abstract class GetView<T> extends StatelessWidget {
   const GetView({super.key});
 
+  /// Optional tag parameter for tag-registered controllers (`Get.find<T>(tag: tag)`).
   final String? tag = null;
 
+  /// Gets the controller instance from the dependency injection container.
   T get controller => Get.find<T>(tag: tag)!;
 
   @override
   Widget build(BuildContext context);
-}
-
-/// GetWidget is a great way of quickly access your individual Controller
-/// without having to call `Get.find<AwesomeController>()` yourself.
-/// Get save you controller on cache, so, you can to use Get.create() safely
-/// GetWidget is perfect to multiples instance of a same controller. Each
-/// GetWidget will have your own controller, and will be call events as `onInit`
-/// and `onClose` when the controller get in/get out on memory.
-abstract class GetWidget<S extends GetLifeCycleMixin> extends GetWidgetCache {
-  const GetWidget({super.key});
-
-  @protected
-  final String? tag = null;
-
-  S get controller {
-    final controller = GetWidget._cache[this];
-    if (controller == null) {
-      throw StateError('Controller not found in cache for $runtimeType');
-    }
-    return controller as S;
-  }
-
-  static final _cache = Expando<GetLifeCycleMixin>();
-
-  @protected
-  Widget build(BuildContext context);
-
-  @override
-  WidgetCache createWidgetCache() => _GetCache<S>();
-}
-
-class _GetCache<S extends GetLifeCycleMixin> extends WidgetCache<GetWidget<S>> {
-  S? _controller;
-  bool _isCreator = false;
-  InstanceInfo? info;
-  @override
-  void onInit() {
-    info = Get.getInstanceInfo<S>(tag: widget!.tag);
-
-    _isCreator = info!.isPrepared && info!.isCreate;
-
-    if (info!.isRegistered) {
-      _controller = Get.find<S>(tag: widget!.tag);
-    }
-
-    GetWidget._cache[widget!] = _controller;
-
-    super.onInit();
-  }
-
-  @override
-  void onClose() {
-    if (_isCreator) {
-      Get.asap(() {
-        widget!.controller.onDelete();
-        Get.log('"${widget!.controller.runtimeType}" onClose() called');
-        Get.log('"${widget!.controller.runtimeType}" deleted from memory');
-      });
-    }
-    info = null;
-    super.onClose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Binder(init: () => _controller, child: widget!.build(context));
-  }
 }

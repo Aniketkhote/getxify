@@ -77,25 +77,6 @@ class GetResponsiveView<T> extends GetView<T> with GetResponsiveMixin {
   }) : screen = ResponsiveScreen(settings);
 }
 
-/// A responsive widget that extends [GetWidget] with responsive capabilities.
-///
-/// Similar to [GetResponsiveView], but for use with [GetWidget]
-/// which has its own controller lifecycle management.
-class GetResponsiveWidget<T extends GetLifeCycleMixin> extends GetWidget<T>
-    with GetResponsiveMixin {
-  @override
-  final bool alwaysUseBuilder;
-
-  @override
-  final ResponsiveScreen screen;
-
-  GetResponsiveWidget({
-    this.alwaysUseBuilder = false,
-    ResponsiveScreenSettings settings = const ResponsiveScreenSettings(),
-    super.key,
-  }) : screen = ResponsiveScreen(settings);
-}
-
 /// Settings for responsive screen breakpoints.
 ///
 /// This class defines the width thresholds for different screen types.

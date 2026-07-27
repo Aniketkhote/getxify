@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+### Breaking Changes
+
+- **Removed Obsolete Hybrid Widgets** - Permanently removed `GetWidget`, `GetWidgetCache`, `GetX`, `GetResponsiveWidget`, and `MixinBuilder` to eliminate hidden global `Expando` controller caching memory leaks and redundant wrapper layers. Developers should migrate to `GetView<T>`, `GetResponsiveView<T>`, or `Obx(() => ...)` as documented in `MIGRATION_V5.md`.
+
 ### State Management & Sealed Types
 
 - **Sealed `GetState<T>` & Dart 3 Pattern Matching** - Added `typedef GetState<T> = GetStatus<T>` and introduced `.when(...)` and `.maybeWhen(...)` pattern-matching methods on `GetStatus<T>` / `GetState<T>` for clean, exhaustive Dart 3 switch expressions in views.

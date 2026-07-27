@@ -848,12 +848,12 @@ void main() {
 
     testWidgets(
       'GetSingleTickerProviderStateMixin ticker is muted when TickerMode '
-      'disables tickers under GetX',
+      'disables tickers under GetBuilder',
       (tester) async {
         await tester.pumpWidget(
           MaterialApp(
             home: _TickerModeHost(
-              child: GetX<SingleTickController>(
+              child: GetBuilder<SingleTickController>(
                 init: SingleTickController(),
                 builder: (controller) => Text('tick: ${controller.tick.value}'),
               ),

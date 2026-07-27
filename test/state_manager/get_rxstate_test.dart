@@ -4,39 +4,30 @@ import 'package:getxify/getxify.dart';
 
 void main() {
   Get.lazyPut<Controller2>(() => Controller2());
-  testWidgets("GetxController smoke test", (tester) async {
+
+  testWidgets("Rx state reactivity smoke test with Obx", (tester) async {
+    final controller = Get.put(Controller());
+    final nonGlobalController = ControllerNonGlobal();
+
     await tester.pumpWidget(
       MaterialApp(
-        home: GetX<Controller>(
-          init: Controller(),
-          builder: (controller) {
-            return Column(
-              children: [
-                Text('Count: ${controller.counter.value}'),
-                Text('Double: ${controller.doubleNum.value}'),
-                Text('String: ${controller.string.value}'),
-                Text('List: ${controller.list.length}'),
-                Text('Bool: ${controller.boolean.value}'),
-                Text('Map: ${controller.map.length}'),
-                TextButton(
-                  child: const Text("increment"),
-                  onPressed: () => controller.increment(),
-                ),
-                GetX<Controller2>(
-                  builder: (controller) {
-                    return Text('lazy ${controller.lazy.value}');
-                  },
-                ),
-                GetX<ControllerNonGlobal>(
-                  init: ControllerNonGlobal(),
-                  global: false,
-                  builder: (controller) {
-                    return Text('single ${controller.nonGlobal.value}');
-                  },
-                ),
-              ],
-            );
-          },
+        home: Obx(
+          () => Column(
+            children: [
+              Text('Count: ${controller.counter.value}'),
+              Text('Double: ${controller.doubleNum.value}'),
+              Text('String: ${controller.string.value}'),
+              Text('List: ${controller.list.length}'),
+              Text('Bool: ${controller.boolean.value}'),
+              Text('Map: ${controller.map.length}'),
+              TextButton(
+                child: const Text("increment"),
+                onPressed: () => controller.increment(),
+              ),
+              Obx(() => Text('lazy ${Get.find<Controller2>().lazy.value}')),
+              Obx(() => Text('single ${nonGlobalController.nonGlobal.value}')),
+            ],
+          ),
         ),
       ),
     );

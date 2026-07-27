@@ -79,13 +79,13 @@ void main() {
   );
 
   testWidgets(
-    'GetX forwards TickerMode to a GetTickerProviderStateMixin controller '
+    'GetBuilder forwards TickerMode to a GetTickerProviderStateMixin controller '
     'through the single GetTickerProvider dispatch',
     (tester) async {
       await tester.pumpWidget(
         TickerMode(
           enabled: false,
-          child: GetX<_MultiController>(
+          child: GetBuilder<_MultiController>(
             init: _MultiController(),
             builder: (c) =>
                 Text('${c.count.value}', textDirection: TextDirection.ltr),
@@ -99,7 +99,7 @@ void main() {
       await tester.pumpWidget(
         TickerMode(
           enabled: true,
-          child: GetX<_MultiController>(
+          child: GetBuilder<_MultiController>(
             builder: (c) =>
                 Text('${c.count.value}', textDirection: TextDirection.ltr),
           ),
