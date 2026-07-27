@@ -21,7 +21,6 @@ class LifecycleService extends GetxService {
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  // Regression test: a non-permanent GetxService superseded into the
   // `lateRemove` chain (markAsDirty + re-registration) must be disposed by
   // the pending non-force delete. Before the fix, the GetxServiceMixin
   // guard returned early in the lateRemove branch, leaking the stale

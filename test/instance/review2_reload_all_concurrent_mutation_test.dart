@@ -1,4 +1,3 @@
-// Regression test: Get.reloadAll() iterates the instance registry while
 // running each instance's onDelete/onClose lifecycle. An onClose that
 // mutates the registry (Get.delete<Other>(), Get.put, ...) must not abort
 // the iteration with a ConcurrentModificationError.

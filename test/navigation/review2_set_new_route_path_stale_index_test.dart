@@ -1,4 +1,3 @@
-// Regression test: GetDelegate.setNewRoutePath computed the index of the
 // reported route BEFORE awaiting the pop-veto surface (_isPopVetoed) and
 // used it afterwards without re-validation. A willPop callback that
 // navigates during that await left the index pointing into a mutated

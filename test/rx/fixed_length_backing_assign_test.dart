@@ -1,4 +1,3 @@
-// Regression tests: assign/assignAll must not require a growable or
 // modifiable backing collection, because their contract is to REPLACE the
 // contents. Real-world trigger: `RxList<T> x = List<T>.empty().obs;` —
 // List.empty() is fixed-length, and assignAll used to call clear() on it,
@@ -78,7 +77,7 @@ void main() {
       expect(notifications, 1);
     });
 
-    test('assign replaces an unmodifiable backing', () {
+    test('assign replaces an unmodifiable backing (variant 1)', () {
       final RxSet<int> set = Set<int>.unmodifiable({1}).obs;
 
       set.assign(9);

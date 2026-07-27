@@ -1,4 +1,3 @@
-// Regression test: two middlewares redirecting to each other (A -> B -> A)
 // used to make GetDelegate.runMiddleware recurse forever, hanging the
 // navigation. The delegate must detect the cycle and degrade to the
 // not-found route, mirroring PageRedirect.getPageToRoute's guard.

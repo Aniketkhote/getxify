@@ -664,8 +664,8 @@ void main() {
   group(
     'RxList over [1, 2, 3]: a fixed-length backing equals a growable one',
     () {
-      for (final op in _listOps) {
-        test(op.name, () {
+      test('list operations equivalence matrix suite', () {
+        for (final op in _listOps) {
           final control = _runList(_growableSeed(), op);
           for (final backing in _equivalentListBackings.entries) {
             _expectSame(
@@ -674,16 +674,16 @@ void main() {
               control,
             );
           }
-        });
-      }
+        }
+      });
     },
   );
 
   group(
     'RxList over an empty fixed-length backing equals an empty growable one',
     () {
-      for (final op in _emptyListOps) {
-        test(op.name, () {
+      test('empty list operations equivalence matrix suite', () {
+        for (final op in _emptyListOps) {
           final control = _runList(<int>[], op);
           for (final backing in _equivalentEmptyListBackings.entries) {
             _expectSame(
@@ -692,14 +692,14 @@ void main() {
               control,
             );
           }
-        });
-      }
+        }
+      });
     },
   );
 
   group('RxList sequences: a fixed-length backing equals a growable one', () {
-    for (final op in _listSequences) {
-      test(op.name, () {
+    test('list sequences equivalence matrix suite', () {
+      for (final op in _listSequences) {
         final control = _runList(_growableSeed(), op);
         for (final backing in _equivalentListBackings.entries) {
           _expectSame(
@@ -709,13 +709,13 @@ void main() {
             maxNotifications: null,
           );
         }
-      });
-    }
+      }
+    });
   });
 
   group('RxSet over {1, 2, 3} behaves the same on every mutable backing', () {
-    for (final op in [..._setOps, ..._setSequences]) {
-      test(op.name, () {
+    test('set operations equivalence matrix suite', () {
+      for (final op in [..._setOps, ..._setSequences]) {
         final control = _runSet(_mutableSeed(), op);
         for (final backing in _equivalentSetBackings.entries) {
           _expectSame(
@@ -725,15 +725,15 @@ void main() {
             maxNotifications: null,
           );
         }
-      });
-    }
+      }
+    });
   });
 
   group(
     'RxMap over {a: 1, b: 2} behaves the same on every mutable backing',
     () {
-      for (final op in [..._mapOps, ..._mapSequences]) {
-        test(op.name, () {
+      test('map operations equivalence matrix suite', () {
+        for (final op in [..._mapOps, ..._mapSequences]) {
           final control = _runMap(_mutableMapSeed(), op);
           for (final backing in _equivalentMapBackings.entries) {
             _expectSame(
@@ -743,8 +743,8 @@ void main() {
               maxNotifications: null,
             );
           }
-        });
-      }
+        }
+      });
     },
   );
 
@@ -755,8 +755,8 @@ void main() {
   group(
     'RxList over an unmodifiable backing rejects what a growable one accepts',
     () {
-      for (final op in _listOps) {
-        test(op.name, () {
+      test('list operations rejection matrix suite', () {
+        for (final op in _listOps) {
           final control = _runList(_growableSeed(), op);
           for (final backing in _unmodifiableListBackings.entries) {
             final label = '${op.name} on ${backing.key}';
@@ -766,14 +766,14 @@ void main() {
               _expectListRejects(label, backing.value(), op, _listSeed);
             }
           }
-        });
-      }
+        }
+      });
     },
   );
 
   group('RxList over an empty unmodifiable backing rejects mutation', () {
-    for (final op in _emptyListOps) {
-      test(op.name, () {
+    test('empty list operations rejection matrix suite', () {
+      for (final op in _emptyListOps) {
         final control = _runList(<int>[], op);
         for (final backing in _unmodifiableEmptyListBackings.entries) {
           final label = '${op.name} on ${backing.key}';
@@ -783,13 +783,13 @@ void main() {
             _expectListRejects(label, backing.value(), op, const <int>[]);
           }
         }
-      });
-    }
+      }
+    });
   });
 
   group('RxList sequences over an unmodifiable backing are rejected', () {
-    for (final op in _listSequences) {
-      test(op.name, () {
+    test('list sequences rejection matrix suite', () {
+      for (final op in _listSequences) {
         final control = _runList(_growableSeed(), op);
         for (final backing in _unmodifiableListBackings.entries) {
           final label = '${op.name} on ${backing.key}';
@@ -804,8 +804,8 @@ void main() {
             _expectListRejects(label, backing.value(), op, _listSeed);
           }
         }
-      });
-    }
+      }
+    });
   });
 
   group('RxSet over an unmodifiable backing rejects mutation', () {

@@ -1,4 +1,3 @@
-// Regression test: GetAnimatedBuilder created a CurvedAnimation in
 // initState and a replacement in didUpdateWidget without disposing either
 // (each registers a listener on the controller, flagged by leak_tracker).
 // The state must own the CurvedAnimation, dispose the replaced one on

@@ -1,4 +1,3 @@
-// Regression tests for the NARROW self-healing contract on RxList/RxSet/RxMap.
 //
 // Real-world trigger (production app, reported crash):
 //
@@ -599,9 +598,9 @@ void main() {
     for (final cases in <List<_ListCase>>[_seededListCases, _emptyListCases]) {
       final label = identical(cases, _emptyListCases) ? ', empty' : '';
       group('RxList over ${backing.key}$label', () {
-        for (final c in cases) {
-          if (backing.value(c.seed) == null) continue;
-          test('${c.name} works and notifies exactly once', () async {
+        test('healing backings mutators matrix suite', () async {
+          for (final c in cases) {
+            if (backing.value(c.seed) == null) continue;
             final list = RxList<int>(backing.value(c.seed)!);
             var notifications = 0;
             list.listen((_) => notifications++);
@@ -609,10 +608,14 @@ void main() {
             c.apply(list);
             await Future.delayed(Duration.zero);
 
-            expect(list, c.expected);
-            expect(notifications, 1);
-          });
-        }
+            expect(list, c.expected, reason: '${c.name} expected result');
+            expect(
+              notifications,
+              1,
+              reason: '${c.name} expected 1 notification',
+            );
+          }
+        });
       });
     }
   }
@@ -626,55 +629,60 @@ void main() {
     for (final cases in <List<_ListCase>>[_seededListCases, _emptyListCases]) {
       final label = identical(cases, _emptyListCases) ? ', empty' : '';
       group('RxList over ${backing.key}$label', () {
-        for (final c in cases) {
-          if (backing.value(c.seed) == null) continue;
-          if (!c.throwsOnFrozen) {
-            test('${c.name} is a no-op, exactly as it always was', () async {
+        test('frozen list mutators matrix suite', () async {
+          for (final c in cases) {
+            if (backing.value(c.seed) == null) continue;
+            if (!c.throwsOnFrozen) {
               final source = backing.value(c.seed)!;
               final list = RxList<int>(source);
               var notifications = 0;
               list.listen((_) => notifications++);
 
-              // It never asks the backing to write, so there is nothing for
-              // the backing to refuse — and it must not start refusing now.
-              expect(() => c.apply(list), returnsNormally);
+              expect(
+                () => c.apply(list),
+                returnsNormally,
+                reason: '${c.name} returns normally',
+              );
               await Future.delayed(Duration.zero);
 
-              expect(list, equals(c.seed));
+              expect(
+                list,
+                equals(c.seed),
+                reason: '${c.name} contents unchanged',
+              );
               expect(
                 identical(list.value, source),
                 isTrue,
-                reason: 'an unmodifiable backing is never swapped out',
+                reason: '${c.name} identity preserved',
+              );
+              expect(notifications, 1, reason: '${c.name} notification count');
+            } else {
+              final source = backing.value(c.seed)!;
+              final list = RxList<int>(source);
+              var notifications = 0;
+              list.listen((_) => notifications++);
+
+              expect(
+                () => c.apply(list),
+                throwsUnsupportedError,
+                reason: '${c.name} throws UnsupportedError',
+              );
+              await Future.delayed(Duration.zero);
+
+              expect(
+                list,
+                equals(c.seed),
+                reason: '${c.name} contents unchanged',
               );
               expect(
-                notifications,
-                1,
-                reason: 'every mutator call notifies exactly once',
+                identical(list.value, source),
+                isTrue,
+                reason: '${c.name} identity preserved',
               );
-            });
-            continue;
+              expect(notifications, 0, reason: '${c.name} zero notifications');
+            }
           }
-          test(
-            '${c.name} throws UnsupportedError and changes nothing',
-            () async {
-              final source = backing.value(c.seed)!;
-              final list = RxList<int>(source);
-              var notifications = 0;
-              list.listen((_) => notifications++);
-
-              expect(() => c.apply(list), throwsUnsupportedError);
-              await Future.delayed(Duration.zero);
-
-              expect(list, equals(c.seed));
-              expect(
-                identical(list.value, source),
-                isTrue,
-                reason: 'an unmodifiable backing is never swapped out',
-              );
-              expect(notifications, 0);
-            },
-          );
-        }
+        });
       });
     }
   }
@@ -1015,44 +1023,57 @@ void main() {
   // -------------------------------------------------------------------------
   for (final backing in _mutableSetBackings.entries) {
     group('RxSet over ${backing.key}', () {
-      for (final c in _setCases) {
-        if (backing.value(c.seed) == null) continue;
-        test(
-          '${c.name} works and notifies ${c.notifications} time(s)',
-          () async {
-            final set = RxSet<int>(backing.value(c.seed)!);
-            var notifications = 0;
-            set.listen((_) => notifications++);
+      test('mutable set mutators matrix suite', () async {
+        for (final c in _setCases) {
+          if (backing.value(c.seed) == null) continue;
+          final set = RxSet<int>(backing.value(c.seed)!);
+          var notifications = 0;
+          set.listen((_) => notifications++);
 
-            c.apply(set);
-            await Future.delayed(Duration.zero);
+          c.apply(set);
+          await Future.delayed(Duration.zero);
 
-            expect(set, c.expected);
-            expect(notifications, c.notifications);
-          },
-        );
-      }
+          expect(set, c.expected, reason: '${c.name} expected contents');
+          expect(
+            notifications,
+            c.notifications,
+            reason: '${c.name} expected notifications',
+          );
+        }
+      });
     });
   }
 
   for (final backing in _frozenSetBackings.entries) {
     group('RxSet over ${backing.key}', () {
-      for (final c in _setCases) {
-        if (backing.value(c.seed) == null) continue;
-        test('${c.name} throws UnsupportedError and changes nothing', () async {
+      test('frozen set mutators matrix suite', () async {
+        for (final c in _setCases) {
+          if (backing.value(c.seed) == null) continue;
           final source = backing.value(c.seed)!;
           final set = RxSet<int>(source);
           var notifications = 0;
           set.listen((_) => notifications++);
 
-          expect(() => c.apply(set), throwsUnsupportedError);
+          expect(
+            () => c.apply(set),
+            throwsUnsupportedError,
+            reason: '${c.name} throws UnsupportedError',
+          );
           await Future.delayed(Duration.zero);
 
-          expect(set, unorderedEquals(c.seed));
-          expect(identical(set.value, source), isTrue);
-          expect(notifications, 0);
-        });
-      }
+          expect(
+            set,
+            unorderedEquals(c.seed),
+            reason: '${c.name} contents unchanged',
+          );
+          expect(
+            identical(set.value, source),
+            isTrue,
+            reason: '${c.name} identity preserved',
+          );
+          expect(notifications, 0, reason: '${c.name} zero notifications');
+        }
+      });
     });
   }
 
@@ -1146,44 +1167,53 @@ void main() {
   // -------------------------------------------------------------------------
   for (final backing in _mutableMapBackings.entries) {
     group('RxMap over ${backing.key}', () {
-      for (final c in _mapCases) {
-        if (backing.value(c.seed) == null) continue;
-        test(
-          '${c.name} works and notifies ${c.notifications} time(s)',
-          () async {
-            final map = RxMap<String, int>(backing.value(c.seed)!);
-            var notifications = 0;
-            map.listen((_) => notifications++);
+      test('mutable map mutators matrix suite', () async {
+        for (final c in _mapCases) {
+          if (backing.value(c.seed) == null) continue;
+          final map = RxMap<String, int>(backing.value(c.seed)!);
+          var notifications = 0;
+          map.listen((_) => notifications++);
 
-            c.apply(map);
-            await Future.delayed(Duration.zero);
+          c.apply(map);
+          await Future.delayed(Duration.zero);
 
-            expect(map, c.expected);
-            expect(notifications, c.notifications);
-          },
-        );
-      }
+          expect(map, c.expected, reason: '${c.name} expected contents');
+          expect(
+            notifications,
+            c.notifications,
+            reason: '${c.name} expected notifications',
+          );
+        }
+      });
     });
   }
 
   for (final backing in _frozenMapBackings.entries) {
     group('RxMap over ${backing.key}', () {
-      for (final c in _mapCases) {
-        if (backing.value(c.seed) == null) continue;
-        test('${c.name} throws UnsupportedError and changes nothing', () async {
+      test('frozen map mutators matrix suite', () async {
+        for (final c in _mapCases) {
+          if (backing.value(c.seed) == null) continue;
           final source = backing.value(c.seed)!;
           final map = RxMap<String, int>(source);
           var notifications = 0;
           map.listen((_) => notifications++);
 
-          expect(() => c.apply(map), throwsUnsupportedError);
+          expect(
+            () => c.apply(map),
+            throwsUnsupportedError,
+            reason: '${c.name} throws UnsupportedError',
+          );
           await Future.delayed(Duration.zero);
 
-          expect(map, equals(c.seed));
-          expect(identical(map.value, source), isTrue);
-          expect(notifications, 0);
-        });
-      }
+          expect(map, equals(c.seed), reason: '${c.name} contents unchanged');
+          expect(
+            identical(map.value, source),
+            isTrue,
+            reason: '${c.name} identity preserved',
+          );
+          expect(notifications, 0, reason: '${c.name} zero notifications');
+        }
+      });
     });
   }
 

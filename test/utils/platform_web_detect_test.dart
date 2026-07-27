@@ -1,4 +1,3 @@
-// Regression tests for https://github.com/jonataslaw/getx/issues/1936
 // macOS was not detected under Firefox on web: Firefox reports
 // navigator.appVersion as '5.0 (Macintosh)' (no 'Mac OS' token), so the
 // appVersion.contains('Mac OS') check silently failed.
@@ -17,7 +16,7 @@ void main() {
       '5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
       '(KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36';
 
-  group('issue #1936 - macOS detection on web', () {
+  group('macOS detection on web', () {
     test('detects macOS under Firefox (appVersion lacks "Mac OS")', () {
       expect(
         WebPlatformDetect.isMacOS(firefoxMacAppVersion, 'MacIntel', 0),
