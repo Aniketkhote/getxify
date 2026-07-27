@@ -22,18 +22,14 @@ GetXify combines three core pillars of Flutter development into a single, cohesi
 
 ---
 
-## Why GetXify over GetX?
+## What's new in v5.0?
 
-| | GetX | GetXify |
-|---|---|---|
-| Dart SDK | legacy | ^3.12.2 |
-| Flutter | legacy | >=3.44.2 |
-| Deprecated APIs | present | removed |
-| Test suite | 144 tests | **1,272 tests** |
-| Upstream bug fixes | — | 111+ resolved |
-| GetConnect (HTTP) | included | removed* |
+GetXify v5.0 is a complete architectural modernization built for Dart 3 and modern Flutter:
 
-\* Use `dio` or `http` instead — keeping GetXify focused on its core.
+- **Native Routing**: Uses standard Dart `Uri` and Flutter `RouterDelegate` under the hood. Supports both contextless (`Get.to()`) and context-aware (`context.to()`) nested navigation.
+- **Native State Management**: Powered by Flutter's native `ListenableBuilder` and `ChangeNotifier`, completely removing custom memory management loops for peak performance.
+- **Element-Bound Dependency Injection**: `GetDependencyScope` intrinsically ties dependencies to the Flutter element tree, guaranteeing deterministic cleanup and zero memory leaks.
+- **Unified Reactive Primitives**: Built entirely on Dart 3 `typedef`s (e.g. `typedef RxInt = Rx<int>`), offering zero-boilerplate syntax (`count.obs`) with maximum performance.
 
 ---
 
@@ -41,7 +37,7 @@ GetXify combines three core pillars of Flutter development into a single, cohesi
 
 ```yaml
 dependencies:
-  getxify: ^4.1.0
+  getxify: ^5.0.0
 ```
 
 ```dart
@@ -67,7 +63,7 @@ dependencies:
 
 # After
 dependencies:
-  getxify: ^4.1.0
+  getxify: ^5.0.0
 ```
 
 ---
@@ -143,23 +139,6 @@ cd example
 flutter pub get
 flutter run
 ```
-
----
-
-## Breaking changes from GetX
-
-**v4.0.0**
-- `Get.back()` now returns `bool` — callers ignoring the result are unaffected
-- iOS back-swipe starts only near the leading edge by default — use `popGesture: true` to restore full-screen
-
-**v2.0.0**
-- Removed `GetUtils` validation/string helpers — use [`validators`](https://pub.dev/packages/validators) or [`recase`](https://pub.dev/packages/recase)
-- Removed several extensions (`double_extensions`, `duration_extensions`, `widget_extensions`, etc.)
-
-**v1.0.0**
-- Removed `GetConnect` HTTP/WebSocket module — use [`dio`](https://pub.dev/packages/dio) or [`http`](https://pub.dev/packages/http)
-- Removed mini stream utilities — use standard Dart streams or [`rxdart`](https://pub.dev/packages/rxdart)
-- All deprecated GetX APIs removed
 
 ---
 
