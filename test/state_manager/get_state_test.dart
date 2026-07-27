@@ -1048,6 +1048,71 @@ void main() {
       expect(Bind.find<AsyncInitController>(tag: 'a').value, 1);
       expect(Bind.find<AsyncInitController>(tag: 'b').value, 2);
     });
+
+    test('GetState pattern matching with when() and maybeWhen()', () {
+      final GetState<int> loadingState = GetStatus<int>.loading();
+      final GetState<int> successState = GetStatus<int>.success(42);
+      final GetState<int> errorState = GetStatus<int>.error('Failed');
+      final GetState<int> emptyState = GetStatus<int>.empty();
+
+      // Test when()
+      expect(
+        loadingState.when(
+          loading: () => 'loading',
+          success: (data) => 'success:$data',
+          error: (err) => 'error:$err',
+          empty: () => 'empty',
+        ),
+        'loading',
+      );
+
+      expect(
+        successState.when(
+          loading: () => 'loading',
+          success: (data) => 'success:$data',
+          error: (err) => 'error:$err',
+          empty: () => 'empty',
+        ),
+        'success:42',
+      );
+
+      expect(
+        errorState.when(
+          loading: () => 'loading',
+          success: (data) => 'success:$data',
+          error: (err) => 'error:$err',
+          empty: () => 'empty',
+        ),
+        'error:Failed',
+      );
+
+      expect(
+        emptyState.when(
+          loading: () => 'loading',
+          success: (data) => 'success:$data',
+          error: (err) => 'error:$err',
+          empty: () => 'empty',
+        ),
+        'empty',
+      );
+
+      // Test maybeWhen()
+      expect(
+        successState.maybeWhen(
+          success: (data) => 'got $data',
+          orElse: () => 'fallback',
+        ),
+        'got 42',
+      );
+
+      expect(
+        loadingState.maybeWhen(
+          success: (data) => 'got $data',
+          orElse: () => 'fallback',
+        ),
+        'fallback',
+      );
+    });
   });
 }
 

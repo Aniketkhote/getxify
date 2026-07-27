@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+### State Management & Sealed Types
+
+- **Sealed `GetState<T>` & Dart 3 Pattern Matching** - Added `typedef GetState<T> = GetStatus<T>` and introduced `.when(...)` and `.maybeWhen(...)` pattern-matching methods on `GetStatus<T>` / `GetState<T>` for clean, exhaustive Dart 3 switch expressions in views.
+
 ### Internal Improvements & Refactoring
 
 - **Element-Bound Dependency Injection** - Completely removed `SmartManagement` and the global `RouterReportManager` tracking hook. Dependency scopes are now bound strictly to the widget Element tree via `GetDependencyScope`. This drastically simplifies nested route cleanup, eliminating state leakage when `Get.put()` dependencies cross navigation boundaries.

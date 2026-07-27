@@ -407,8 +407,58 @@ class EmptyStatus<T> extends GetStatus<T> {
   List get props => [];
 }
 
-/// Extension on [GetStatus] providing convenience getters.
+/// Typedef for [GetStatus] providing a cleaner modern naming convention.
+typedef GetState<T> = GetStatus<T>;
+
+/// Extension on [GetStatus] providing pattern-matching methods.
 extension StatusDataExt<T> on GetStatus<T> {
+  /// Exhaustively maps every [GetStatus] state to a return value [R].
+  R when<R>({
+    required R Function() loading,
+    required R Function(T data) success,
+    required R Function(Object? error) error,
+    required R Function() empty,
+    R Function()? custom,
+  }) {
+    final self = this;
+    if (self is LoadingStatus<T>) {
+      return loading();
+    } else if (self is SuccessStatus<T>) {
+      return success(self.data);
+    } else if (self is ErrorStatus<T, dynamic>) {
+      return error(self.error);
+    } else if (self is EmptyStatus<T>) {
+      return empty();
+    } else if (self is CustomStatus<T>) {
+      return (custom ?? loading)();
+    }
+    return loading();
+  }
+
+  /// Optionally maps specific [GetStatus] states to a return value [R], with [orElse] fallback.
+  R maybeWhen<R>({
+    required R Function() orElse,
+    R Function()? loading,
+    R Function(T data)? success,
+    R Function(Object? error)? error,
+    R Function()? empty,
+    R Function()? custom,
+  }) {
+    final self = this;
+    if (self is LoadingStatus<T> && loading != null) {
+      return loading();
+    } else if (self is SuccessStatus<T> && success != null) {
+      return success(self.data);
+    } else if (self is ErrorStatus<T, dynamic> && error != null) {
+      return error(self.error);
+    } else if (self is EmptyStatus<T> && empty != null) {
+      return empty();
+    } else if (self is CustomStatus<T> && custom != null) {
+      return custom();
+    }
+    return orElse();
+  }
+
   /// Whether this status is loading.
   bool get isLoading => this is LoadingStatus;
 
