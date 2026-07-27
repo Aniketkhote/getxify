@@ -13,7 +13,7 @@ mixin Equality {
 
   @override
   int get hashCode {
-    return runtimeType.hashCode ^ const DeepCollectionEquality().hash(props);
+    return Object.hash(runtimeType, const DeepCollectionEquality().hash(props));
   }
 }
 
@@ -63,12 +63,18 @@ class IdentityEquality<E> implements IEquality<E> {
 }
 
 class DeepCollectionEquality implements IEquality<Object?> {
-  final IEquality _base = const DefaultEquality<Never>();
-  final bool _unordered = false;
-  const DeepCollectionEquality();
+  final IEquality _base;
+  final bool _unordered;
+
+  const DeepCollectionEquality([
+    IEquality base = const DefaultEquality<Never>(),
+    bool unordered = false,
+  ]) : _base = base,
+       _unordered = unordered;
 
   @override
   bool equals(Object? e1, Object? e2) {
+    if (identical(e1, e2)) return true;
     if (e1 is Set) {
       return e2 is Set && SetEquality(this).equals(e1, e2);
     }
@@ -88,6 +94,7 @@ class DeepCollectionEquality implements IEquality<Object?> {
 
   @override
   int hash(Object? o) {
+    if (o == null) return null.hashCode;
     if (o is Set) return SetEquality(this).hash(o);
     if (o is Map) return MapEquality(keys: this, values: this).hash(o);
     if (!_unordered) {
@@ -130,8 +137,6 @@ class ListEquality<E> implements IEquality<List<E>> {
   int hash(List<E>? list) {
     if (list == null) return null.hashCode;
     // Jenkins's one-at-a-time hash function.
-    // This code is almost identical to the one in IterableEquality, except
-    // that it uses indexing instead of iterating to get the elements.
     var hash = 0;
     for (var i = 0; i < list.length; i++) {
       var c = _elementEquality.hash(list[i]);
@@ -168,6 +173,19 @@ class MapEquality<K, V> implements IEquality<Map<K, V>> {
     if (map1 == null || map2 == null) return false;
     var length = map1.length;
     if (length != map2.length) return false;
+
+    // Zero-allocation fast-path for standard key lookup
+    if (_keyEquality is DefaultEquality ||
+        _keyEquality is DeepCollectionEquality) {
+      for (var entry in map1.entries) {
+        if (!map2.containsKey(entry.key)) return false;
+        if (!_valueEquality.equals(entry.value, map2[entry.key] as V)) {
+          return false;
+        }
+      }
+      return true;
+    }
+
     Map<_MapEntry, int> equalElementCounts = HashMap();
     for (var key in map1.keys) {
       var entry = _MapEntry(this, key, map1[key]);
@@ -287,6 +305,8 @@ abstract class _UnorderedEquality<E, T extends Iterable<E>>
   bool equals(T? elements1, T? elements2) {
     if (identical(elements1, elements2)) return true;
     if (elements1 == null || elements2 == null) return false;
+    if (elements1.length != elements2.length) return false;
+
     var counts = HashMap<E, int>(
       equals: _elementEquality.equals,
       hashCode: _elementEquality.hash,
