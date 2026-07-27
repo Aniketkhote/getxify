@@ -197,23 +197,15 @@ class ParseRouteTree {
   /// `onBindingsStart` later, or a list not produced by the flattening) are
   /// simply absent from the result and treated as declared by the page
   /// running them.
-  static Map<BindingsInterface, String> bindingOwnersOf(List<GetPage> branch) {
-    final owners = LinkedHashMap<BindingsInterface, String>.identity();
+  static Map<Binding, String> bindingOwnersOf(List<GetPage> branch) {
+    final owners = LinkedHashMap<Binding, String>.identity();
     if (branch.isEmpty) return owners;
 
-    // The branch root is a page as declared (never flattened): its own
-    // declarations are its `binding` field plus its `bindings` list, and
-    // both were folded — `binding` first — into every descendant's merged
-    // list by the flattening.
     final root = branch.first;
-    final rootBinding = root.binding;
-    if (rootBinding != null) {
-      owners.putIfAbsent(rootBinding, () => root.name);
-    }
     for (final binding in root.bindings) {
       owners.putIfAbsent(binding, () => root.name);
     }
-    var prefixLength = (rootBinding != null ? 1 : 0) + root.bindings.length;
+    var prefixLength = root.bindings.length;
 
     for (final page in branch.skip(1)) {
       final bindings = page.bindings;
@@ -228,7 +220,7 @@ class ParseRouteTree {
 
   /// Returns every descendant of [route] as a flat list of pages whose
   /// names are the cumulative paths of their ancestor chain and whose
-  /// middleware, binding and bind lists include the entries inherited from
+  /// middleware and binding lists include the entries inherited from
   /// every ancestor (ancestors first), each descendant appearing exactly
   /// once.
   List<GetPage> _flattenPage(GetPage route) {
@@ -241,8 +233,7 @@ class ParseRouteTree {
       route,
       route.name,
       route.middlewares,
-      [if (route.binding != null) route.binding!, ...route.bindings],
-      route.binds,
+      route.bindings,
       result,
     );
     return result;
@@ -252,25 +243,21 @@ class ParseRouteTree {
     GetPage parent,
     String parentPath,
     List<GetMiddleware> inheritedMiddlewares,
-    List<BindingsInterface> inheritedBindings,
-    List<Bind> inheritedBinds,
+    List<Binding> inheritedBindings,
     List<GetPage> result,
   ) {
     for (final child in parent.children) {
       final middlewares = [...inheritedMiddlewares, ...child.middlewares];
       final bindings = [
         ...inheritedBindings,
-        if (child.binding != null) child.binding!,
         ...child.bindings,
       ];
-      final binds = [...inheritedBinds, ...child.binds];
 
       final flattened = _addChild(
         child,
         parentPath,
         middlewares,
         bindings,
-        binds,
       );
       _ownMiddlewares[flattened] = child.middlewares;
       result.add(flattened);
@@ -280,7 +267,6 @@ class ParseRouteTree {
         flattened.name,
         middlewares,
         bindings,
-        binds,
         result,
       );
     }
@@ -291,8 +277,7 @@ class ParseRouteTree {
     GetPage origin,
     String parentPath,
     List<GetMiddleware> middlewares,
-    List<BindingsInterface> bindings,
-    List<Bind> binds,
+    List<Binding> bindings,
   ) {
     return origin.copyWith(
       middlewares: middlewares,
@@ -300,7 +285,6 @@ class ParseRouteTree {
           ? (parentPath + origin.name).replaceAll(r'//', '/')
           : origin.name,
       bindings: bindings,
-      binds: binds,
       // key:
     );
   }

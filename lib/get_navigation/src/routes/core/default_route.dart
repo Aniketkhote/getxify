@@ -30,9 +30,7 @@ class GetPageRoute<T> extends PageRoute<T> with GetPageRouteTransitionMixin<T> {
     this.customTransition,
     this.barrierDismissible = false,
     this.barrierColor,
-    BindingsInterface? binding,
-    List<BindingsInterface> bindings = const [],
-    this.binds,
+    this.bindings = const [],
     this.routeName,
     this.page,
     this.title,
@@ -42,8 +40,7 @@ class GetPageRoute<T> extends PageRoute<T> with GetPageRouteTransitionMixin<T> {
     super.fullscreenDialog,
     this.middlewares,
     this.bindingOwnerNames,
-  }) : bindings = (binding == null) ? bindings : [...bindings, binding],
-       _middlewareRunner = MiddlewareRunner(middlewares);
+  }) : _middlewareRunner = MiddlewareRunner(middlewares);
 
   /// The explicit [PageRoute.allowSnapshotting] override passed to the
   /// constructor, or `null` to defer to the [GetPage] this route was
@@ -73,8 +70,8 @@ class GetPageRoute<T> extends PageRoute<T> with GetPageRouteTransitionMixin<T> {
   /// Custom transition widget for this route.
   final CustomTransition? customTransition;
 
-  /// List of binding interfaces to apply to this route.
-  final List<BindingsInterface> bindings;
+  /// List of bindings to apply to this route.
+  final List<Binding> bindings;
 
   /// The name of the page that declared each entry of [bindings], for
   /// entries inherited from ancestor pages during route-tree flattening.
@@ -86,13 +83,10 @@ class GetPageRoute<T> extends PageRoute<T> with GetPageRouteTransitionMixin<T> {
   /// instead of this one, so they survive this route's disposal while the
   /// ancestor's view is still alive. Bindings absent from this map are
   /// treated as declared by this route's own page.
-  final Map<BindingsInterface, String>? bindingOwnerNames;
+  final Map<Binding, String>? bindingOwnerNames;
 
   /// Route parameters passed as key-value pairs.
   final Map<String, String>? parameter;
-
-  /// List of direct bindings to apply.
-  final List<Bind>? binds;
 
   @override
   final bool showCupertinoParallax;
@@ -154,38 +148,21 @@ class GetPageRoute<T> extends PageRoute<T> with GetPageRouteTransitionMixin<T> {
   Widget _getChild() {
     if (_child != null) return _child!;
 
-    final localBinds = [...?binds];
-
-    final bindingsToBind = _middlewareRunner.runOnBindingsStart(
-      bindings.isNotEmpty ? bindings : localBinds,
-    );
+    final bindingsToBind = _middlewareRunner.runOnBindingsStart(bindings);
 
     final pageToBuild = _middlewareRunner.runOnPageBuildStart(page)!;
 
     final Set<String> scopedKeys = {};
 
     if (bindingsToBind != null && bindingsToBind.isNotEmpty) {
-      if (bindingsToBind is List<BindingsInterface>) {
-        Get.runWithScope(scopedKeys, () {
-          for (final item in bindingsToBind) {
-            final dep = item.dependencies();
-            if (dep is List<Bind>) {
-              _child = Binds(
-                binds: dep,
-                child: _middlewareRunner.runOnPageBuilt(pageToBuild()),
-              );
-            }
-          }
-        });
-      } else if (bindingsToBind is List<Bind>) {
-        _child = Binds(
-          binds: bindingsToBind,
-          child: _middlewareRunner.runOnPageBuilt(pageToBuild()),
-        );
-      }
+      Get.runWithScope(scopedKeys, () {
+        for (final item in bindingsToBind) {
+          item.dependencies();
+        }
+      });
     }
 
-    _child ??= _middlewareRunner.runOnPageBuilt(pageToBuild());
+    _child = _middlewareRunner.runOnPageBuilt(pageToBuild());
 
     if (scopedKeys.isNotEmpty) {
       _child = GetDependencyScope(keys: scopedKeys, child: _child!);

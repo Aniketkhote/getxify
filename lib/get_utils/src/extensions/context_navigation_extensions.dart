@@ -22,7 +22,7 @@ extension ContextNavigationExt on BuildContext {
     String? routeName,
     bool fullscreenDialog = false,
     Object? arguments,
-    List<BindingsInterface> bindings = const [],
+    List<Binding> bindings = const [],
     bool preventDuplicates = true,
     bool? popGesture,
     bool showCupertinoParallax = true,

@@ -87,11 +87,11 @@ abstract class GetMiddleware {
   /// {@end-tool}
   GetPage? onPageCalled(GetPage? page) => page;
 
-  /// This function will be called right before the [BindingsInterface] are initialized.
-  /// Here you can change [BindingsInterface] for this page
+  /// This function will be called right before the [Binding]s are initialized.
+  /// Here you can change [Binding]s for this page
   /// {@tool snippet}
   /// ```dart
-  /// List<Bindings> onBindingsStart(List<Bindings> bindings) {
+  /// List<Binding> onBindingsStart(List<Binding> bindings) {
   ///   final authService = Get.find<AuthService>();
   ///   if (authService.isAdmin) {
   ///     bindings.add(AdminBinding());
@@ -102,7 +102,7 @@ abstract class GetMiddleware {
   /// {@end-tool}
   List<R>? onBindingsStart<R>(List<R>? bindings) => bindings;
 
-  /// This function will be called right after the [BindingsInterface] are initialized.
+  /// This function will be called right after the [Binding]s are initialized.
   GetPageBuilder? onPageBuildStart(GetPageBuilder? page) => page;
 
   /// This function will be called right after the
@@ -239,8 +239,6 @@ class PageRedirect {
       opaque: r.opaque,
       customTransition: r.customTransition,
       bindings: r.bindings,
-      binding: r.binding,
-      binds: r.binds,
       transitionDuration: r.transitionDuration ?? Get.defaultTransitionDuration,
       reverseTransitionDuration:
           r.reverseTransitionDuration ?? Get.defaultTransitionDuration,

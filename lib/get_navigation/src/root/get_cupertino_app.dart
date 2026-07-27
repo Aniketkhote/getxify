@@ -57,7 +57,7 @@ class GetCupertinoApp extends StatelessWidget {
   final LogWriterCallback? logWriterCallback;
   final bool? popGesture;
 
-  final BindingsInterface? initialBinding;
+  final Binding? initialBinding;
   final Duration? transitionDuration;
   final bool? defaultGlobalState;
   final List<GetPage>? getPages;

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../../get_core/get_core.dart';
+import '../../../get_instance/get_instance.dart';
 
 extension ContextExt on BuildContext {
   /// The same of [MediaQuery.sizeOf(context)]
@@ -158,5 +160,71 @@ extension ContextExt on BuildContext {
     ].whereType<T>();
     final looseValues = [watch, mobile, tablet, desktop].whereType<T>();
     return strictValues.firstOrNull ?? looseValues.first;
+  }
+
+  /// Finds the registered dependency of type [T] using Get DI container.
+  T find<T>({String? tag}) => Get.find<T>(tag: tag);
+
+  /// Shows a modal dialog bound to this BuildContext's navigator and theme.
+  Future<T?> showDialog<T>({
+    required WidgetBuilder builder,
+    bool barrierDismissible = true,
+    Color? barrierColor,
+    String? barrierLabel,
+    bool useSafeArea = true,
+    bool useRootNavigator = true,
+    RouteSettings? routeSettings,
+  }) {
+    return showGeneralDialog<T>(
+      context: this,
+      pageBuilder: (buildContext, animation, secondaryAnimation) {
+        final widget = builder(buildContext);
+        return useSafeArea ? SafeArea(child: widget) : widget;
+      },
+      barrierDismissible: barrierDismissible,
+      barrierColor: barrierColor ?? const Color(0x80000000),
+      barrierLabel: barrierLabel,
+      useRootNavigator: useRootNavigator,
+      routeSettings: routeSettings,
+    );
+  }
+
+  /// Shows a modal bottom sheet bound to this BuildContext's theme.
+  Future<T?> showBottomSheet<T>({
+    required WidgetBuilder builder,
+    Color? backgroundColor,
+    double? elevation,
+    ShapeBorder? shape,
+    Clip? clipBehavior,
+    BoxConstraints? constraints,
+    Color? barrierColor,
+    bool isScrollControlled = false,
+    bool useRootNavigator = false,
+    bool isDismissible = true,
+    bool enableDrag = true,
+    AnimationController? transitionAnimationController,
+  }) {
+    return showModalBottomSheet<T>(
+      context: this,
+      builder: builder,
+      backgroundColor: backgroundColor,
+      elevation: elevation,
+      shape: shape,
+      clipBehavior: clipBehavior,
+      constraints: constraints,
+      barrierColor: barrierColor,
+      isScrollControlled: isScrollControlled,
+      useRootNavigator: useRootNavigator,
+      isDismissible: isDismissible,
+      enableDrag: enableDrag,
+      transitionAnimationController: transitionAnimationController,
+    );
+  }
+
+  /// Shows a SnackBar using the nearest ScaffoldMessenger.
+  ScaffoldFeatureController<SnackBar, SnackBarClosedReason> showSnackbar(
+    SnackBar snackBar,
+  ) {
+    return ScaffoldMessenger.of(this).showSnackBar(snackBar);
   }
 }

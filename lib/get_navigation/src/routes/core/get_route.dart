@@ -1,5 +1,3 @@
-// ignore_for_file: overridden_fields
-
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
@@ -7,7 +5,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../get_instance/src/bindings_interface.dart';
-import '../../../../get_state_manager/src/simple/get_state.dart';
 import '../../../get_navigation.dart';
 
 class GetPage<T> extends Page<T> {
@@ -22,9 +19,7 @@ class GetPage<T> extends Page<T> {
   final bool maintainState;
   final bool opaque;
   final double Function(BuildContext context)? gestureWidth;
-  final BindingsInterface? binding;
-  final List<BindingsInterface> bindings;
-  final List<Bind> binds;
+  final List<Binding> bindings;
   final CustomTransition? customTransition;
   final Duration? transitionDuration;
   final Duration? reverseTransitionDuration;
@@ -46,15 +41,12 @@ class GetPage<T> extends Page<T> {
   // @override
   // RouteSettings get settings => this;
 
-  @override
-  final Object? arguments;
-
   /// The route name this page is registered under.
   ///
   /// Route names must start with a slash (e.g. `/home`); passing a name
   /// without a leading slash throws an [AssertionError] in debug mode.
   @override
-  final String name;
+  String get name => super.name!;
 
   final bool inheritParentPath;
 
@@ -68,7 +60,7 @@ class GetPage<T> extends Page<T> {
   static void _defaultPopInvokedHandler(bool didPop, Object? result) {}
 
   GetPage({
-    required this.name,
+    required String name,
     required this.page,
     this.title,
     this.participatesInRootNavigator,
@@ -82,9 +74,7 @@ class GetPage<T> extends Page<T> {
     this.transitionDuration,
     this.reverseTransitionDuration,
     this.popGesture,
-    this.binding,
     this.bindings = const [],
-    this.binds = const [],
     this.transition,
     this.customTransition,
     this.fullscreenDialog = false,
@@ -92,7 +82,7 @@ class GetPage<T> extends Page<T> {
     this.children = const <GetPage>[],
     this.middlewares = const [],
     this.unknownRoute,
-    this.arguments,
+    super.arguments,
     this.showCupertinoParallax = true,
     this.preventDuplicates = true,
     this.preventDuplicateHandlingMode =
@@ -112,7 +102,6 @@ class GetPage<T> extends Page<T> {
        super(
          key: key ?? ValueKey(name),
          name: name,
-         // arguments: Get.arguments,
        );
   // settings = RouteSettings(name: name, arguments: Get.arguments);
 
@@ -128,9 +117,7 @@ class GetPage<T> extends Page<T> {
     Alignment? alignment,
     bool? maintainState,
     bool? opaque,
-    List<BindingsInterface>? bindings,
-    BindingsInterface? binding,
-    List<Bind>? binds,
+    List<Binding>? bindings,
     CustomTransition? customTransition,
     Duration? transitionDuration,
     Duration? reverseTransitionDuration,
@@ -170,8 +157,6 @@ class GetPage<T> extends Page<T> {
       maintainState: maintainState ?? this.maintainState,
       opaque: opaque ?? this.opaque,
       bindings: bindings ?? this.bindings,
-      binds: binds ?? this.binds,
-      binding: binding ?? this.binding,
       customTransition: customTransition ?? this.customTransition,
       transitionDuration: transitionDuration ?? this.transitionDuration,
       reverseTransitionDuration:
