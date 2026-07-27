@@ -79,7 +79,24 @@ GetMaterialApp(
 
 ---
 
-## 3. Sealed `GetState<T>` & Dart 3 Pattern Matching
+## 3. State Restoration Support (`GetRestorationMixin`)
+
+- **Feature:** Added `GetRestorationMixin` providing `restore(key, defaultValue)` and `persist(key, value)` methods to allow `GetxController` states to seamlessly survive OS process termination on Android and iOS via Flutter's native `RestorationBucket`.
+
+```dart
+// ✅ State Restoration in GetxController
+class CounterController extends GetxController with GetRestorationMixin {
+  @override
+  String? get restorationId => 'counter_controller';
+
+  int get count => restore('count', 0);
+  set count(int val) => persist('count', val);
+}
+```
+
+---
+
+## 4. Sealed `GetState<T>` & Dart 3 Pattern Matching
 
 - **Feature:** `GetStatus<T>` (`GetState<T>`) is now a sealed class hierarchy supporting exhaustive Dart 3 switch pattern matching as well as functional `.when(...)` and `.maybeWhen(...)` methods.
 
