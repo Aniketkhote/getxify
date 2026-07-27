@@ -9,7 +9,7 @@ This guide details the **architectural rationale, design decisions, and deep tec
 1. [Removal of Obsolete Hybrid Widgets (GetWidget, GetX, MixinBuilder)](#1-removal-of-obsolete-hybrid-widgets-getwidget-getx-mixinbuilder)
 2. [Element-Bound Dependency Injection & Removal of SmartManagement](#2-element-bound-dependency-injection--removal-of-smartmanagement)
 3. [State Restoration Support (GetRestorationMixin)](#3-state-restoration-support-getrestorationmixin)
-4. [Sealed GetState<T> & Dart 3 Pattern Matching](#4-sealed-getstatet--dart-3-pattern-matching)
+4. [Sealed GetStatus<T>, StateMixin<T>, and controller.obx()](#4-sealed-getstatust-statemixint-and-controllerobx)
 5. [Context-Aware Navigation Extensions](#5-context-aware-navigation-extensions)
 6. [Dependency Injection Modernization (Binding) & GetPage Consolidation](#6-dependency-injection-modernization-binding--getpage-consolidation)
 7. [Modern BuildContext Extensions (find, showDialog, showBottomSheet, showSnackbar)](#7-modern-buildcontext-extensions-find-showdialog-showbottomsheet-showsnackbar)
@@ -104,42 +104,68 @@ class FormController extends GetxController with GetRestorationMixin {
 
 ---
 
-## 4. Sealed `GetState<T>` & Dart 3 Pattern Matching
+## 4. Sealed `GetStatus<T>`, `StateMixin<T>`, and `controller.obx()`
 
 ### 💡 Why this approach now?
-- **String Checks & Typo Hazards:** Legacy `StateMixin` relied on loose boolean getters (`status.isLoading`, `status.isError`, `status.isSuccess`). This allowed developers to forget handling loading or error states, or make logic errors when checking state conditions.
-- **Compile-Time Exhaustiveness:** `GetState<T>` (`GetStatus<T>`) is implemented as a **Dart 3 `sealed class` hierarchy**. The compiler guarantees that every possible state (`Initial`, `Loading`, `Success`, `Error`, `Empty`, `Custom`) is handled in `switch` expressions. If a new state is introduced, compilation fails until all views handle it.
+- **Manual State Booleans:** Legacy state management relied on custom boolean flags (`isLoading`, `isError`, `isEmpty`) scattered across controllers, leading to boilerplate state bugs and missing loading/error UI states.
+- **Unified Status Management:** In v5.0.0, state status is driven by the **`GetStatus<T>` sealed class hierarchy** (`GetStatus.loading()`, `GetStatus.success(data)`, `GetStatus.empty()`, `GetStatus.error(message)`).
+- **Declarative View Binding (`controller.obx`):** Controllers mixing in `StateMixin<T>` update status using `change(data, status: GetStatus.success(data))` or `change(data)`. Views consume state declaratively using `controller.obx((data) => ..., onLoading: ..., onEmpty: ..., onError: ...)` or Dart 3 pattern matching via `.when(...)`.
 
 ### 📝 Detailed Migration & Code Examples
 
 ```dart
-// ✅ APPROACH 1: Functional .when() Pattern Matching
-class UserListView extends GetView<UserController> {
-  const UserListView({super.key});
+// ✅ CONTROLLER: Mix in StateMixin<T> and emit GetStatus
+class ProductCatalogController extends GetxController with StateMixin<List<Product>> {
+  
+  void fetchCatalog() {
+    change(null, status: GetStatus.loading());
+
+    try {
+      final items = repository.getProducts();
+      if (items.isEmpty) {
+        change(items, status: GetStatus.empty());
+      } else {
+        change(items, status: GetStatus.success(items));
+      }
+    } catch (e) {
+      change(null, status: GetStatus.error(e.toString()));
+    }
+  }
+}
+
+// ✅ VIEW (Option 1): Declarative controller.obx() Widget Builder
+class CatalogView extends GetView<ProductCatalogController> {
+  const CatalogView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return controller.status.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
-      success: (users) => ListView.builder(
-        itemCount: users.length,
-        itemBuilder: (ctx, idx) => ListTile(title: Text(users[idx].name)),
+    return Scaffold(
+      body: controller.obx(
+        (products) => ListView.builder(
+          itemCount: products.length,
+          itemBuilder: (ctx, i) => ProductTile(products[i]),
+        ),
+        onLoading: const Center(child: CircularProgressIndicator()),
+        onEmpty: const Center(child: Text('No products available')),
+        onError: (err) => Center(child: Text('Error: $err')),
       ),
-      error: (msg) => Center(child: Text('Error: $msg')),
-      empty: () => const Center(child: Text('No users found.')),
     );
   }
 }
 
-// ✅ APPROACH 2: Native Dart 3 Switch Expressions with Pattern Destructuring
-Widget renderState(GetState<List<User>> status) {
-  return switch (status) {
-    GetStateLoading() => const CircularProgressIndicator(),
-    GetStateSuccess(:final data) => Text('Loaded ${data.length} users'),
-    GetStateError(:final message) => Text('Failed: $message'),
-    GetStateEmpty() => const Text('Empty list'),
-    GetStateInitial() => const SizedBox.shrink(),
-  };
+// ✅ VIEW (Option 2): Functional .when() Pattern Matching
+class CatalogViewEx extends GetView<ProductCatalogController> {
+  const CatalogViewEx({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return controller.status.when(
+      loading: () => const CircularProgressIndicator(),
+      success: (items) => Text('Loaded ${items.length} items'),
+      empty: () => const Text('No items'),
+      error: (err) => Text('Error: $err'),
+    );
+  }
 }
 ```
 

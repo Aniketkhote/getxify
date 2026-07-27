@@ -6,8 +6,8 @@
 
 ### State Management & Restoration
 
+- **Sealed `GetStatus<T>` & Reactive `StateMixin<T>`** - Standardized status management around `GetStatus<T>` (`GetStatus.loading()`, `GetStatus.success(data)`, `GetStatus.empty()`, `GetStatus.error(msg)`). Controllers mixing in `StateMixin<T>` use `change(data, status: GetStatus.success(data))` or `change(data)`, while views consume `controller.obx((data) => ..., onLoading: ..., onEmpty: ..., onError: ...)` with full Dart 3 pattern matching via `.when(...)` and `.maybeWhen(...)`.
 - **State Restoration Support (`GetRestorationMixin`)** - Added `GetRestorationMixin` providing `restore(key, defaultVal)` and `persist(key, val)` methods to allow `GetxController` states to seamlessly survive OS process death on Android and iOS via Flutter's `RestorationBucket`.
-- **Sealed `GetState<T>` & Dart 3 Pattern Matching** - Added `typedef GetState<T> = GetStatus<T>` and introduced `.when(...)` and `.maybeWhen(...)` pattern-matching methods on `GetStatus<T>` / `GetState<T>` for clean, exhaustive Dart 3 switch expressions in views.
 
 ### Internal Improvements & Refactoring
 
