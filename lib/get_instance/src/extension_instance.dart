@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 
 import '../../get_core/get_core.dart';
-import '../../get_navigation/src/router_report.dart';
+
 import '../../get_state_manager/src/simple/list_notifier.dart';
 import 'lifecycle.dart';
 
@@ -59,11 +59,7 @@ extension ResetInstance on GetInterface {
   /// Even the persistent ones.
   /// This should be used at the end or tearDown of unit tests.
   ///
-  /// `clearFactory` clears the callbacks registered by [lazyPut]
-  /// `clearRouteBindings` clears Instances associated with routes.
-  ///
   bool resetInstance({bool clearRouteBindings = true}) {
-    if (clearRouteBindings) RouterReportManager.instance.clearRouteKeys();
     GetInstanceExt._singletons.clear();
 
     return true;
@@ -84,12 +80,26 @@ extension GetInstanceExt on GetInterface {
   /// `Get.put()`
   static final Map<String, _InstanceBuilderFactory<Object?>> _singletons = {};
 
+  static Set<String>? _currentScopeKeys;
+
+  /// Runs [body] while capturing all dependency keys registered during its
+  /// execution. Used by `GetDependencyScope` to bind lifecycles to the tree.
+  R runWithScope<R>(Set<String> keys, R Function() body) {
+    final previousKeys = _currentScopeKeys;
+    _currentScopeKeys = keys;
+    try {
+      return body();
+    } finally {
+      _currentScopeKeys = previousKeys;
+    }
+  }
+
   /// Injects a [dependency] into the dependency manager and immediately initializes it.
   ///
   /// Returns the registered dependency.
   ///
   /// - [tag] Optional tag to identify this specific instance.
-  /// - [permanent] If true, prevents the instance from being deleted by SmartManagement.
+  /// - [permanent] If true, prevents the instance from being deleted.
   S put<S>(S dependency, {String? tag, bool permanent = false}) {
     _insert(
       isSingleton: true,
@@ -118,7 +128,7 @@ extension GetInstanceExt on GetInterface {
   /// ```
   ///
   /// - [tag] Optional tag to identify this specific instance.
-  /// - [permanent] If true, prevents the instance from being deleted by SmartManagement.
+  /// - [permanent] If true, prevents the instance from being deleted.
   Future<S> putAsync<S>(
     AsyncInstanceBuilderCallback<S> builder, {
     String? tag,
@@ -133,8 +143,7 @@ extension GetInstanceExt on GetInterface {
   /// the Instance and persisted as a Singleton (like you would
   /// use `Get.put()`).
   ///
-  /// Using `Get.smartManagement` as [SmartManagement.keepFactory] has
-  /// the same outcome as using `fenix:true` :
+  ///
   /// The internal register of `builder()` will remain in memory to recreate
   /// the Instance if the Instance has been removed with `Get.delete()`.
   /// Therefore, future calls to `Get.find()` will return the same Instance.
@@ -160,7 +169,7 @@ extension GetInstanceExt on GetInterface {
       name: tag,
       permanent: permanent,
       builder: builder,
-      fenix: fenix ?? Get.smartManagement == SmartManagement.keepFactory,
+      fenix: fenix ?? false,
     );
   }
 
@@ -202,6 +211,9 @@ extension GetInstanceExt on GetInterface {
     bool fenix = false,
   }) {
     final key = _getKey(S, name);
+    if (_currentScopeKeys != null) {
+      _currentScopeKeys!.add(key);
+    }
 
     _InstanceBuilderFactory<S>? dep;
     if (_singletons.containsKey(key)) {
@@ -222,21 +234,14 @@ extension GetInstanceExt on GetInterface {
       fenix: fenix,
       tag: name,
       lateRemove: dep,
-      // When this registration is created by a page binding's
-      // `dependencies()`, remember which route declared it so the first
-      // resolution links the instance to the declaring page's route even
-      // if it happens under another route (e.g. a deep-linked child page
-      // running its ancestors' merged bindings).
-      bindingOwnerRouteName:
-          RouterReportManager.instance.currentBindingOwnerName,
+      bindingOwnerRouteName: null,
     );
   }
 
   /// Initializes the dependencies for a Class Instance [S] (or tag),
   /// If its a Controller, it starts the lifecycle process.
-  /// Optionally associating the current Route to the lifetime of the instance,
-  /// if `Get.smartManagement` is marked as [SmartManagement.full] or
-  /// [SmartManagement.keepFactory]
+  ///
+
   /// Only flags `isInit` if it's using `Get.create()`
   /// (not for Singletons access).
   /// Returns the instance if not initialized, required for Get.create() to
@@ -253,15 +258,6 @@ extension GetInstanceExt on GetInterface {
         dep.isInit = true;
       }
       i = _startController<S>(tag: name);
-
-      if (isSingleton) {
-        if (Get.smartManagement != SmartManagement.onlyBuilder) {
-          RouterReportManager.instance.reportDependencyLinkedToRoute(
-            _getKey(S, name),
-            ownerRouteName: dep.bindingOwnerRouteName,
-          );
-        }
-      }
     }
     return i;
   }
@@ -318,9 +314,6 @@ extension GetInstanceExt on GetInterface {
         Get.log('Instance "$S" has been initialized');
       } else {
         Get.log('Instance "$S" with tag "$tag" has been initialized');
-      }
-      if (dep.isSingleton == false) {
-        RouterReportManager.instance.appendRouteByCreate(i);
       }
     }
     return i;
@@ -534,7 +527,7 @@ extension GetInstanceExt on GetInterface {
     if (dep.permanent && !force) {
       Get.log(
         // ignore: lines_longer_than_80_chars
-        '"$newKey" has been marked as permanent, SmartManagement is not authorized to delete it.',
+        '"$newKey" has been marked as permanent and cannot be deleted.',
         isError: true,
       );
       return false;
@@ -569,7 +562,7 @@ extension GetInstanceExt on GetInterface {
   /// Deletes the dependency registered under [key] on behalf of a disposed
   /// route, keeping it alive when still-mounted widgets depend on it.
   ///
-  /// Meant for internal usage of the `RouterReportManager`: when a route is
+  /// Meant for internal usage of `GetDependencyScope`: when a scope is
   /// disposed, the instances linked to it are deleted. An instance that
   /// still has widget subscribers (`GetBuilder`/`GetX` listeners) at that
   /// moment may be shared with widgets of another, still-visible route —
@@ -774,8 +767,7 @@ class _InstanceBuilderFactory<S> {
   /// Usually used by factory methods
   InstanceBuilderCallback<S> builderFunc;
 
-  /// Flag to persist the instance in memory,
-  /// without considering `Get.smartManagement`
+  /// Flag to persist the instance in memory.
   bool permanent = false;
 
   bool isInit = false;

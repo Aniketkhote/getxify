@@ -106,9 +106,6 @@ class GetXState<T extends GetLifeCycleMixin> extends State<GetX<T>> {
       controller?.onStart();
     }
     widget.initState?.call(this);
-    if (widget.global && Get.smartManagement == SmartManagement.onlyBuilder) {
-      controller?.onStart();
-    }
 
     super.initState();
   }

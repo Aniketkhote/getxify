@@ -1,16 +1,11 @@
 import 'package:flutter/foundation.dart';
 
 import 'log.dart';
-import 'smart_management.dart';
 
 /// The base class/interface that allows other packages (like navigation,
 /// state management, etc.) to merge their capabilities into the global `Get`
 /// instance through Dart extensions.
 abstract class GetInterface {
-  /// Defines the dependency disposal behavior of GetX.
-  /// Defaults to [SmartManagement.full].
-  SmartManagement smartManagement = SmartManagement.full;
-
   /// Whether logging is enabled. Defaults to `kDebugMode`.
   bool isLogEnable = kDebugMode;
 

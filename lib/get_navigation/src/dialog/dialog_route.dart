@@ -1,7 +1,5 @@
 import 'package:flutter/widgets.dart';
 
-import '../router_report.dart';
-
 /// A customized [PopupRoute] used to display a modal dialog.
 ///
 /// This route is responsible for rendering the dialog content and handling
@@ -46,12 +44,6 @@ class GetDialogRoute<T> extends PopupRoute<T> {
   @override
   TraversalEdgeBehavior? get traversalEdgeBehavior =>
       _traversalEdgeBehavior ?? super.traversalEdgeBehavior;
-
-  @override
-  void dispose() {
-    RouterReportManager.instance.reportRouteDispose(this);
-    super.dispose();
-  }
 
   @override
   Widget buildPage(

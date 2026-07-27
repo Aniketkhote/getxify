@@ -56,7 +56,7 @@ class GetCupertinoApp extends StatelessWidget {
   final bool? enableLog;
   final LogWriterCallback? logWriterCallback;
   final bool? popGesture;
-  final SmartManagement smartManagement;
+
   final BindingsInterface? initialBinding;
   final Duration? transitionDuration;
   final bool? defaultGlobalState;
@@ -121,7 +121,7 @@ class GetCupertinoApp extends StatelessWidget {
     this.showSemanticsDebugger = false,
     this.debugShowCheckedModeBanner = true,
     this.shortcuts,
-    this.smartManagement = SmartManagement.full,
+
     this.initialBinding,
     this.useInheritedMediaQuery = false,
     this.unknownRoute,
@@ -188,7 +188,7 @@ class GetCupertinoApp extends StatelessWidget {
     this.enableLog = kDebugMode,
     this.logWriterCallback,
     this.popGesture,
-    this.smartManagement = SmartManagement.full,
+
     this.initialBinding,
     this.transitionDuration,
     this.defaultGlobalState,
@@ -231,7 +231,6 @@ class GetCupertinoApp extends StatelessWidget {
         routerDelegate: routerDelegate,
         routerConfig: routerConfig,
         routingCallback: routingCallback,
-        smartManagement: smartManagement,
         transitionDuration: transitionDuration,
         translations: translations,
         translationsKeys: translationsKeys,

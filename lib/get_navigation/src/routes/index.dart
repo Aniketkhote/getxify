@@ -10,7 +10,7 @@ export 'router/get_route_information_provider.dart';
 export 'router/get_router_delegate.dart';
 export 'router/page_settings.dart';
 export 'router/parse_route.dart';
-export 'router/route_report.dart';
+
 export 'router/router_outlet.dart';
 export 'transitions/circular_reveal_clipper.dart';
 export 'transitions/custom_transition.dart';

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../../../../get_core/get_core.dart';
 import '../../../../get_instance/get_instance.dart';
-import '../../router_report.dart';
 
 class Dependencies {
   void lazyPut<S>(
@@ -78,16 +77,22 @@ abstract class Module extends StatefulWidget {
 }
 
 class ModuleState extends State<Module> {
+  final Set<String> _scopedKeys = {};
+
   @override
   void initState() {
-    RouterReportManager.instance.reportCurrentRoute(this);
-    widget.dependencies(Dependencies());
+    Get.runWithScope(_scopedKeys, () {
+      widget.dependencies(Dependencies());
+    });
     super.initState();
   }
 
   @override
   void dispose() {
-    RouterReportManager.instance.reportRouteDispose(this);
+    for (final key in _scopedKeys) {
+      Get.delete(key: key);
+    }
+    _scopedKeys.clear();
     super.dispose();
   }
 

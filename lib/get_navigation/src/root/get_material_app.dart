@@ -64,7 +64,7 @@ class GetMaterialApp extends StatelessWidget {
   final bool? enableLog;
   final LogWriterCallback? logWriterCallback;
   final bool? popGesture;
-  final SmartManagement smartManagement;
+
   final List<Bind> binds;
   final Duration? transitionDuration;
   final bool? defaultGlobalState;
@@ -138,7 +138,7 @@ class GetMaterialApp extends StatelessWidget {
     this.popGesture,
     this.transitionDuration,
     this.defaultGlobalState,
-    this.smartManagement = SmartManagement.full,
+
     this.binds = const [],
     this.unknownRoute,
     this.highContrastTheme,
@@ -202,7 +202,7 @@ class GetMaterialApp extends StatelessWidget {
     this.enableLog = kDebugMode,
     this.logWriterCallback,
     this.popGesture,
-    this.smartManagement = SmartManagement.full,
+
     this.binds = const [],
     this.transitionDuration,
     this.defaultGlobalState,
@@ -245,7 +245,6 @@ class GetMaterialApp extends StatelessWidget {
         routerConfig: routerConfig,
         routingCallback: routingCallback,
         scaffoldMessengerKey: scaffoldMessengerKey,
-        smartManagement: smartManagement,
         transitionDuration: transitionDuration,
         translations: translations,
         translationsKeys: translationsKeys,

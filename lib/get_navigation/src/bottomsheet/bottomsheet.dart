@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../../getxify.dart';
-import '../router_report.dart';
 
 /// A customized [PopupRoute] used to display a modal bottom sheet.
 ///
@@ -71,12 +70,6 @@ class GetModalBottomSheetRoute<T> extends PopupRoute<T> {
   AnimationController? _animationController;
 
   AnimationController? get animationController => _animationController;
-
-  @override
-  void dispose() {
-    RouterReportManager.instance.reportRouteDispose(this);
-    super.dispose();
-  }
 
   @override
   Animation<double> createAnimation() {

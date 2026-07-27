@@ -1,46 +1,8 @@
 import 'package:flutter/cupertino.dart';
 
 import '../../../../getxify.dart';
-import '../../router_report.dart';
 
-/// Mixin that reports route lifecycle events to the [RouterReportManager].
-///
-/// This mixin should be applied to [State] classes to automatically report
-/// when a route becomes active (initState) and when it's disposed.
-mixin RouteReportMixin<T extends StatefulWidget> on State<T> {
-  @override
-  void initState() {
-    super.initState();
-    RouterReportManager.instance.reportCurrentRoute(this);
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    RouterReportManager.instance.reportRouteDispose(this);
-  }
-}
-
-/// Mixin that reports route lifecycle events to the [RouterReportManager].
-///
-/// This mixin should be applied to [Route] classes to automatically report
-/// when a route is installed and when it's disposed.
-mixin PageRouteReportMixin<T> on Route<T> {
-  @override
-  void install() {
-    super.install();
-    RouterReportManager.instance.reportCurrentRoute(this);
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    RouterReportManager.instance.reportRouteDispose(this);
-  }
-}
-
-class GetPageRoute<T> extends PageRoute<T>
-    with GetPageRouteTransitionMixin<T>, PageRouteReportMixin {
+class GetPageRoute<T> extends PageRoute<T> with GetPageRouteTransitionMixin<T> {
   /// Creates a custom page route with GetX navigation features.
   ///
   /// This route supports custom transitions, bindings, middleware, and
@@ -181,23 +143,7 @@ class GetPageRoute<T> extends PageRoute<T>
   final MiddlewareRunner _middlewareRunner;
 
   @override
-  void install() {
-    super.install();
-    final name = routeName;
-    if (name != null) {
-      RouterReportManager.instance.reportRouteName(name, this);
-    }
-  }
-
-  @override
   void dispose() {
-    // Leave the name registry before dependencies are torn down, so a
-    // dependency resolved during disposal can never be linked to this
-    // dying route through its name.
-    final name = routeName;
-    if (name != null) {
-      RouterReportManager.instance.unreportRouteName(name, this);
-    }
     super.dispose();
     _middlewareRunner.runOnPageDispose();
     _child = null;
@@ -205,36 +151,8 @@ class GetPageRoute<T> extends PageRoute<T>
 
   Widget? _child;
 
-  /// Runs [binding]'s `dependencies()`, attributing the registrations it
-  /// creates to the page that declared it.
-  ///
-  /// The owner is looked up in [bindingOwnerNames] (an inherited ancestor
-  /// binding is attributed to the ancestor page); a binding declared by
-  /// this route's own page — or added later, e.g. by
-  /// [GetMiddleware.onBindingsStart] — is attributed to [routeName].
-  dynamic _runBindingDependencies(BindingsInterface binding) {
-    final ownerName = bindingOwnerNames?[binding] ?? routeName;
-    if (ownerName == null) return binding.dependencies();
-    return RouterReportManager.instance.runWithBindingOwner(
-      ownerName,
-      binding.dependencies,
-    );
-  }
-
-  /// Builds and caches the child widget with bindings applied.
-  ///
-  /// This method handles the dependency injection by running middleware
-  /// and applying bindings before building the page widget. The result is
-  /// cached to avoid rebuilding on every frame.
-  ///
-  /// Before running the bindings, this route reports itself as the current
-  /// route so that dependencies instantiated while building its subtree are
-  /// linked to it, even when multiple routes are pushed within the same
-  /// frame.
   Widget _getChild() {
     if (_child != null) return _child!;
-
-    RouterReportManager.instance.reportCurrentRoute(this);
 
     final localBinds = [...?binds];
 
@@ -244,17 +162,21 @@ class GetPageRoute<T> extends PageRoute<T>
 
     final pageToBuild = _middlewareRunner.runOnPageBuildStart(page)!;
 
+    final Set<String> scopedKeys = {};
+
     if (bindingsToBind != null && bindingsToBind.isNotEmpty) {
       if (bindingsToBind is List<BindingsInterface>) {
-        for (final item in bindingsToBind) {
-          final dep = _runBindingDependencies(item);
-          if (dep is List<Bind>) {
-            _child = Binds(
-              binds: dep,
-              child: _middlewareRunner.runOnPageBuilt(pageToBuild()),
-            );
+        Get.runWithScope(scopedKeys, () {
+          for (final item in bindingsToBind) {
+            final dep = item.dependencies();
+            if (dep is List<Bind>) {
+              _child = Binds(
+                binds: dep,
+                child: _middlewareRunner.runOnPageBuilt(pageToBuild()),
+              );
+            }
           }
-        }
+        });
       } else if (bindingsToBind is List<Bind>) {
         _child = Binds(
           binds: bindingsToBind,
@@ -263,7 +185,13 @@ class GetPageRoute<T> extends PageRoute<T>
       }
     }
 
-    return _child ??= _middlewareRunner.runOnPageBuilt(pageToBuild());
+    _child ??= _middlewareRunner.runOnPageBuilt(pageToBuild());
+
+    if (scopedKeys.isNotEmpty) {
+      _child = GetDependencyScope(keys: scopedKeys, child: _child!);
+    }
+
+    return _child!;
   }
 
   @override

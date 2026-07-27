@@ -6,7 +6,6 @@ import 'package:getxify/get_navigation/src/routes/core/test_kit.dart';
 import '../../getxify.dart';
 import 'dialog/dialog_route.dart';
 import 'root/get_root.dart';
-import 'router_report.dart';
 
 class RouteNotFoundException implements Exception {
   final String message;
@@ -129,7 +128,6 @@ Route<dynamic>? _topRouteOf(NavigatorState navigatorState) {
 /// restores the target to the route that was topmost before the push.
 void _relinkDependenciesTo(Route<dynamic>? route) {
   if (route == null) return;
-  RouterReportManager.instance.reportCurrentRoute(route);
 }
 
 extension ExtensionDialog on GetInterface {
