@@ -54,7 +54,7 @@ import 'package:get/get.dart';
 import 'package:getxify/getxify.dart';
 ```
 
-That's it — the API is fully compatible. Also update your `pubspec.yaml`:
+That's it — the core API is fully compatible. Also update your `pubspec.yaml`:
 
 ```yaml
 # Before
@@ -65,6 +65,8 @@ dependencies:
 dependencies:
   getxify: ^5.0.0
 ```
+
+> 📖 For a detailed guide on v5 architectural changes, API modernizations, and code examples, check out **[MIGRATION_V5.md](MIGRATION_V5.md)**.
 
 ---
 
@@ -123,16 +125,16 @@ class OtherPage extends StatelessWidget {
 
 ## Example app
 
-A full example app is in the `example/` directory, demonstrating:
+A complete, production-ready example app is available in the **[example/](example)** directory ([main.dart](example/lib/main.dart)), demonstrating:
 
 - Nested routing with `GetRouterOutlet`
 - Route guards (`EnsureAuthMiddleware`, `EnsureNotAuthedMiddleware`)
 - Named routes with type-safe `Routes` class
-- Dynamic route parameters
-- Page transitions
-- Reactive state with `.obs`
-- `GetxService` for global state
-- Lazy bindings
+- Dynamic route parameters & deep linking
+- Context-aware navigation and modal overlays
+- Reactive state management with `.obs` & `Obx`
+- `GetxService` for global state lifecycle
+- Element-bound lazy `Binding`s
 
 ```bash
 cd example
@@ -149,4 +151,4 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for setup instructions, coding standards,
 ## License
 
 GetXify is released under the MIT License. See [LICENSE](LICENSE) for details.  
-Includes work by [@Baghdady92](https://github.com/Baghdady92) and originally forked from [GetX](https://github.com/jonataslaw/getx) by Jonatas Borges.
+Originally forked from [GetX](https://github.com/jonataslaw/getx) by Jonatas Borges.

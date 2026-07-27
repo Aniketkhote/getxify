@@ -6,8 +6,8 @@ Only the latest published version of GetXify on [pub.dev](https://pub.dev/packag
 
 | Version | Supported |
 |---------|-----------|
-| 4.0.0  | ✅ |
-| <=3.0.0   | ❌ |
+| 5.0.x   | ✅ |
+| < 5.0.0 | ❌ |
 
 ## Reporting a vulnerability
 

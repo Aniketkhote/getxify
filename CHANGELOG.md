@@ -1,4 +1,4 @@
-## Unreleased
+## 5.0.0
 
 ### Breaking Changes
 
@@ -13,7 +13,9 @@
 
 - **Element-Bound Dependency Injection** - Completely removed `SmartManagement` and the global `RouterReportManager` tracking hook. Dependency scopes are now bound strictly to the widget Element tree via `GetDependencyScope`. This drastically simplifies nested route cleanup, eliminating state leakage when `Get.put()` dependencies cross navigation boundaries.
 - **Removed deprecated `SmartManagement` API** - The legacy `SmartManagement.full`, `onlyBuilder`, and `keepFactory` parameters have been fully deprecated and excised, meaning the DI container now inherently operates via pure Element mount/unmount boundaries instead of complex heuristic configurations.
-
+- **Equality & Collection Comparison Optimizations** - Refactored `Equality` and `DeepCollectionEquality` with $O(1)$ identity short-circuiting, zero-allocation `MapEquality` fast paths, and `Object.hash(...)` collision resistance.
+- **Strongly Typed `GetQueue` Engine** - Upgraded `GetQueue` to generic `_Item<T>` type safety, an iterative event loop, and safe completer cancellation.
+- **Expanded Test Coverage** - Added comprehensive unit test suites for `Equality`, `GetQueue`, and `BuildContext` extensions (`context.to()`, `context.find<T>()`, `context.showSnackbar()`, etc.).
 - **Unified Reactive Primitives** - Replaced custom wrapper classes (`RxInt`, `RxBool`, `RxString`, etc.) with Dart 3 `typedef`s to consolidate the core `Rx<T>` architecture.
 - **Moved operators to extensions** - Shifted primitive operators (`+`, `-`, etc.) into their respective extension classes (e.g. `RxIntExt`, `RxNumExt`) to preserve 100% backward compatibility while drastically simplifying the internal class hierarchy.
 - **Removed extraneous bitwise operators** - Removed unused and out-of-scope bitwise logic and shift operators from numeric extensions.
