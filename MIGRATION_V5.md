@@ -298,7 +298,7 @@ void UserActions(BuildContext context) {
 - **Typedef Architecture with Extension Methods:** v5.0.0 unifies all reactive primitives under generic `Rx<T>` using Dart 3 `typedef`s (e.g. `typedef RxInt = Rx<int>;`). Operators (`+`, `-`, string concatenation) are implemented via extension methods (`RxIntExt`, `RxNumExt`, `RxStringExt`), preserving 100% backward compatibility while drastically streamlining internal classes.
 
 ```dart
-// ✅ 100% Backward Compatible & Lightweight
+// ✅ Zero Technical Debt & Zero Breaking Changes
 final RxInt count = 0.obs;      // typedef RxInt = Rx<int>;
 final RxString name = 'A'.obs;  // typedef RxString = Rx<String>;
 

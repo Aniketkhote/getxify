@@ -248,27 +248,13 @@ class ParseRouteTree {
   ) {
     for (final child in parent.children) {
       final middlewares = [...inheritedMiddlewares, ...child.middlewares];
-      final bindings = [
-        ...inheritedBindings,
-        ...child.bindings,
-      ];
+      final bindings = [...inheritedBindings, ...child.bindings];
 
-      final flattened = _addChild(
-        child,
-        parentPath,
-        middlewares,
-        bindings,
-      );
+      final flattened = _addChild(child, parentPath, middlewares, bindings);
       _ownMiddlewares[flattened] = child.middlewares;
       result.add(flattened);
 
-      _flattenChildren(
-        child,
-        flattened.name,
-        middlewares,
-        bindings,
-        result,
-      );
+      _flattenChildren(child, flattened.name, middlewares, bindings, result);
     }
   }
 

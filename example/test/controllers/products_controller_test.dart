@@ -13,14 +13,21 @@ void main() {
       controller.dispose();
     });
 
-    test('initially has empty products list', () {
-      expect(controller.products.value, isEmpty);
+    test('onInit populates sample products and sets success status', () {
+      controller.onInit();
+      expect(controller.products, isNotEmpty);
+      expect(controller.status.isSuccess, isTrue);
     });
 
-    test('loadDemoProducts adds a product', () {
-      controller.loadDemoProducts();
-      expect(controller.products.length, 1);
-      expect(controller.products.first.name, contains('Product added on:'));
-    });
+    test(
+      'setting search query to non-matching string updates status to empty',
+      () async {
+        controller.onInit();
+        controller.searchQuery.value = 'non_matching_product_name_xyz';
+        await Future.delayed(const Duration(milliseconds: 350));
+        expect(controller.filteredProducts, isEmpty);
+        expect(controller.status.isEmpty, isTrue);
+      },
+    );
   });
 }

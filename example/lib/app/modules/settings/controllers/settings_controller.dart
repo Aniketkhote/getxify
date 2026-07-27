@@ -1,18 +1,48 @@
+import 'package:flutter/material.dart';
 import 'package:getxify/getxify.dart';
 
 /// Controller for the settings screen
-/// Manages app settings and preferences
 class SettingsController extends GetxController {
-  /// Observable counter for demo purposes
   final count = 0.obs;
-
-  /// Observable for dark mode setting
   final isDarkMode = false.obs;
+  final pushNotifications = true.obs;
+  final autoSync = true.obs;
 
-  /// Increment the counter
+  @override
+  void onInit() {
+    super.onInit();
+    if (Get.context != null) {
+      isDarkMode.value = Theme.of(Get.context!).brightness == Brightness.dark;
+    }
+  }
+
   void increment() => count.value++;
 
-  /// Toggle dark mode
-  void toggleDarkMode([bool? value]) =>
-      isDarkMode.value = value ?? !isDarkMode.value;
+  void toggleDarkMode(bool value) {
+    isDarkMode.value = value;
+    Get.changeThemeMode(value ? ThemeMode.dark : ThemeMode.light);
+  }
+
+  void toggleNotifications(bool value) => pushNotifications.value = value;
+  void toggleAutoSync(bool value) => autoSync.value = value;
+
+  void resetAppState() {
+    Get.defaultDialog(
+      title: 'Reset Preferences',
+      middleText: 'Are you sure you want to reset all app preferences?',
+      textConfirm: 'Reset',
+      confirmTextColor: Colors.white,
+      onConfirm: () {
+        count.value = 0;
+        pushNotifications.value = true;
+        autoSync.value = true;
+        Get.back();
+        Get.snackbar(
+          'Settings Reset',
+          'App preferences restored to default state.',
+          snackPosition: SnackPosition.top,
+        );
+      },
+    );
+  }
 }

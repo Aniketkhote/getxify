@@ -6,8 +6,9 @@ class ProductDetailsBinding extends Binding {
   @override
   List<Bind> dependencies() {
     return [
-      Bind.spawn<ProductDetailsController>(
+      Bind.lazyPut<ProductDetailsController>(
         () => ProductDetailsController(Get.parameters['productId'] ?? ''),
+        fenix: true,
       ),
     ];
   }

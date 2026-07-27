@@ -38,24 +38,27 @@ void main() {
     expect(controller.count.value, 0);
   });
 
-  test('Binding.put, Binding.lazyPut, and Binding.builder zero-arg variants work', () {
-    final bPut = Binding.put(SampleController());
-    bPut.dependencies();
-    expect(Get.isRegistered<SampleController>(), isTrue);
+  test(
+    'Binding.put, Binding.lazyPut, and Binding.builder zero-arg variants work',
+    () {
+      final bPut = Binding.put(SampleController());
+      bPut.dependencies();
+      expect(Get.isRegistered<SampleController>(), isTrue);
 
-    Get.resetInstance();
+      Get.resetInstance();
 
-    final bLazy = Binding.lazyPut(() => SampleController());
-    bLazy.dependencies();
-    expect(Get.isPrepared<SampleController>(), isTrue);
-    expect(Get.find<SampleController>().count.value, 0);
+      final bLazy = Binding.lazyPut(() => SampleController());
+      bLazy.dependencies();
+      expect(Get.isPrepared<SampleController>(), isTrue);
+      expect(Get.find<SampleController>().count.value, 0);
 
-    Get.resetInstance();
+      Get.resetInstance();
 
-    final bZeroArg = Binding.builder(() {
-      Get.put(SampleController());
-    });
-    bZeroArg.dependencies();
-    expect(Get.isRegistered<SampleController>(), isTrue);
-  });
+      final bZeroArg = Binding.builder(() {
+        Get.put(SampleController());
+      });
+      bZeroArg.dependencies();
+      expect(Get.isRegistered<SampleController>(), isTrue);
+    },
+  );
 }

@@ -99,10 +99,7 @@ class GetPage<T> extends Page<T> {
          'GetPage route names must start with a slash "/". '
          'Use "/$name" instead of "$name".',
        ),
-       super(
-         key: key ?? ValueKey(name),
-         name: name,
-       );
+       super(key: key ?? ValueKey(name), name: name);
   // settings = RouteSettings(name: name, arguments: Get.arguments);
 
   GetPage<T> copyWith({

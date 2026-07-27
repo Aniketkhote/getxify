@@ -5,59 +5,50 @@ import '../../../routes/app_pages.dart';
 import '../controllers/home_controller.dart';
 
 /// Home screen view
-/// Demonstrates nested routing with bottom navigation
+/// Demonstrates nested routing with bottom navigation and router outlets
 class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
 
-  static const Color _statusBarColor = Color(0xFFFFD700);
-
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(color: _statusBarColor, width: double.infinity, height: 25),
-        Expanded(
-          child: GetRouterOutlet.builder(
-            route: Routes.home,
-            builder: (context) {
-              return Scaffold(
-                body: GetRouterOutlet(
-                  initialRoute: Routes.dashboard,
-                  anchorRoute: Routes.home,
-                ),
-                bottomNavigationBar: IndexedRouteBuilder(
-                  routes: const [
-                    Routes.dashboard,
-                    Routes.profile,
-                    Routes.products,
-                  ],
-                  builder: (context, routes, index) {
-                    final delegate = context.delegate;
-                    return BottomNavigationBar(
-                      currentIndex: index,
-                      onTap: (value) => delegate.toNamed(routes[value]),
-                      items: const [
-                        BottomNavigationBarItem(
-                          icon: Icon(Icons.home),
-                          label: 'Home',
-                        ),
-                        BottomNavigationBarItem(
-                          icon: Icon(Icons.account_box_rounded),
-                          label: 'Profile',
-                        ),
-                        BottomNavigationBarItem(
-                          icon: Icon(Icons.shopping_cart),
-                          label: 'Products',
-                        ),
-                      ],
-                    );
-                  },
-                ),
+    return GetRouterOutlet.builder(
+      route: Routes.home,
+      builder: (context) {
+        return Scaffold(
+          body: GetRouterOutlet(
+            initialRoute: Routes.dashboard,
+            anchorRoute: Routes.home,
+          ),
+          bottomNavigationBar: IndexedRouteBuilder(
+            routes: const [Routes.dashboard, Routes.products, Routes.profile],
+            builder: (context, routes, index) {
+              final delegate = context.delegate;
+              return NavigationBar(
+                selectedIndex: index,
+                onDestinationSelected: (value) =>
+                    delegate.toNamed(routes[value]),
+                destinations: const [
+                  NavigationDestination(
+                    icon: Icon(Icons.dashboard_outlined),
+                    selectedIcon: Icon(Icons.dashboard, color: Colors.indigo),
+                    label: 'Dashboard',
+                  ),
+                  NavigationDestination(
+                    icon: Icon(Icons.storefront_outlined),
+                    selectedIcon: Icon(Icons.storefront, color: Colors.indigo),
+                    label: 'Catalog',
+                  ),
+                  NavigationDestination(
+                    icon: Icon(Icons.person_outline),
+                    selectedIcon: Icon(Icons.person, color: Colors.indigo),
+                    label: 'Profile',
+                  ),
+                ],
               );
             },
           ),
-        ),
-      ],
+        );
+      },
     );
   }
 }

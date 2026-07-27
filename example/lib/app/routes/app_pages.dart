@@ -46,7 +46,7 @@ class AppPages {
           preventDuplicates: true,
           name: _Paths.home,
           page: () => const HomeView(),
-          bindings: [HomeBinding()],
+          bindings: [HomeBinding(), DashboardBinding()],
           title: null,
           children: [
             GetPage(

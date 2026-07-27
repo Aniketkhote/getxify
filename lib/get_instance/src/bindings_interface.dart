@@ -54,11 +54,8 @@ abstract class Binding {
   factory Binding.builder(Function builder) = _DelegateBinding;
 
   /// Creates a [Binding] that immediately registers [dependency].
-  static Binding put<S>(
-    S dependency, {
-    String? tag,
-    bool permanent = false,
-  }) => _PutBinding<S>(dependency, tag: tag, permanent: permanent);
+  static Binding put<S>(S dependency, {String? tag, bool permanent = false}) =>
+      _PutBinding<S>(dependency, tag: tag, permanent: permanent);
 
   /// Creates a [Binding] that lazily initializes [builder] on first access.
   static Binding lazyPut<S>(
