@@ -28,6 +28,7 @@ class SnackbarController {
   bool _onTappedDismiss = false;
 
   Timer? _timer;
+  Timer? _swipeResetTimer;
 
   /// The animation that drives the route's transition and the previous route's
   /// forward transition.
@@ -73,6 +74,9 @@ class SnackbarController {
   void _cancelTimer() {
     if (_timer != null && _timer!.isActive) {
       _timer!.cancel();
+    }
+    if (_swipeResetTimer != null && _swipeResetTimer!.isActive) {
+      _swipeResetTimer!.cancel();
     }
   }
 
@@ -333,7 +337,10 @@ class SnackbarController {
     }
 
     if (_wasDismissedBySwipe) {
-      Timer(const Duration(milliseconds: 200), controller.reset);
+      _swipeResetTimer = Timer(
+        const Duration(milliseconds: 200),
+        controller.reset,
+      );
       _wasDismissedBySwipe = false;
     } else {
       controller.reverse();

@@ -239,7 +239,10 @@ Worker debounce<T>(
     onDone: onDone,
     cancelOnError: cancelOnError,
   );
-  return Worker(sub.cancel, '[debounce]');
+  return Worker(() async {
+    newDebouncer.cancel();
+    await sub.cancel();
+  }, '[debounce]');
 }
 
 class Worker {

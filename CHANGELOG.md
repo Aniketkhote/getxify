@@ -1,3 +1,12 @@
+## [Unreleased]
+
+### Bug Fixes
+
+- **Fixed Timer leak in SnackbarController** - Added tracking for swipe reset timer to ensure proper cleanup during snackbar dismissal, preventing potential memory leaks
+- **Fixed Debouncer cleanup in debounce worker** - Updated debounce worker disposal to properly cancel debouncer's internal timer before cancelling stream subscription, ensuring complete resource cleanup
+
+---
+
 ## 5.0.0
 
 ### Breaking Changes
