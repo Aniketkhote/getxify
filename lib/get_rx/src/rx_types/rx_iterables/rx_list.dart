@@ -363,22 +363,12 @@ extension ListExtension<E> on List<E> {
 
   /// Add [item] to [List<E>] only if [condition] is true.
   void addIf(Object? condition, E item) {
-    final isTrue = switch (condition) {
-      bool b => b,
-      Condition c => c(),
-      _ => false,
-    };
-    if (isTrue) add(item);
+    if (evaluateCondition(condition)) add(item);
   }
 
   /// Adds [Iterable<E>] to [List<E>] only if [condition] is true.
   void addAllIf(Object? condition, Iterable<E> items) {
-    final isTrue = switch (condition) {
-      bool b => b,
-      Condition c => c(),
-      _ => false,
-    };
-    if (isTrue) addAll(items);
+    if (evaluateCondition(condition)) addAll(items);
   }
 
   /// Replaces all existing items of this list with [item]

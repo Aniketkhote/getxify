@@ -366,10 +366,25 @@ class Rx<T> extends _RxImpl<T> {
 
   @override
   dynamic toJson() {
+    if (value == null) {
+      return null;
+    }
+
+    // Try to call toJson() method with better error handling
     try {
-      return (value as dynamic)?.toJson();
-    } on Exception catch (_) {
-      throw Exception('$T has not method [toJson]');
+      final valueDynamic = value as dynamic;
+      final result = valueDynamic.toJson();
+      return result;
+    } on NoSuchMethodError catch (_) {
+      throw Exception(
+        'Type $T does not have a toJson() method. '
+        'Ensure your class implements toJson() or use a custom serialization approach.',
+      );
+    } catch (e) {
+      throw Exception(
+        'Failed to serialize type $T: ${e.toString()}. '
+        'Ensure your class implements toJson() correctly.',
+      );
     }
   }
 }
@@ -379,10 +394,25 @@ class Rxn<T> extends Rx<T?> {
 
   @override
   dynamic toJson() {
+    if (value == null) {
+      return null;
+    }
+
+    // Try to call toJson() method with better error handling
     try {
-      return (value as dynamic)?.toJson();
-    } on Exception catch (_) {
-      throw Exception('$T has not method [toJson]');
+      final valueDynamic = value as dynamic;
+      final result = valueDynamic.toJson();
+      return result;
+    } on NoSuchMethodError catch (_) {
+      throw Exception(
+        'Type $T does not have a toJson() method. '
+        'Ensure your class implements toJson() or use a custom serialization approach.',
+      );
+    } catch (e) {
+      throw Exception(
+        'Failed to serialize type $T: ${e.toString()}. '
+        'Ensure your class implements toJson() correctly.',
+      );
     }
   }
 }

@@ -120,22 +120,12 @@ extension SetExtension<E> on Set<E> {
 
   /// Add [item] to [Set<E>] only if [condition] is true.
   void addIf(Object? condition, E item) {
-    final isTrue = switch (condition) {
-      bool b => b,
-      Condition c => c(),
-      _ => false,
-    };
-    if (isTrue) add(item);
+    if (evaluateCondition(condition)) add(item);
   }
 
   /// Adds [Iterable<E>] to [Set<E>] only if [condition] is true.
   void addAllIf(Object? condition, Iterable<E> items) {
-    final isTrue = switch (condition) {
-      bool b => b,
-      Condition c => c(),
-      _ => false,
-    };
-    if (isTrue) addAll(items);
+    if (evaluateCondition(condition)) addAll(items);
   }
 
   /// Replaces all existing items of this set with [item]

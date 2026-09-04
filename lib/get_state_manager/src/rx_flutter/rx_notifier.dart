@@ -171,7 +171,8 @@ class GetListenable<T> extends ListNotifierSingle implements RxInterface<T> {
   }
 
   set value(T newValue) {
-    if (_value == newValue) return;
+    // Optimized equality check: use identical first for performance
+    if (identical(_value, newValue) || _value == newValue) return;
     _value = newValue;
     _notify();
   }

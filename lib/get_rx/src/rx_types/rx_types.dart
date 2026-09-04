@@ -7,7 +7,6 @@ import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 
 import '../../../get_state_manager/src/rx_flutter/rx_notifier.dart';
-import '../rx_typedefs/rx_typedefs.dart';
 
 part 'rx_core/rx_impl.dart';
 part 'rx_core/rx_interface.dart';
@@ -27,3 +26,13 @@ typedef RxBool = Rx<bool>;
 typedef RxnBool = Rx<bool?>;
 typedef RxNum = Rx<num>;
 typedef RxnNum = Rx<num?>;
+
+/// Evaluates a condition for extension methods with consistent false-by-default behavior.
+/// Used by list, map, and set extensions for conditional operations.
+/// Accepts null, bool, or bool Function() and returns a consistent boolean result.
+bool evaluateCondition(Object? condition) {
+  if (condition == null) return false;
+  if (condition is bool) return condition;
+  if (condition is bool Function()) return condition();
+  return false;
+}
