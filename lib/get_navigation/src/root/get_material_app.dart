@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:getxify/get_core/get_core.dart';
 
 import '../../../get_state_manager/get_state_manager.dart';

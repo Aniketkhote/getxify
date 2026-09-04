@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:getxify/getxify.dart';
 
 import '../../../../services/cart_service.dart';

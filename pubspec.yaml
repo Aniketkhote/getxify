@@ -1,6 +1,6 @@
 name: getxify
-description: "An improved and enhanced version of GetX - Open screens/snackbars/dialogs without context, manage states and inject dependencies easily with GetXify."
-version: 5.0.0
+description: "GetXify: The modern evolution of GetX. Navigate screens, manage state, and inject dependencies without BuildContext. Enhanced performance, cleaner API, and full Flutter compatibility."
+version: 5.0.1
 homepage: https://github.com/Aniketkhote/getxify
 repository: https://github.com/Aniketkhote/getxify
 issue_tracker: https://github.com/Aniketkhote/getxify/issues
@@ -27,6 +27,8 @@ dependencies:
     sdk: flutter
   web: ">=1.1.0 <2.0.0"
 
+  cupertino_ui: any
+  material_ui: any
 dev_dependencies:
   flutter_test:
     sdk: flutter

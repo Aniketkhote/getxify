@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Demo product model for the GetXify E-Commerce example app
 class DemoProduct {

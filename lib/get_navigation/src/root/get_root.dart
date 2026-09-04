@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:getxify/get_navigation/src/routes/core/test_kit.dart';
 
 import '../../../getxify.dart';

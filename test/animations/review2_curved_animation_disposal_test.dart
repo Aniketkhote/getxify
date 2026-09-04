@@ -3,7 +3,7 @@
 // The state must own the CurvedAnimation, dispose the replaced one on
 // updates, and dispose the final one before the controller.
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:getxify/getxify.dart';
 

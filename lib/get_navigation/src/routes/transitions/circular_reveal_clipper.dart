@@ -1,7 +1,7 @@
 import 'dart:math' show sqrt, max;
 import 'dart:ui' show lerpDouble;
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// A custom clipper that creates a circular reveal animation effect.
 ///

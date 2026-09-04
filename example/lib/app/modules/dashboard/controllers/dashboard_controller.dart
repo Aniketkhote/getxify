@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:getxify/getxify.dart';
 
 import '../../../../models/demo_product.dart';
