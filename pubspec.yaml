@@ -27,8 +27,8 @@ dependencies:
     sdk: flutter
   web: ">=1.1.0 <2.0.0"
 
-  cupertino_ui: any
-  material_ui: any
+  cupertino_ui: ^1.0.2
+  material_ui: ^1.1.1
 dev_dependencies:
   flutter_test:
     sdk: flutter

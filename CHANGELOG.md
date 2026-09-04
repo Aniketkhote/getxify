@@ -1,4 +1,15 @@
-## [Unreleased]
+## 5.0.1
+
+### Migration & Compatibility
+
+- **Migrated to Flutter 3.47 standalone packages** - Updated all imports from Flutter core SDK to new standalone Material and Cupertino packages:
+  - Replaced `package:flutter/material.dart` with `package:material_ui/material_ui.dart`
+  - Replaced `package:flutter/cupertino.dart` with `package:cupertino_ui/cupertino_ui.dart`
+  - Added `material_ui` and `cupertino_ui` dependencies to pubspec.yaml
+  - Updated Flutter SDK requirement to >=3.44.2
+  - Added analyzer excludes for platform directories to prevent analysis noise
+
+This migration aligns with Flutter 3.47's decoupling of Material and Cupertino UI packages from the core SDK into independent pub.dev packages, providing better modularity and dependency management.
 
 ### Bug Fixes
 
