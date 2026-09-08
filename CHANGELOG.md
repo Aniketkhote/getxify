@@ -1,3 +1,11 @@
+## 5.0.2
+
+### Bug Fixes
+
+- **Fixed Rx stream emission issue** - Fixed the stream property of Rx types (including RxnBool) not emitting when values change. The issue was caused by incorrect listener setup in GetListenable where the stream listener was being added in the onCancel callback instead of when the stream was created. This fix ensures that all Rx types properly emit values through their streams when values change via direct assignment, call(), or toggle() methods.
+
+---
+
 ## 5.0.1
 
 ### Migration & Compatibility
