@@ -1,3 +1,13 @@
+## 5.0.3
+
+### Bug Fixes
+
+- **Fixed GetListenable stream reconnection after listener cancellation** - Fixed GetListenable.subject permanently detaching from ChangeNotifier after all stream listeners cancel. The issue was caused by the listener being added only once during controller initialization and never re-added when new listeners subscribed. The fix uses onListen callback to dynamically re-attach the stream listener when new subscriptions are created, ensuring that Rx streams continue to emit value changes even after all previous listeners have cancelled. Added regression test to verify stream reconnection behavior.
+
+- **Fixed shared controller scope ownership issue** - Fixed issue where popping a second route would delete a shared controller registered by the first route. The problem was in the `_insert` method in `extension_instance.dart` where the dependency key was added to `_currentScopeKeys` before checking if the registration already existed. This caused the second route to claim ownership of an instance it didn't create. The fix ensures that keys are only added to the current scope when actually creating new registrations, preventing routes from incorrectly claiming ownership of shared dependencies. Added regression test to verify controller lifecycle across multiple routes.
+
+---
+
 ## 5.0.2
 
 ### Bug Fixes

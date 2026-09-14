@@ -1,6 +1,6 @@
 name: getxify
 description: "GetXify: The modern evolution of GetX. Navigate screens, manage state, and inject dependencies without BuildContext. Enhanced performance, cleaner API, and full Flutter compatibility."
-version: 5.0.2
+version: 5.0.3
 homepage: https://github.com/Aniketkhote/getxify
 repository: https://github.com/Aniketkhote/getxify
 issue_tracker: https://github.com/Aniketkhote/getxify/issues

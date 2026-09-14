@@ -1,7 +1,6 @@
 import 'package:flutter/widgets.dart';
 
 import '../../get_core/get_core.dart';
-
 import '../../get_state_manager/src/simple/list_notifier.dart';
 import 'lifecycle.dart';
 
@@ -211,9 +210,6 @@ extension GetInstanceExt on GetInterface {
     bool fenix = false,
   }) {
     final key = _getKey(S, name);
-    if (_currentScopeKeys != null) {
-      _currentScopeKeys!.add(key);
-    }
 
     _InstanceBuilderFactory<S>? dep;
     if (_singletons.containsKey(key)) {
@@ -226,6 +222,13 @@ extension GetInstanceExt on GetInterface {
         }
       }
     }
+
+    // Only add key to current scope if we're actually creating a new registration
+    // This prevents a route from claiming ownership of an instance it didn't create
+    if (_currentScopeKeys != null) {
+      _currentScopeKeys!.add(key);
+    }
+
     _singletons[key] = _InstanceBuilderFactory<S>(
       isSingleton: isSingleton,
       builderFunc: builder,
