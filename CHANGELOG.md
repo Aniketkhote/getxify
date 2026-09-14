@@ -6,6 +6,8 @@
 
 - **Fixed shared controller scope ownership issue** - Fixed issue where popping a second route would delete a shared controller registered by the first route. The problem was in the `_insert` method in `extension_instance.dart` where the dependency key was added to `_currentScopeKeys` before checking if the registration already existed. This caused the second route to claim ownership of an instance it didn't create. The fix ensures that keys are only added to the current scope when actually creating new registrations, preventing routes from incorrectly claiming ownership of shared dependencies. Added regression test to verify controller lifecycle across multiple routes.
 
+- **Fixed GetDependencyScope to use route-aware deletion** - Fixed GetDependencyScope calling `Get.delete()` directly instead of `Get.deleteRouteDependency()`. This ensures that dependencies shared across routes are not prematurely deleted when one route disposes. The route-aware deletion checks for remaining subscribers and handles lateRemove chains properly, preventing the same type of ownership issues that were fixed in issue #11.
+
 ---
 
 ## 5.0.2
