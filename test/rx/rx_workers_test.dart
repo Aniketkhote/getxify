@@ -393,6 +393,80 @@ void main() {
     );
   });
 
+  group('bindStream/bindStreamBuilder pause and resume on listener count', () {
+    test('bindStream unsubscribes once the last listener is removed', () async {
+      var cancelled = false;
+      final source = StreamController<int>(
+        onCancel: () {
+          cancelled = true;
+        },
+      );
+      final rx = 0.obs;
+
+      final listenerSub = rx.listen((_) {});
+      rx.bindStream(source.stream);
+      source.add(1);
+      await Future.delayed(Duration.zero);
+      expect(rx.value, 1);
+      expect(cancelled, false);
+
+      await listenerSub.cancel();
+      await Future.delayed(Duration.zero);
+      expect(cancelled, true);
+
+      source.add(2);
+      await Future.delayed(Duration.zero);
+      expect(rx.value, 1);
+
+      await source.close();
+      rx.close();
+    });
+
+    test('bindStreamBuilder rebuilds and rebinds the stream when a listener '
+        'returns after dropping to zero', () async {
+      var buildCount = 0;
+      final controllers = <StreamController<int>>[];
+      final rx = 0.obs;
+
+      Stream<int> builder() {
+        buildCount++;
+        final controller = StreamController<int>();
+        controllers.add(controller);
+        return controller.stream;
+      }
+
+      final listenerSub1 = rx.listen((_) {});
+      rx.bindStreamBuilder(builder);
+      expect(buildCount, 1);
+
+      controllers.last.add(1);
+      await Future.delayed(Duration.zero);
+      expect(rx.value, 1);
+
+      await listenerSub1.cancel();
+      await Future.delayed(Duration.zero);
+
+      // The old stream is unsubscribed and no longer updates the value.
+      controllers.first.add(99);
+      await Future.delayed(Duration.zero);
+      expect(rx.value, 1);
+
+      // A new listener triggers the builder again, rebinding a fresh stream.
+      final listenerSub2 = rx.listen((_) {});
+      expect(buildCount, 2);
+
+      controllers.last.add(2);
+      await Future.delayed(Duration.zero);
+      expect(rx.value, 2);
+
+      await listenerSub2.cancel();
+      for (final controller in controllers) {
+        await controller.close();
+      }
+      rx.close();
+    });
+  });
+
   group('Rx collections generic subtype element support', () {
     group('issue #3411: default-constructed Rx collections are typed as E', () {
       test('RxList<E>() accepts elements of E and its subtypes', () {

@@ -35,12 +35,31 @@ class ListNotifierGroup extends ChangeNotifier with ListNotifierGroupMixin {}
 /// hood for optimized $O(1)$ listener management.
 mixin ListNotifierSingleMixin on ChangeNotifier {
   bool _isDisposed = false;
+  int _listenerCount = 0;
 
   @override
   Disposer addListener(VoidCallback listener) {
     super.addListener(listener);
+    _listenerCount++;
+    if (_listenerCount == 1) onListen();
     return () => removeListener(listener);
   }
+
+  @override
+  void removeListener(VoidCallback listener) {
+    super.removeListener(listener);
+    if (_listenerCount == 0) return;
+    _listenerCount--;
+    if (_listenerCount == 0) onCancel();
+  }
+
+  /// Called when a first listener is added after having none.
+  @protected
+  void onListen() {}
+
+  /// Called when the last remaining listener is removed.
+  @protected
+  void onCancel() {}
 
   /// Notifies all listeners to update using Flutter's native [ChangeNotifier].
   @protected

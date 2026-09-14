@@ -119,46 +119,118 @@ mixin RxObjectMixin<T> on GetListenable<T> {
     return subscription;
   }
 
-  /// Subscriptions created by [bindStream], cancelled when this Rx is closed.
-  final List<StreamSubscription<T>> _subscriptions = <StreamSubscription<T>>[];
+  /// Streams bound by [bindStream]/[bindStreamBuilder]. Cancelled when this
+  /// Rx is closed, or paused when its listener count drops to zero.
+  final List<_BoundStream<T>> _boundStreams = <_BoundStream<T>>[];
 
   /// Binds an existing `Stream<T>` to this `Rx<T>` to keep the values in sync.
   /// You can bind multiple sources to update the value.
   ///
   /// Set [cancelPrevious] to `true` to cancel any subscriptions created by
-  /// earlier [bindStream] calls before binding the new [stream]. This is
-  /// useful when rebinding to a fresh source (e.g. re-entering a page) so
-  /// stale streams stop overwriting the value.
+  /// earlier [bindStream]/[bindStreamBuilder] calls before binding the new
+  /// [stream]. This is useful when rebinding to a fresh source (e.g.
+  /// re-entering a page) so stale streams stop overwriting the value.
   ///
   /// Returns the [StreamSubscription], so callers can pause or cancel the
   /// binding manually. All active subscriptions are cancelled automatically
-  /// when this Rx is closed; when [bindStream] is called during an observer
-  /// (`GetX` or `Obx`) build, the subscription is also cancelled when that
-  /// Widget gets unmounted from the Widget tree.
+  /// when this Rx is closed, and are also unsubscribed whenever this Rx's
+  /// listener count drops to zero (e.g. no more `Obx`/`GetX` widgets or
+  /// `listen` callbacks are watching it); when [bindStream] is called during
+  /// an observer (`GetX` or `Obx`) build, the subscription is also cancelled
+  /// when that Widget gets unmounted from the Widget tree.
   StreamSubscription<T> bindStream(
     Stream<T> stream, {
     bool cancelPrevious = false,
   }) {
-    if (cancelPrevious) {
-      for (final subscription in _subscriptions) {
-        subscription.cancel();
-      }
-      _subscriptions.clear();
-    }
+    if (cancelPrevious) _cancelBoundStreams();
+    final bound = _BoundStream<T>(null);
     final sub = stream.listen((va) => value = va);
-    _subscriptions.add(sub);
+    bound.subscription = sub;
+    _boundStreams.add(bound);
     reportAdd(sub.cancel);
     return sub;
   }
 
+  /// Same as [bindStream], but takes a [builder] that creates the stream on
+  /// demand instead of a stream instance.
+  ///
+  /// Whenever this Rx's listener count drops to zero, the current stream is
+  /// unsubscribed; once a new listener is added, [builder] is called again
+  /// to recreate and rebind the stream. This is useful for sources that
+  /// can't simply be re-listened to (e.g. single-subscription streams) once
+  /// dropped.
+  StreamSubscription<T> bindStreamBuilder(
+    Stream<T> Function() builder, {
+    bool cancelPrevious = false,
+  }) {
+    if (cancelPrevious) _cancelBoundStreams();
+    final bound = _BoundStream<T>(builder);
+    final sub = builder().listen((va) => value = va);
+    bound.subscription = sub;
+    _boundStreams.add(bound);
+    reportAdd(sub.cancel);
+    return sub;
+  }
+
+  void _cancelBoundStreams() {
+    for (final bound in _boundStreams) {
+      bound.subscription?.cancel();
+    }
+    _boundStreams.clear();
+  }
+
+  /// Unsubscribes every bound stream. Builder-based bindings are kept around
+  /// (with a `null` subscription) so [_resumeBoundStreams] can recreate them.
+  void _pauseBoundStreams() {
+    _boundStreams.removeWhere((bound) {
+      bound.subscription?.cancel();
+      bound.subscription = null;
+      return bound.factory == null;
+    });
+  }
+
+  /// Recreates and resubscribes every builder-based binding left dangling by
+  /// [_pauseBoundStreams].
+  void _resumeBoundStreams() {
+    for (final bound in _boundStreams) {
+      final factory = bound.factory;
+      if (bound.subscription != null || factory == null) continue;
+      final sub = factory().listen((va) => value = va);
+      bound.subscription = sub;
+      reportAdd(sub.cancel);
+    }
+  }
+
+  @override
+  @protected
+  void onCancel() {
+    _pauseBoundStreams();
+    super.onCancel();
+  }
+
+  @override
+  @protected
+  void onListen() {
+    super.onListen();
+    _resumeBoundStreams();
+  }
+
   @override
   void close() {
-    for (final subscription in _subscriptions) {
-      subscription.cancel();
-    }
-    _subscriptions.clear();
+    _cancelBoundStreams();
     super.close();
   }
+}
+
+/// Bookkeeping for a stream bound via [RxObjectMixin.bindStream] or
+/// [RxObjectMixin.bindStreamBuilder].
+class _BoundStream<T> {
+  _BoundStream(this.factory);
+
+  /// Non-null only for bindings created with [RxObjectMixin.bindStreamBuilder];
+  /// used to recreate the stream once listeners return after dropping to zero.
+  final Stream<T> Function()? factory;
+  StreamSubscription<T>? subscription;
 }
 
 /// Base Rx class that manages all the stream logic for any Type.
