@@ -82,13 +82,13 @@ class ValueBuilderState<T> extends State<ValueBuilder<T>> {
 
   @override
   void dispose() {
-    super.dispose();
     widget.onDispose?.call();
     if (value is ChangeNotifier) {
       (value as ChangeNotifier?)?.dispose();
     } else if (value is StreamController) {
       (value as StreamController?)?.close();
     }
+    super.dispose();
   }
 }
 
@@ -150,11 +150,11 @@ mixin StatelessObserverComponent on StatelessElement {
 
   @override
   void unmount() {
-    super.unmount();
     for (final disposer in disposers!) {
       disposer();
     }
     disposers!.clear();
     disposers = null;
+    super.unmount();
   }
 }

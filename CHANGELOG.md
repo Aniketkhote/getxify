@@ -2,6 +2,8 @@
 
 ### Bug Fixes
 
+- **Fixed Flutter widget lifecycle hook ordering** - Fixed an issue in `ValueBuilderState` and `ObxElement` where `super.dispose()` and `super.unmount()` were called before local teardown logic. According to the Flutter framework documentation, overridden teardown methods must perform their work before calling the superclass method. Moved these `super` calls to the end of the methods to prevent potential memory leaks or exceptions when resources are prematurely disposed.
+
 - **Fixed `GetX` macro generating invalid Dart 3.13 syntax** - Removed `onInit()`, `onClose()`, and `builder()` method implementations from the `GetX` macro. The macro's responsibility is solely to scaffold the `StatefulWidget` boilerplate and `Obx` binding; method bodies must be implemented directly in the derived class to ensure compatibility with Dart 3.13's non-nested function support and avoid syntax errors.
 
 ---
