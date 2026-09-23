@@ -144,6 +144,7 @@ class GetPageRoute<T> extends PageRoute<T> with GetPageRouteTransitionMixin<T> {
   }
 
   Widget? _child;
+  final GlobalKey<State> _scopeKey = GlobalKey<State>();
 
   Widget _getChild() {
     if (_child != null) return _child!;
@@ -165,7 +166,11 @@ class GetPageRoute<T> extends PageRoute<T> with GetPageRouteTransitionMixin<T> {
     _child = _middlewareRunner.runOnPageBuilt(pageToBuild());
 
     if (scopedKeys.isNotEmpty) {
-      _child = GetDependencyScope(keys: scopedKeys, child: _child!);
+      _child = GetDependencyScope(
+        key: _scopeKey,
+        keys: scopedKeys,
+        child: _child!,
+      );
     }
 
     return _child!;

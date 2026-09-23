@@ -1,3 +1,11 @@
+## 5.0.4
+
+### Bug Fixes
+
+- **Fixed Flutter Inspector tree change disposing route controllers** - Fixed issue where toggling Flutter Inspector's "Select Widget Mode" caused route controllers to be disposed and recreated, resulting in screen flashing and state loss. The problem was that Flutter Inspector temporarily wraps the widget tree with `WidgetInspector`, which caused `GetDependencyScope` to be disposed and recreated. The fix adds a `GlobalKey` to each route's `GetDependencyScope`, ensuring Flutter preserves the widget state across temporary tree structure changes. This prevents controller disposal during Inspector-only tree shape changes, matching the behavior of GetX 4.7.3. Added regression tests to verify controller state preservation during tree changes.
+
+---
+
 ## 5.0.3
 
 ### Bug Fixes
