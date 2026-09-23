@@ -258,12 +258,16 @@ extension StateExt<T> on StateMixin<T> {
       builder: (context) {
         final currentStatus = status;
         return switch (currentStatus) {
-          LoadingStatus() => onLoading ?? const Center(child: CircularProgressIndicator()),
-          ErrorStatus() => onError != null
-              ? onError(currentStatus.errorMessage)
-              : Center(
-                  child: Text('An error occurred: ${currentStatus.errorMessage}'),
-                ),
+          LoadingStatus() =>
+            onLoading ?? const Center(child: CircularProgressIndicator()),
+          ErrorStatus() =>
+            onError != null
+                ? onError(currentStatus.errorMessage)
+                : Center(
+                    child: Text(
+                      'An error occurred: ${currentStatus.errorMessage}',
+                    ),
+                  ),
           EmptyStatus() => onEmpty ?? const SizedBox.shrink(),
           SuccessStatus() => widget(value),
           CustomStatus() => onCustom?.call(context) ?? const SizedBox.shrink(),
@@ -300,20 +304,20 @@ sealed class GetStatus<T> with Equality {
   bool get isCustom => this is CustomStatus<T>;
 
   Object? get error => switch (this) {
-        ErrorStatus(:final error) => error,
-        _ => null,
-      };
+    ErrorStatus(:final error) => error,
+    _ => null,
+  };
 
   String get errorMessage => switch (this) {
-        ErrorStatus(:final error) when error != null =>
-          error is String ? error : error.toString(),
-        _ => '',
-      };
+    ErrorStatus(:final error) when error != null =>
+      error is String ? error : error.toString(),
+    _ => '',
+  };
 
   T? get data => switch (this) {
-        SuccessStatus(:final data) => data,
-        _ => null,
-      };
+    SuccessStatus(:final data) => data,
+    _ => null,
+  };
 }
 
 class CustomStatus<T> extends GetStatus<T> {
@@ -360,14 +364,13 @@ extension StatusDataExt<T> on GetStatus<T> {
     required R Function(Object? error) error,
     required R Function() empty,
     R Function()? custom,
-  }) =>
-      switch (this) {
-        LoadingStatus() => loading(),
-        SuccessStatus(:final data) => success(data),
-        ErrorStatus(error: final err) => error(err),
-        EmptyStatus() => empty(),
-        CustomStatus() => (custom ?? loading)(),
-      };
+  }) => switch (this) {
+    LoadingStatus() => loading(),
+    SuccessStatus(:final data) => success(data),
+    ErrorStatus(error: final err) => error(err),
+    EmptyStatus() => empty(),
+    CustomStatus() => (custom ?? loading)(),
+  };
 
   R maybeWhen<R>({
     required R Function() orElse,
@@ -376,13 +379,12 @@ extension StatusDataExt<T> on GetStatus<T> {
     R Function(Object? error)? error,
     R Function()? empty,
     R Function()? custom,
-  }) =>
-      switch (this) {
-        LoadingStatus() when loading != null => loading(),
-        SuccessStatus(:final data) when success != null => success(data),
-        ErrorStatus(error: final err) when error != null => error(err),
-        EmptyStatus() when empty != null => empty(),
-        CustomStatus() when custom != null => custom(),
-        _ => orElse(),
-      };
+  }) => switch (this) {
+    LoadingStatus() when loading != null => loading(),
+    SuccessStatus(:final data) when success != null => success(data),
+    ErrorStatus(error: final err) when error != null => error(err),
+    EmptyStatus() when empty != null => empty(),
+    CustomStatus() when custom != null => custom(),
+    _ => orElse(),
+  };
 }

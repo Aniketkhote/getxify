@@ -138,9 +138,9 @@ class GetPageRoute<T> extends PageRoute<T> with GetPageRouteTransitionMixin<T> {
 
   @override
   void dispose() {
-    super.dispose();
     _middlewareRunner.runOnPageDispose();
     _child = null;
+    super.dispose();
   }
 
   Widget? _child;

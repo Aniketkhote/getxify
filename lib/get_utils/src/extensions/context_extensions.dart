@@ -150,16 +150,14 @@ extension ContextExt on BuildContext {
       watch != null || mobile != null || tablet != null || desktop != null,
     );
 
-    var deviceWidth = mediaQuerySize.width;
-    //big screen width can display smaller sizes
-    final strictValues = [
-      if (deviceWidth >= 1200) desktop, //desktop is allowed
-      if (deviceWidth >= 600) tablet, //tablet is allowed
-      if (deviceWidth >= 300) mobile, //mobile is allowed
-      watch, //watch is allowed
-    ].whereType<T>();
-    final looseValues = [watch, mobile, tablet, desktop].whereType<T>();
-    return strictValues.firstOrNull ?? looseValues.first;
+    final deviceWidth = mediaQuerySize.width;
+
+    if (deviceWidth >= 1200 && desktop != null) return desktop;
+    if (deviceWidth >= 600 && tablet != null) return tablet;
+    if (deviceWidth >= 300 && mobile != null) return mobile;
+    if (watch != null) return watch;
+
+    return desktop ?? tablet ?? mobile ?? watch!;
   }
 
   /// Finds the registered dependency of type [T] using Get DI container.

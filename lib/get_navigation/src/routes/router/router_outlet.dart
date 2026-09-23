@@ -214,10 +214,10 @@ class GetRouterOutlet extends RouterOutlet<GetDelegate, RouteDecoder> {
     GetDelegate? delegate,
   }) : super(
          pageBuilder: (context, rDelegate, pages) {
-           final pageRes = <GetPage?>[
+           final pageRes = <GetPage>[
              ...?pages,
-             if (pages == null || pages.isEmpty) emptyPage?.call(rDelegate),
-           ].whereType<GetPage>();
+             if (pages == null || pages.isEmpty) ?emptyPage?.call(rDelegate),
+           ];
 
            if (pageRes.isNotEmpty) {
              GetNavigator buildNavigator(GlobalKey<NavigatorState>? key) {

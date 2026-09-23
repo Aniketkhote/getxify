@@ -370,14 +370,10 @@ extension RxnBoolExt on Rx<bool?> {
 /// wrapper.
 class Rx<T> extends _RxImpl<T> {
   Rx(super.initial);
-
-
 }
 
 class Rxn<T> extends Rx<T?> {
   Rxn([super.initial]);
-
-
 }
 
 extension StringExtension on String {

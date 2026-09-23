@@ -1,5 +1,10 @@
 ## Unreleased
 
+### Performance Improvements
+
+- **Zero-Allocation `responsiveValue`**: Refactored `context.responsiveValue` to eliminate runtime `List` allocations and `.whereType<T>()` iterations, replacing them with direct $O(1)$ conditional logic. This drastically reduces GC overhead during responsive UI rebuilds and window resizing.
+- **Optimized Router Outlet**: Replaced intermediate list allocations in `GetRouterOutlet.pickPages` with a direct collection literal, eliminating unnecessary iterators.
+
 ### Bug Fixes
 
 - **Fixed Flutter widget lifecycle hook ordering** - Fixed an issue in `ValueBuilderState` and `ObxElement` where `super.dispose()` and `super.unmount()` were called before local teardown logic. According to the Flutter framework documentation, overridden teardown methods must perform their work before calling the superclass method. Moved these `super` calls to the end of the methods to prevent potential memory leaks or exceptions when resources are prematurely disposed.
