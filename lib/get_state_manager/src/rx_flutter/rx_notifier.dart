@@ -60,7 +60,7 @@ mixin StateMixin<T> on ListNotifier {
 
   @protected
   set value(T newValue) {
-    if (_value == newValue) return;
+    if (identical(_value, newValue) || _value == newValue) return;
     _value = newValue;
     refresh();
   }

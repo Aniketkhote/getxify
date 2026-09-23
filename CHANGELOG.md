@@ -1,3 +1,11 @@
+## 5.0.5
+
+### Bug Fixes
+
+- **Fixed `GetX` macro generating invalid Dart 3.13 syntax** - Removed `onInit()`, `onClose()`, and `builder()` method implementations from the `GetX` macro. The macro's responsibility is solely to scaffold the `StatefulWidget` boilerplate and `Obx` binding; method bodies must be implemented directly in the derived class to ensure compatibility with Dart 3.13's non-nested function support and avoid syntax errors.
+
+---
+
 ## 5.0.4
 
 ### Bug Fixes

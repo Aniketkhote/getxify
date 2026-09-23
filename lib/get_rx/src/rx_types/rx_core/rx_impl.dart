@@ -58,7 +58,14 @@ mixin RxObjectMixin<T> on GetListenable<T> {
   String toString() => value.toString();
 
   /// Returns the json representation of `value`.
-  dynamic toJson() => value;
+  dynamic toJson() {
+    if (value == null) return null;
+    try {
+      return (value as dynamic).toJson();
+    } catch (_) {
+      return value;
+    }
+  }
 
   /// This equality override works for _RxImpl instances and the internal
   /// values.
@@ -80,7 +87,7 @@ mixin RxObjectMixin<T> on GetListenable<T> {
   set value(T val) {
     if (isDisposed) return;
     sentToStream = false;
-    if (value == val && !firstRebuild) return;
+    if ((identical(value, val) || value == val) && !firstRebuild) return;
     firstRebuild = false;
     sentToStream = true;
     super.value = val;
@@ -364,57 +371,13 @@ extension RxnBoolExt on Rx<bool?> {
 class Rx<T> extends _RxImpl<T> {
   Rx(super.initial);
 
-  @override
-  dynamic toJson() {
-    if (value == null) {
-      return null;
-    }
 
-    // Try to call toJson() method with better error handling
-    try {
-      final valueDynamic = value as dynamic;
-      final result = valueDynamic.toJson();
-      return result;
-    } on NoSuchMethodError catch (_) {
-      throw Exception(
-        'Type $T does not have a toJson() method. '
-        'Ensure your class implements toJson() or use a custom serialization approach.',
-      );
-    } catch (e) {
-      throw Exception(
-        'Failed to serialize type $T: ${e.toString()}. '
-        'Ensure your class implements toJson() correctly.',
-      );
-    }
-  }
 }
 
 class Rxn<T> extends Rx<T?> {
   Rxn([super.initial]);
 
-  @override
-  dynamic toJson() {
-    if (value == null) {
-      return null;
-    }
 
-    // Try to call toJson() method with better error handling
-    try {
-      final valueDynamic = value as dynamic;
-      final result = valueDynamic.toJson();
-      return result;
-    } on NoSuchMethodError catch (_) {
-      throw Exception(
-        'Type $T does not have a toJson() method. '
-        'Ensure your class implements toJson() or use a custom serialization approach.',
-      );
-    } catch (e) {
-      throw Exception(
-        'Failed to serialize type $T: ${e.toString()}. '
-        'Ensure your class implements toJson() correctly.',
-      );
-    }
-  }
 }
 
 extension StringExtension on String {
