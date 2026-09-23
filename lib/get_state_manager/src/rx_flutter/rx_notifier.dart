@@ -38,13 +38,13 @@ mixin StateMixin<T> on ListNotifier {
 
   GetStatus<T> get status {
     reportRead();
-    return _status ??= _status = GetStatus.loading();
+    return _status ??= GetStatus.loading();
   }
 
   T get state => value;
 
   set status(GetStatus<T> newStatus) {
-    if (newStatus == status) return;
+    if (newStatus == _status) return;
     _status = newStatus;
     if (newStatus is SuccessStatus<T>) {
       _value = newStatus.data;
@@ -112,14 +112,11 @@ mixin StateMixin<T> on ListNotifier {
         } else {
           status = GetStatus<T>.success(newValue);
         }
-
-        refresh();
       },
       onError: (err) {
         status = GetStatus.error(
           err is Exception ? err : Exception(errorMessage ?? err.toString()),
         );
-        refresh();
       },
     );
   }
@@ -223,7 +220,7 @@ class Value<T> extends ListNotifier
 
   @override
   set value(T newValue) {
-    if (_value == newValue) return;
+    if (identical(_value, newValue) || _value == newValue) return;
     _value = newValue;
     refresh();
   }
@@ -259,22 +256,18 @@ extension StateExt<T> on StateMixin<T> {
   }) {
     return Observer(
       builder: (context) {
-        if (status.isLoading) {
-          return onLoading ?? const Center(child: CircularProgressIndicator());
-        } else if (status.isError) {
-          return onError != null
-              ? onError(status.errorMessage)
+        final currentStatus = status;
+        return switch (currentStatus) {
+          LoadingStatus() => onLoading ?? const Center(child: CircularProgressIndicator()),
+          ErrorStatus() => onError != null
+              ? onError(currentStatus.errorMessage)
               : Center(
-                  child: Text('An error occurred: ${status.errorMessage}'),
-                );
-        } else if (status.isEmpty) {
-          return onEmpty ?? const SizedBox.shrink();
-        } else if (status.isSuccess) {
-          return widget(value);
-        } else if (status.isCustom) {
-          return onCustom?.call(context) ?? const SizedBox.shrink();
-        }
-        return widget(value);
+                  child: Text('An error occurred: ${currentStatus.errorMessage}'),
+                ),
+          EmptyStatus() => onEmpty ?? const SizedBox.shrink(),
+          SuccessStatus() => widget(value),
+          CustomStatus() => onCustom?.call(context) ?? const SizedBox.shrink(),
+        };
       },
     );
   }
@@ -288,7 +281,7 @@ sealed class GetStatus<T> with Equality {
 
   factory GetStatus.loading() => LoadingStatus<T>();
 
-  factory GetStatus.error(Object message) => ErrorStatus<T, Object>(message);
+  factory GetStatus.error(Object message) => ErrorStatus<T>(message);
 
   factory GetStatus.empty() => EmptyStatus<T>();
 
@@ -300,40 +293,27 @@ sealed class GetStatus<T> with Equality {
 
   bool get isSuccess => this is SuccessStatus<T>;
 
-  bool get isError => this is ErrorStatus<T, dynamic>;
+  bool get isError => this is ErrorStatus<T>;
 
   bool get isEmpty => this is EmptyStatus<T>;
 
-  bool get isCustom => !isLoading && !isSuccess && !isError && !isEmpty;
+  bool get isCustom => this is CustomStatus<T>;
 
-  Object? get error {
-    final self = this;
-    if (self is ErrorStatus<T, dynamic>) {
-      return self.error;
-    }
-    return null;
-  }
+  Object? get error => switch (this) {
+        ErrorStatus(:final error) => error,
+        _ => null,
+      };
 
-  String get errorMessage {
-    final self = this;
-    if (self is ErrorStatus<T, dynamic>) {
-      if (self.error != null) {
-        if (self.error is String) {
-          return self.error as String;
-        }
-        return self.error.toString();
-      }
-    }
-    return '';
-  }
+  String get errorMessage => switch (this) {
+        ErrorStatus(:final error) when error != null =>
+          error is String ? error : error.toString(),
+        _ => '',
+      };
 
-  T? get data {
-    final self = this;
-    if (self is SuccessStatus<T>) {
-      return self.data;
-    }
-    return null;
-  }
+  T? get data => switch (this) {
+        SuccessStatus(:final data) => data,
+        _ => null,
+      };
 }
 
 class CustomStatus<T> extends GetStatus<T> {
@@ -356,9 +336,9 @@ class SuccessStatus<T> extends GetStatus<T> {
   List get props => [data];
 }
 
-class ErrorStatus<T, S> extends GetStatus<T> {
+class ErrorStatus<T> extends GetStatus<T> {
   @override
-  final S? error;
+  final Object? error;
 
   const ErrorStatus([this.error]);
 
@@ -380,21 +360,14 @@ extension StatusDataExt<T> on GetStatus<T> {
     required R Function(Object? error) error,
     required R Function() empty,
     R Function()? custom,
-  }) {
-    final self = this;
-    if (self is LoadingStatus<T>) {
-      return loading();
-    } else if (self is SuccessStatus<T>) {
-      return success(self.data);
-    } else if (self is ErrorStatus<T, dynamic>) {
-      return error(self.error);
-    } else if (self is EmptyStatus<T>) {
-      return empty();
-    } else if (self is CustomStatus<T>) {
-      return (custom ?? loading)();
-    }
-    return loading();
-  }
+  }) =>
+      switch (this) {
+        LoadingStatus() => loading(),
+        SuccessStatus(:final data) => success(data),
+        ErrorStatus(error: final err) => error(err),
+        EmptyStatus() => empty(),
+        CustomStatus() => (custom ?? loading)(),
+      };
 
   R maybeWhen<R>({
     required R Function() orElse,
@@ -403,19 +376,13 @@ extension StatusDataExt<T> on GetStatus<T> {
     R Function(Object? error)? error,
     R Function()? empty,
     R Function()? custom,
-  }) {
-    final self = this;
-    if (self is LoadingStatus<T> && loading != null) {
-      return loading();
-    } else if (self is SuccessStatus<T> && success != null) {
-      return success(self.data);
-    } else if (self is ErrorStatus<T, dynamic> && error != null) {
-      return error(self.error);
-    } else if (self is EmptyStatus<T> && empty != null) {
-      return empty();
-    } else if (self is CustomStatus<T> && custom != null) {
-      return custom();
-    }
-    return orElse();
-  }
+  }) =>
+      switch (this) {
+        LoadingStatus() when loading != null => loading(),
+        SuccessStatus(:final data) when success != null => success(data),
+        ErrorStatus(error: final err) when error != null => error(err),
+        EmptyStatus() when empty != null => empty(),
+        CustomStatus() when custom != null => custom(),
+        _ => orElse(),
+      };
 }

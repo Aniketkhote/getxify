@@ -1,5 +1,5 @@
 name: getxify
-description: "GetXify: The modern evolution of GetX. Navigate screens, manage state, and inject dependencies without BuildContext. Enhanced performance, cleaner API, and full Flutter compatibility."
+description: "GetXify: A modern toolkit for building simpler, faster Flutter apps."
 version: 5.0.4
 homepage: https://github.com/Aniketkhote/getxify
 repository: https://github.com/Aniketkhote/getxify
@@ -13,7 +13,7 @@ topics:
   - reactive
 
 screenshots:
-  - description: GetXify – enhanced GetX for Flutter
+  - description: "GetXify - A modern toolkit for building simpler, faster Flutter apps."
     path: assets/getxify.png
 
 environment:
@@ -27,8 +27,8 @@ dependencies:
     sdk: flutter
   web: ">=1.1.0 <2.0.0"
 
-  cupertino_ui: ^1.0.2
-  material_ui: ^1.1.1
+  cupertino_ui: ^1.1.1
+  material_ui: ^1.4.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
