@@ -1,7 +1,12 @@
 ## Unreleased
 
+### New Features
+
+- **Conditional Debounce**: Added the `condition` parameter to the `debounce` worker, bringing it to feature parity with `ever`, `once`, and `interval`. This allows developers to conditionally trigger debounced callbacks (e.g., waiting for >3 characters in a search field).
+
 ### Performance Improvements
 
+- **Zero-Copy `RxList` Assignments**: Refactored `RxList.assign` and `RxList.assignAll` to use `.take(0).toList()` when replacing backing lists. This completely bypasses the previous $O(N)$ overhead of copying all existing elements before clearing them, while preserving Dart generic type covariance.
 - **Zero-Allocation `responsiveValue`**: Refactored `context.responsiveValue` to eliminate runtime `List` allocations and `.whereType<T>()` iterations, replacing them with direct $O(1)$ conditional logic. This drastically reduces GC overhead during responsive UI rebuilds and window resizing.
 - **Optimized Router Outlet**: Replaced intermediate list allocations in `GetRouterOutlet.pickPages` with a direct collection literal, eliminating unnecessary iterators.
 

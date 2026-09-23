@@ -222,6 +222,7 @@ Worker debounce<T>(
   GetListenable<T> listener,
   WorkerCallback<T> callback, {
   Duration? time,
+  Object? condition = true,
   Function? onError,
   void Function()? onDone,
   bool? cancelOnError,
@@ -231,9 +232,11 @@ Worker debounce<T>(
   );
   StreamSubscription sub = listener.listen(
     (event) {
-      newDebouncer(() {
-        callback(event);
-      });
+      if (_conditional(condition)) {
+        newDebouncer(() {
+          callback(event);
+        });
+      }
     },
     onError: onError,
     onDone: onDone,
