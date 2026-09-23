@@ -1,6 +1,4 @@
-## Unreleased
-
-### New Features
+## 5.0.5
 
 - **Conditional Debounce**: Added the `condition` parameter to the `debounce` worker, bringing it to feature parity with `ever`, `once`, and `interval`. This allows developers to conditionally trigger debounced callbacks (e.g., waiting for >3 characters in a search field).
 
@@ -11,6 +9,8 @@
 - **Optimized Router Outlet**: Replaced intermediate list allocations in `GetRouterOutlet.pickPages` with a direct collection literal, eliminating unnecessary iterators.
 
 ### Bug Fixes
+
+- **Fixed Critical `Obx` Memory Leak**: Fixed an issue in `StatelessObserverComponent` (the engine behind `Obx` and `ObxValue`) where reactive listener closures were never cleared between widget rebuilds. This resulted in thousands of duplicate listener subscriptions piling up infinitely on reactive variables, severely degrading memory and CPU performance over time. The widget now safely unbinds stale listeners before every build frame.
 
 - **Fixed Flutter widget lifecycle hook ordering** - Fixed an issue in `ValueBuilderState` and `ObxElement` where `super.dispose()` and `super.unmount()` were called before local teardown logic. According to the Flutter framework documentation, overridden teardown methods must perform their work before calling the superclass method. Moved these `super` calls to the end of the methods to prevent potential memory leaks or exceptions when resources are prematurely disposed.
 

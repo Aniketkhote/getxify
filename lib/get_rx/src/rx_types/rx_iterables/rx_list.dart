@@ -380,8 +380,7 @@ extension ListExtension<E> on List<E> {
   /// exactly once.
   void assign(E item) {
     if (this case final RxList<E> rx) {
-      rx.value = rx.value.take(0).toList()
-        ..add(item);
+      rx.value = rx.value.take(0).toList()..add(item);
     } else {
       clear();
       add(item);
@@ -397,8 +396,7 @@ extension ListExtension<E> on List<E> {
   /// exactly once.
   void assignAll(Iterable<E> items) {
     if (this case final RxList<E> rx) {
-      rx.value = rx.value.take(0).toList()
-        ..addAll(items);
+      rx.value = rx.value.take(0).toList()..addAll(items);
     } else {
       clear();
       addAll(items);

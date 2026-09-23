@@ -142,6 +142,11 @@ mixin StatelessObserverComponent on StatelessElement {
 
   @override
   Widget build() {
+    for (final disposer in disposers!) {
+      disposer();
+    }
+    disposers!.clear();
+
     return Notifier.instance.append(
       NotifyData(disposers: disposers!, updater: getUpdate),
       super.build,
