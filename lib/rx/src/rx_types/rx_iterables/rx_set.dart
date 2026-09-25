@@ -114,5 +114,3 @@ class RxSet<E> extends GetListenable<Set<E>>
     refresh();
   }
 }
-
-

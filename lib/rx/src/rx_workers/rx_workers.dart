@@ -18,10 +18,10 @@ class Workers {
   Workers(this.workers);
   final List<Worker> workers;
 
-  void dispose() {
+  Future<void> dispose() async {
     for (final worker in workers) {
       if (!worker._disposed) {
-        worker.dispose();
+        await worker.dispose();
       }
     }
   }
@@ -103,7 +103,7 @@ Worker everAll(
 
   Future<void> cancel() async {
     for (var i in evers) {
-      i.cancel();
+      await i.cancel();
     }
   }
 
@@ -142,11 +142,11 @@ Worker once<T>(
   late Worker ref;
   StreamSubscription? sub;
   sub = listener.listen(
-    (event) {
+    (event) async {
       if (!_conditional(condition)) return;
       ref._disposed = true;
       ref._log('called');
-      sub?.cancel();
+      await sub?.cancel();
       callback(event);
     },
     onError: onError,
@@ -264,15 +264,15 @@ class Worker {
     Get.log('$runtimeType $type $msg');
   }
 
-  void dispose() {
+  Future<void> dispose() async {
     if (_disposed) {
       _log('already disposed');
       return;
     }
     _disposed = true;
-    worker();
+    await worker();
     _log('disposed');
   }
 
-  void call() => dispose();
+  Future<void> call() => dispose();
 }

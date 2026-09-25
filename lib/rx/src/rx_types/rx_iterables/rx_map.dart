@@ -114,5 +114,3 @@ class RxMap<K, V> extends GetListenable<Map<K, V>>
     refresh();
   }
 }
-
-

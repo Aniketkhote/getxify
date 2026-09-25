@@ -356,5 +356,3 @@ class RxList<E> extends GetListenable<List<E>>
     refresh();
   }
 }
-
-
