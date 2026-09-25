@@ -1,4 +1,7 @@
-part of '../rx_types.dart';
+import 'dart:collection';
+
+import '../../../../state_manager/src/controllers/rx_notifier.dart';
+import '../rx_types.dart';
 
 /// Create a map similar to `Map<K, V>` but reactive.
 class RxMap<K, V> extends GetListenable<Map<K, V>>

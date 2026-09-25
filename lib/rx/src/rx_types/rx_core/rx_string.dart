@@ -1,4 +1,5 @@
-part of '../rx_types.dart';
+import '../rx_types.dart';
+import 'rx_impl.dart';
 
 /// Extension on [Rx<String>] providing standard operators.
 extension RxStringExt on Rx<String> {

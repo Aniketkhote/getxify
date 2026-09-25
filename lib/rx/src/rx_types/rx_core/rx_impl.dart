@@ -1,4 +1,7 @@
-part of '../rx_types.dart';
+import 'dart:async';
+import 'package:flutter/foundation.dart';
+import '../../../../state_manager/src/controllers/rx_notifier.dart';
+import '../rx_types.dart';
 
 /// global object that registers against `GetX` and `Obx`, and allows the
 /// reactivity

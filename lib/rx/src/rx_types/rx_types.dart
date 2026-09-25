@@ -1,20 +1,14 @@
 library;
 
-import 'dart:async';
-import 'dart:collection';
-import 'dart:typed_data';
+import 'rx_core/rx_impl.dart';
 
-import 'package:flutter/foundation.dart';
-
-import '../../../state_manager/src/controllers/rx_notifier.dart';
-
-part 'rx_core/rx_impl.dart';
-part 'rx_core/rx_interface.dart';
-part 'rx_core/rx_num.dart';
-part 'rx_core/rx_string.dart';
-part 'rx_iterables/rx_list.dart';
-part 'rx_iterables/rx_map.dart';
-part 'rx_iterables/rx_set.dart';
+export 'rx_core/rx_impl.dart';
+export 'rx_core/rx_interface.dart';
+export 'rx_core/rx_num.dart';
+export 'rx_core/rx_string.dart';
+export 'rx_iterables/rx_list.dart';
+export 'rx_iterables/rx_map.dart';
+export 'rx_iterables/rx_set.dart';
 
 typedef RxString = Rx<String>;
 typedef RxnString = Rx<String?>;

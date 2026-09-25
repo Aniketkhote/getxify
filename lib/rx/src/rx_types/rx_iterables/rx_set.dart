@@ -1,4 +1,7 @@
-part of '../rx_types.dart';
+import 'dart:collection';
+
+import '../../../../state_manager/src/controllers/rx_notifier.dart';
+import '../rx_types.dart';
 
 /// Create a set similar to `Set<T>` but reactive.
 class RxSet<E> extends GetListenable<Set<E>>

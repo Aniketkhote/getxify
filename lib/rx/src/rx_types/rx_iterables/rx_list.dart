@@ -1,4 +1,8 @@
-part of '../rx_types.dart';
+import 'dart:collection';
+import 'dart:typed_data';
+
+import '../../../../state_manager/src/controllers/rx_notifier.dart';
+import '../rx_types.dart';
 
 /// Create a list similar to `List<T>` but reactive.
 class RxList<E> extends GetListenable<List<E>>

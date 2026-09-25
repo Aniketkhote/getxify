@@ -1,4 +1,5 @@
-part of '../rx_types.dart';
+import '../rx_types.dart';
+import 'rx_impl.dart';
 
 /// Helper functions for common numeric operations to reduce code duplication.
 

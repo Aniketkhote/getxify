@@ -1,4 +1,6 @@
-part of '../rx_types.dart';
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
 
 /// This class is the foundation for all reactive (Rx) classes that make Get
 /// so powerful.
