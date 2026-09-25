@@ -3,7 +3,7 @@
 // List.empty() is fixed-length, and assignAll used to call clear() on it,
 // throwing "Unsupported operation: Cannot clear a fixed-length list".
 import 'package:flutter_test/flutter_test.dart';
-import 'package:getxify/get_rx/get_rx.dart';
+import 'package:getxify/rx/rx.dart';
 
 void main() {
   group('RxList with non-growable backing', () {

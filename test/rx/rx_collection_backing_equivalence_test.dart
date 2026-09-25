@@ -45,7 +45,7 @@ import 'dart:math';
 // importing it directly here would be flagged as an unnecessary import.
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:getxify/get_rx/get_rx.dart';
+import 'package:getxify/rx/rx.dart';
 
 /// What an operation is expected to do to a collection whose backing is an
 /// explicit opt-in to immutability.

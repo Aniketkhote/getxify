@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:getxify/get_rx/get_rx.dart';
+import 'package:getxify/rx/rx.dart';
 
 void main() {
   test('RxnBool stream should emit when value changes', () async {

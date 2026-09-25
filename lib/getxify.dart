@@ -1,8 +1,8 @@
-export 'get_animations/index.dart';
-export 'get_common/get_reset.dart';
-export 'get_core/get_core.dart';
-export 'get_instance/get_instance.dart';
-export 'get_navigation/get_navigation.dart';
-export 'get_rx/get_rx.dart';
-export 'get_state_manager/get_state_manager.dart';
-export 'get_utils/get_utils.dart';
+export 'animations/index.dart';
+export 'common/get_reset.dart';
+export 'core/core.dart';
+export 'instance/instance.dart';
+export 'navigation/navigation.dart';
+export 'rx/rx.dart';
+export 'state_manager/state_manager.dart';
+export 'utils/utils.dart';

@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:getxify/get_utils/get_utils.dart';
+import 'package:getxify/utils/utils.dart';
 
 void main() {
   group('GetQueue Tests', () {

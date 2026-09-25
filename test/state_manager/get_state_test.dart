@@ -989,7 +989,7 @@ void main() {
 
   group('Ticker provider mixin public exports and naming', () {
     test('ticker provider mixin file uses the corrected file name', () {
-      const base = 'lib/get_state_manager/src/rx_flutter';
+      const base = 'lib/state_manager/src/rx_flutter';
       expect(File('$base/rx_ticker_provider_mixin.dart').existsSync(), isTrue);
       expect(File('$base/rx_ticket_provider_mixin.dart').existsSync(), isFalse);
     });

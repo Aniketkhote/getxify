@@ -2,7 +2,7 @@
 // navigator.appVersion as '5.0 (Macintosh)' (no 'Mac OS' token), so the
 // appVersion.contains('Mac OS') check silently failed.
 import 'package:flutter_test/flutter_test.dart';
-import 'package:getxify/get_utils/src/platform/platform_web_detect.dart';
+import 'package:getxify/utils/src/platform/platform_web_detect.dart';
 
 void main() {
   const firefoxMacAppVersion = '5.0 (Macintosh)';
