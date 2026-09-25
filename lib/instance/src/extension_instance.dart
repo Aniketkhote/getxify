@@ -1,7 +1,4 @@
-import 'package:flutter/widgets.dart';
-
 import '../../core/core.dart';
-import '../../state_manager/src/controllers/list_notifier.dart';
 import 'lifecycle.dart';
 
 /// Exception thrown when a requested dependency has not been registered
@@ -59,7 +56,7 @@ extension ResetInstance on GetInterface {
   /// This should be used at the end or tearDown of unit tests.
   ///
   bool resetInstance({bool clearRouteBindings = true}) {
-    GetInstanceExt._singletons.clear();
+    GetInstanceExt.factories.clear();
 
     return true;
   }
@@ -77,7 +74,7 @@ extension GetInstanceExt on GetInterface {
 
   /// Holds references to every registered Instance when using
   /// `Get.put()`
-  static final Map<String, _InstanceBuilderFactory<Object?>> _singletons = {};
+  static final Map<String, InstanceBuilderFactory<Object?>> factories = {};
 
   static Set<String>? _currentScopeKeys;
 
@@ -209,15 +206,15 @@ extension GetInstanceExt on GetInterface {
     required InstanceBuilderCallback<S> builder,
     bool fenix = false,
   }) {
-    final key = _getKey(S, name);
+    final key = getInstanceKey(S, name);
 
-    _InstanceBuilderFactory<S>? dep;
-    if (_singletons.containsKey(key)) {
-      final newDep = _singletons[key];
+    InstanceBuilderFactory<S>? dep;
+    if (factories.containsKey(key)) {
+      final newDep = factories[key];
       if (newDep == null || !newDep.isDirty) {
         return;
       } else {
-        if (newDep is _InstanceBuilderFactory<S>) {
+        if (newDep is InstanceBuilderFactory<S>) {
           dep = newDep;
         }
       }
@@ -229,7 +226,7 @@ extension GetInstanceExt on GetInterface {
       _currentScopeKeys!.add(key);
     }
 
-    _singletons[key] = _InstanceBuilderFactory<S>(
+    factories[key] = InstanceBuilderFactory<S>(
       isSingleton: isSingleton,
       builderFunc: builder,
       permanent: permanent,
@@ -250,8 +247,8 @@ extension GetInstanceExt on GetInterface {
   /// Returns the instance if not initialized, required for Get.create() to
   /// work properly.
   S? _initDependencies<S>({String? name}) {
-    final key = _getKey(S, name);
-    final dep = _singletons[key];
+    final key = getInstanceKey(S, name);
+    final dep = factories[key];
     if (dep == null) return null;
     final isInit = dep.isInit;
     S? i;
@@ -266,7 +263,7 @@ extension GetInstanceExt on GetInterface {
   }
 
   InstanceInfo getInstanceInfo<S>({String? tag}) {
-    final build = _getDependency<S>(tag: tag);
+    final build = getDependencyFactory<S>(tag: tag);
 
     return InstanceInfo(
       isPermanent: build?.permanent,
@@ -277,24 +274,24 @@ extension GetInstanceExt on GetInterface {
     );
   }
 
-  _InstanceBuilderFactory<Object?>? _getDependency<S>({
+  InstanceBuilderFactory<Object?>? getDependencyFactory<S>({
     String? tag,
     String? key,
   }) {
-    final newKey = key ?? _getKey(S, tag);
+    final newKey = key ?? getInstanceKey(S, tag);
 
-    if (!_singletons.containsKey(newKey)) {
+    if (!factories.containsKey(newKey)) {
       Get.log('Instance "$newKey" is not registered.', isError: true);
       return null;
     } else {
-      return _singletons[newKey];
+      return factories[newKey];
     }
   }
 
   void markAsDirty<S>({String? tag, String? key}) {
-    final newKey = key ?? _getKey(S, tag);
-    if (_singletons.containsKey(newKey)) {
-      final dep = _singletons[newKey];
+    final newKey = key ?? getInstanceKey(S, tag);
+    if (factories.containsKey(newKey)) {
+      final dep = factories[newKey];
       if (dep != null && !dep.permanent) {
         dep.isDirty = true;
       }
@@ -303,8 +300,8 @@ extension GetInstanceExt on GetInterface {
 
   /// Initializes the controller
   S _startController<S>({String? tag}) {
-    final key = _getKey(S, tag);
-    final dep = _singletons[key];
+    final key = getInstanceKey(S, tag);
+    final dep = factories[key];
     if (dep == null) {
       throw InstanceNotFoundException(
         'Instance "$S" with tag "$tag" not found',
@@ -327,10 +324,10 @@ extension GetInstanceExt on GetInterface {
   ///
   /// - [tag] Optional tag to identify the instance.
   S putOrFind<S>(InstanceBuilderCallback<S> dep, {String? tag}) {
-    final key = _getKey(S, tag);
+    final key = getInstanceKey(S, tag);
 
-    if (_singletons.containsKey(key)) {
-      final existing = _singletons[key];
+    if (factories.containsKey(key)) {
+      final existing = factories[key];
       if (existing == null) {
         return put(dep(), tag: tag);
       }
@@ -346,9 +343,9 @@ extension GetInstanceExt on GetInterface {
   /// If the registered type <[S]> (or [tag]) is a Controller,
   /// it will initialize its lifecycle.
   S find<S>({String? tag}) {
-    final key = _getKey(S, tag);
+    final key = getInstanceKey(S, tag);
     if (isRegistered<S>(tag: tag)) {
-      final dep = _singletons[key];
+      final dep = factories[key];
       if (dep == null) {
         if (tag == null) {
           throw InstanceNotFoundException('Class "$S" is not registered');
@@ -397,7 +394,7 @@ extension GetInstanceExt on GetInterface {
     final info = getInstanceInfo<P>(tag: tag);
     final permanent = (info.isPermanent ?? false);
     delete<P>(tag: tag, force: permanent);
-    _evictSurvivingRegistration(_getKey(P, tag));
+    _evictSurvivingRegistration(getInstanceKey(P, tag));
     put(child, tag: tag, permanent: permanent);
   }
 
@@ -421,7 +418,7 @@ extension GetInstanceExt on GetInterface {
     final info = getInstanceInfo<P>(tag: tag);
     final permanent = (info.isPermanent ?? false);
     delete<P>(tag: tag, force: permanent);
-    _evictSurvivingRegistration(_getKey(P, tag));
+    _evictSurvivingRegistration(getInstanceKey(P, tag));
     lazyPut(builder, tag: tag, fenix: fenix ?? permanent);
   }
 
@@ -436,7 +433,7 @@ extension GetInstanceExt on GetInterface {
   /// entry that has not yet received `onDelete` gets it here; `onDelete`
   /// is idempotent, so instances already disposed by [delete] are safe.
   void _evictSurvivingRegistration(String key) {
-    final dep = _singletons[key];
+    final dep = factories[key];
     if (dep == null) return;
 
     var stale = dep.lateRemove;
@@ -455,7 +452,7 @@ extension GetInstanceExt on GetInterface {
       Get.log('"$key" onDelete() called');
     }
 
-    _singletons.remove(key);
+    factories.remove(key);
     Get.log('"$key" deleted from memory');
   }
 
@@ -466,7 +463,7 @@ extension GetInstanceExt on GetInterface {
   /// registration whose generic argument was inferred as nullable (e.g.
   /// `MyController? c = Get.put(MyController());`) shares the same key
   /// as `Get.put<MyController>(...)` and `Get.find<MyController>()`.
-  String _getKey(Type type, String? name) {
+  String getInstanceKey(Type type, String? name) {
     final typeName = type.toString();
     final cleanType = typeName.endsWith('?')
         ? typeName.substring(0, typeName.length - 1)
@@ -490,14 +487,14 @@ extension GetInstanceExt on GetInterface {
   ///   the Instance. **don't use** it unless you know what you are doing.
   /// - [force] Will delete an Instance even if marked as `permanent`.
   bool delete<S>({String? tag, String? key, bool force = false}) {
-    final newKey = key ?? _getKey(S, tag);
+    final newKey = key ?? getInstanceKey(S, tag);
 
-    if (!_singletons.containsKey(newKey)) {
+    if (!factories.containsKey(newKey)) {
       Get.log('Instance "$newKey" already removed.', isError: true);
       return false;
     }
 
-    final dep = _singletons[newKey];
+    final dep = factories[newKey];
 
     if (dep == null) return false;
 
@@ -552,8 +549,8 @@ extension GetInstanceExt on GetInterface {
       dep.isDirty = false;
       return true;
     } else {
-      _singletons.remove(newKey);
-      if (_singletons.containsKey(newKey)) {
+      factories.remove(newKey);
+      if (factories.containsKey(newKey)) {
         Get.log('Error removing object "$newKey"', isError: true);
       } else {
         Get.log('"$newKey" deleted from memory');
@@ -581,64 +578,13 @@ extension GetInstanceExt on GetInterface {
   ///
   /// A registration superseded while the route was disposing (pending
   /// `lateRemove` chain) is peeled synchronously, exactly like [delete].
-  void deleteRouteDependency(String key) {
-    final dep = _singletons[key];
-    if (dep == null) {
-      Get.log('Instance "$key" already removed.', isError: true);
-      return;
-    }
-
-    final live = dep.dependency;
-    final hasSubscribers =
-        live is ListNotifierSingleMixin &&
-        !live.isDisposed &&
-        live.hasSubscribers;
-    if (dep.lateRemove != null || !hasSubscribers) {
-      delete(key: key);
-      return;
-    }
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final current = _singletons[key];
-      if (current == null) return;
-      if (!identical(current, dep)) {
-        // The registration was superseded meanwhile (e.g. the same key was
-        // re-registered for a fresh route while this route was disposing).
-        // If the stale factory is pending in the lateRemove chain, peel it
-        // like the synchronous path would have; a fresh unrelated
-        // registration must not be touched.
-        var chain = current.lateRemove;
-        while (chain != null) {
-          if (identical(chain, dep)) {
-            delete(key: key);
-            return;
-          }
-          chain = chain.lateRemove;
-        }
-        return;
-      }
-      if (!live.isDisposed && live.hasSubscribers) {
-        // The disposed route marked the key dirty on its way out; the
-        // instance is consciously kept alive for its remaining
-        // subscribers, so it must not be treated as stale by future
-        // registrations.
-        dep.isDirty = false;
-        Get.log(
-          'Instance "$key" was kept alive on route disposal: '
-          'widgets are still subscribed to it.',
-        );
-        return;
-      }
-      delete(key: key);
-    });
-  }
 
   /// Deletes all registered instances from memory, invokes their onDelete/close lifecycles,
   /// and cleans up resources.
   ///
   /// - [force] If true, deletes even the instances marked as `permanent`.
   void deleteAll({bool force = false}) {
-    final keys = _singletons.keys.toList();
+    final keys = factories.keys.toList();
     for (final key in keys) {
       delete(key: key, force: force);
     }
@@ -659,9 +605,9 @@ extension GetInstanceExt on GetInterface {
     // lifecycle below runs user `onClose` callbacks, which may mutate the
     // registry (e.g. `Get.delete<Other>()`, `Get.put`) and would otherwise
     // throw a ConcurrentModificationError mid-iteration.
-    final keys = _singletons.keys.toList();
+    final keys = factories.keys.toList();
     for (final key in keys) {
-      final value = _singletons[key];
+      final value = factories[key];
       if (value == null) {
         // Removed by a lifecycle callback of a previously reloaded instance.
         continue;
@@ -698,9 +644,9 @@ extension GetInstanceExt on GetInterface {
   /// - [key] Optional unique registry key.
   /// - [force] If true, reloads even if the instance is marked as `permanent`.
   void reload<S>({String? tag, String? key, bool force = false}) {
-    final newKey = key ?? _getKey(S, tag);
+    final newKey = key ?? getInstanceKey(S, tag);
 
-    final builder = _getDependency<S>(tag: tag, key: newKey);
+    final builder = getDependencyFactory<S>(tag: tag, key: newKey);
     if (builder == null) return;
 
     if (builder.permanent && !force) {
@@ -731,15 +677,15 @@ extension GetInstanceExt on GetInterface {
   ///
   /// - [tag] Optional tag to identify the instance.
   bool isRegistered<S>({String? tag}) =>
-      _singletons.containsKey(_getKey(S, tag));
+      factories.containsKey(getInstanceKey(S, tag));
 
   /// Checks whether a lazy factory callback for type [S] (and optionally with [tag]) is registered
   /// and ready to be initialized.
   ///
   /// - [tag] Optional tag to identify the lazy instance.
   bool isPrepared<S>({String? tag}) {
-    final newKey = _getKey(S, tag);
-    final builder = _getDependency<S>(tag: tag, key: newKey);
+    final newKey = getInstanceKey(S, tag);
+    final builder = getDependencyFactory<S>(tag: tag, key: newKey);
     return builder != null && !builder.isInit;
   }
 }
@@ -748,13 +694,13 @@ extension GetInstanceExt on GetInterface {
 typedef InstanceBuilderCallback<S> = S Function();
 
 /// Callback type for building instances of type [S] on demand using [BuildContext].
-typedef InstanceCreateBuilderCallback<S> = S Function(BuildContext _);
+typedef InstanceCreateBuilderCallback<S> = S Function(Object _);
 
 /// Callback type for asynchronously building instances of type [S].
 typedef AsyncInstanceBuilderCallback<S> = Future<S> Function();
 
 /// Internal class to register instances with `Get.put<S>()`.
-class _InstanceBuilderFactory<S> {
+class InstanceBuilderFactory<S> {
   /// Marks the Builder as a single instance.
   /// For reusing [dependency] instead of [builderFunc]
   bool? isSingleton;
@@ -775,7 +721,7 @@ class _InstanceBuilderFactory<S> {
 
   bool isInit = false;
 
-  _InstanceBuilderFactory<S>? lateRemove;
+  InstanceBuilderFactory<S>? lateRemove;
 
   bool isDirty = false;
 
@@ -786,7 +732,7 @@ class _InstanceBuilderFactory<S> {
   /// instance to the declaring page's route on its first resolution.
   final String? bindingOwnerRouteName;
 
-  _InstanceBuilderFactory({
+  InstanceBuilderFactory({
     required this.isSingleton,
     required this.builderFunc,
     required this.permanent,

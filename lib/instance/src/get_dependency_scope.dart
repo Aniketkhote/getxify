@@ -1,5 +1,7 @@
 import 'package:flutter/widgets.dart';
 
+import 'lifecycle_manager.dart';
+
 import '../../core/core.dart';
 import 'extension_instance.dart';
 
@@ -27,7 +29,7 @@ class _GetDependencyScopeState extends State<GetDependencyScope> {
   @override
   void dispose() {
     for (final key in widget.keys) {
-      Get.deleteRouteDependency(key);
+      DependencyLifecycleManager.deleteRouteDependency(key);
     }
     super.dispose();
   }
