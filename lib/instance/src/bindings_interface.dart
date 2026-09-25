@@ -1,3 +1,4 @@
+import 'instance_builder_factory.dart';
 import '../../core/core.dart';
 import 'extension_instance.dart';
 

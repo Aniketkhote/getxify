@@ -1,53 +1,8 @@
 import '../../core/core.dart';
 import 'lifecycle.dart';
 
-/// Exception thrown when a requested dependency has not been registered
-/// in the dependency manager.
-class InstanceNotFoundException implements Exception {
-  /// The error message associated with this exception.
-  final String message;
-
-  /// Creates a new [InstanceNotFoundException] with the given [message].
-  InstanceNotFoundException(this.message);
-
-  @override
-  String toString() => 'InstanceNotFoundException: $message';
-}
-
-/// Holds metadata about the registration and lifecycle state of an instance.
-class InstanceInfo {
-  /// Whether the instance is marked as permanent.
-  final bool? isPermanent;
-
-  /// Whether the instance is registered as a singleton.
-  final bool? isSingleton;
-
-  /// Whether the instance is created on demand rather than stored as a singleton.
-  bool get isCreate => isSingleton != true;
-
-  /// Whether the dependency is registered in the dependency manager.
-  final bool isRegistered;
-
-  /// Whether the dependency is prepared (registered via lazyPut but not yet initialized).
-  final bool isPrepared;
-
-  /// Whether the dependency has been initialized.
-  final bool? isInit;
-
-  /// Creates a new [InstanceInfo] containing registration details.
-  const InstanceInfo({
-    required this.isPermanent,
-    required this.isSingleton,
-    required this.isRegistered,
-    required this.isPrepared,
-    required this.isInit,
-  });
-
-  @override
-  String toString() {
-    return 'InstanceInfo(isPermanent: $isPermanent, isSingleton: $isSingleton, isRegistered: $isRegistered, isPrepared: $isPrepared, isInit: $isInit)';
-  }
-}
+import 'instance_builder_factory.dart';
+import 'instance_info.dart';
 
 /// Extension on [GetInterface] to reset and clear registered instances.
 extension ResetInstance on GetInterface {
@@ -687,79 +642,5 @@ extension GetInstanceExt on GetInterface {
     final newKey = getInstanceKey(S, tag);
     final builder = getDependencyFactory<S>(tag: tag, key: newKey);
     return builder != null && !builder.isInit;
-  }
-}
-
-/// Callback type for building singleton or lazy instances of type [S].
-typedef InstanceBuilderCallback<S> = S Function();
-
-/// Callback type for building instances of type [S] on demand using [BuildContext].
-typedef InstanceCreateBuilderCallback<S> = S Function(Object _);
-
-/// Callback type for asynchronously building instances of type [S].
-typedef AsyncInstanceBuilderCallback<S> = Future<S> Function();
-
-/// Internal class to register instances with `Get.put<S>()`.
-class InstanceBuilderFactory<S> {
-  /// Marks the Builder as a single instance.
-  /// For reusing [dependency] instead of [builderFunc]
-  bool? isSingleton;
-
-  /// When fenix mode is available, when a new instance is need
-  /// Instance manager will recreate a new instance of S
-  bool fenix;
-
-  /// Stores the actual object instance when [isSingleton]=true.
-  S? dependency;
-
-  /// Generates (and regenerates) the instance when [isSingleton]=false.
-  /// Usually used by factory methods
-  InstanceBuilderCallback<S> builderFunc;
-
-  /// Flag to persist the instance in memory.
-  bool permanent = false;
-
-  bool isInit = false;
-
-  InstanceBuilderFactory<S>? lateRemove;
-
-  bool isDirty = false;
-
-  String? tag;
-
-  /// The name of the route whose page binding created this registration,
-  /// or `null` when it was not created by a page binding. Used to link the
-  /// instance to the declaring page's route on its first resolution.
-  final String? bindingOwnerRouteName;
-
-  InstanceBuilderFactory({
-    required this.isSingleton,
-    required this.builderFunc,
-    required this.permanent,
-    required this.isInit,
-    required this.fenix,
-    required this.tag,
-    required this.lateRemove,
-    this.bindingOwnerRouteName,
-  });
-
-  void _showInitLog() {
-    if (tag == null) {
-      Get.log('Instance "$S" has been created');
-    } else {
-      Get.log('Instance "$S" has been created with tag "$tag"');
-    }
-  }
-
-  /// Gets the actual instance by its [builderFunc] or the persisted instance.
-  S getDependency() {
-    if (isSingleton ?? false) {
-      if (dependency case final dep?) {
-        return dep;
-      }
-      _showInitLog();
-      return dependency = builderFunc();
-    }
-    return builderFunc();
   }
 }
