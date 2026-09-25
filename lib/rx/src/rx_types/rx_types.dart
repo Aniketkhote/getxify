@@ -6,6 +6,8 @@ export 'rx_core/rx_impl.dart';
 export 'rx_core/rx_interface.dart';
 export 'rx_core/rx_num.dart';
 export 'rx_core/rx_string.dart';
+export 'extensions/primitive_extensions.dart';
+export 'extensions/iterable_extensions.dart';
 export 'rx_iterables/rx_list.dart';
 export 'rx_iterables/rx_map.dart';
 export 'rx_iterables/rx_set.dart';

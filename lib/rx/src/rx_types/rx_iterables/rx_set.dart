@@ -115,43 +115,4 @@ class RxSet<E> extends GetListenable<Set<E>>
   }
 }
 
-extension SetExtension<E> on Set<E> {
-  /// Wraps this set in an [RxSet].
-  RxSet<E> get obs {
-    return RxSet<E>(<E>{})..addAll(this);
-  }
 
-  /// Add [item] to [Set<E>] only if [condition] is true.
-  void addIf(Object? condition, E item) {
-    if (evaluateCondition(condition)) add(item);
-  }
-
-  /// Adds [Iterable<E>] to [Set<E>] only if [condition] is true.
-  void addAllIf(Object? condition, Iterable<E> items) {
-    if (evaluateCondition(condition)) addAll(items);
-  }
-
-  /// Replaces all existing items of this set with [item]
-  void assign(E item) {
-    if (this case final RxSet<E> rx) {
-      rx.value = rx.value.toSet()
-        ..clear()
-        ..add(item);
-    } else {
-      clear();
-      add(item);
-    }
-  }
-
-  /// Replaces all existing items of this set with [items]
-  void assignAll(Iterable<E> items) {
-    if (this case final RxSet<E> rx) {
-      rx.value = rx.value.toSet()
-        ..clear()
-        ..addAll(items);
-    } else {
-      clear();
-      addAll(items);
-    }
-  }
-}

@@ -115,48 +115,4 @@ class RxMap<K, V> extends GetListenable<Map<K, V>>
   }
 }
 
-extension MapExtension<K, V> on Map<K, V> {
-  RxMap<K, V> get obs {
-    return RxMap<K, V>(this);
-  }
 
-  /// Adds [key] and [value] to map if [condition] is true.
-  void addIf(Object? condition, K key, V value) {
-    if (evaluateCondition(condition)) {
-      this[key] = value;
-    }
-  }
-
-  /// Adds all [values] to map if [condition] is true.
-  void addAllIf(Object? condition, Map<K, V> values) {
-    if (evaluateCondition(condition)) addAll(values);
-  }
-
-  /// Replaces all existing items of this map with [key] and [val].
-  void assign(K key, V val) {
-    if (this is RxMap<K, V>) {
-      (this as RxMap<K, V>).value = <K, V>{key: val};
-    } else {
-      clear();
-      this[key] = val;
-    }
-  }
-
-  /// Replaces all existing items of this map with [val].
-  void assignAll(Map<K, V> val) {
-    if (val is RxMap && this is RxMap) {
-      if ((val as RxMap).value == (this as RxMap).value) return;
-    }
-    if (this is RxMap) {
-      final map = (this as RxMap);
-      if (map.value == val) return;
-      // The value setter refreshes exactly once when the instance differs,
-      // which the guard above already established.
-      map.value = val;
-    } else {
-      if (this == val) return;
-      clear();
-      addAll(val);
-    }
-  }
-}
