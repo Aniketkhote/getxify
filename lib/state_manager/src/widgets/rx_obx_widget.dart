@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 
 import '../../../rx/src/rx_types/rx_types.dart';
-import '../simple/simple_builder.dart';
+import 'simple_builder.dart';
 
 typedef WidgetCallback = Widget Function();
 

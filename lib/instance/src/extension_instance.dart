@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 
 import '../../core/core.dart';
-import '../../state_manager/src/simple/list_notifier.dart';
+import '../../state_manager/src/controllers/list_notifier.dart';
 import 'lifecycle.dart';
 
 /// Exception thrown when a requested dependency has not been registered

@@ -6,7 +6,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 
-import '../../../state_manager/src/rx_flutter/rx_notifier.dart';
+import '../../../state_manager/src/controllers/rx_notifier.dart';
 
 part 'rx_core/rx_impl.dart';
 part 'rx_core/rx_interface.dart';

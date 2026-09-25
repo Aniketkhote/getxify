@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import '../../../core/core.dart';
-import '../../../state_manager/src/rx_flutter/rx_notifier.dart';
+import '../../../state_manager/src/controllers/rx_notifier.dart';
 import '../rx_types/rx_types.dart';
 import 'utils/debouncer.dart';
 

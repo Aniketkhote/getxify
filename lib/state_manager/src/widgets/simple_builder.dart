@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/widgets.dart';
 
-import 'list_notifier.dart';
+import '../controllers/list_notifier.dart';
 
 /// Callback function to update the value in [ValueBuilder].
 typedef ValueBuilderUpdateCallback<T> = void Function(T snapshot);

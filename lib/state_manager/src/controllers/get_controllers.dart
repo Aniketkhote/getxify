@@ -2,7 +2,7 @@ import 'package:flutter/widgets.dart';
 
 import '../../../core/core.dart';
 import '../../../instance/instance.dart';
-import '../rx_flutter/rx_notifier.dart';
+import 'rx_notifier.dart';
 import 'list_notifier.dart';
 
 /// A base controller class that provides state management functionality.

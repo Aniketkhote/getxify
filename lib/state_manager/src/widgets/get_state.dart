@@ -5,7 +5,7 @@ import 'package:material_ui/material_ui.dart';
 import '../../../core/core.dart';
 import '../../../instance/instance.dart';
 import '../../state_manager.dart';
-import 'list_notifier.dart';
+import '../controllers/list_notifier.dart';
 
 typedef InitBuilder<T> = T Function();
 

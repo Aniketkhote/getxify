@@ -7,7 +7,7 @@ import '../../../instance/instance.dart';
 import '../../../rx/src/rx_types/rx_types.dart';
 import '../../../utils/src/equality/equality.dart';
 import '../../state_manager.dart';
-import '../simple/list_notifier.dart';
+import 'list_notifier.dart';
 
 /// Extension to check if an object is empty.
 extension _Empty on Object {
