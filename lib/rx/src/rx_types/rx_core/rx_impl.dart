@@ -61,13 +61,13 @@ mixin RxObjectMixin<T> on GetListenable<T> {
   @override
   String toString() => value.toString();
 
-  /// Returns the json representation of `value`.
   dynamic toJson() {
-    if (value == null) return null;
+    final v = value;
+    if (v == null) return null;
     try {
-      return (value as dynamic).toJson();
-    } catch (_) {
-      return value;
+      return (v as dynamic).toJson();
+    } on NoSuchMethodError {
+      return v;
     }
   }
 
