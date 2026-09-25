@@ -82,20 +82,12 @@ class SnackbarController {
 
   // ignore: avoid_returning_this
   void _configureAlignment(SnackPosition snackPosition) {
-    switch (snackbar.snackPosition) {
-      case SnackPosition.top:
-        {
-          _initialAlignment = const Alignment(-1.0, -2.0);
-          _endAlignment = const Alignment(-1.0, -1.0);
-          break;
-        }
-      case SnackPosition.bottom:
-        {
-          _initialAlignment = const Alignment(-1.0, 2.0);
-          _endAlignment = const Alignment(-1.0, 1.0);
-          break;
-        }
-    }
+    final alignments = switch (snackbar.snackPosition) {
+      SnackPosition.top => (const Alignment(-1.0, -2.0), const Alignment(-1.0, -1.0)),
+      SnackPosition.bottom => (const Alignment(-1.0, 2.0), const Alignment(-1.0, 1.0)),
+    };
+    _initialAlignment = alignments.$1;
+    _endAlignment = alignments.$2;
   }
 
   bool _isTesting = false;

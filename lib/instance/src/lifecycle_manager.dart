@@ -7,7 +7,7 @@ import 'extension_instance.dart';
 /// Manages the lifecycle and disposal of dependencies bound to the UI.
 class DependencyLifecycleManager {
   /// Schedules a dependency to be deleted when the route finishes disposing.
-  /// 
+  ///
   /// The registration might have been superseded by a new one during disposal.
   /// This method safely peels the stale factory out of the memory without
   /// affecting the active one.

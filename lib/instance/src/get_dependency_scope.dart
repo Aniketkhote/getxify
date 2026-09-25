@@ -2,9 +2,6 @@ import 'package:flutter/widgets.dart';
 
 import 'lifecycle_manager.dart';
 
-import '../../core/core.dart';
-import 'extension_instance.dart';
-
 /// A widget that manages the lifecycle of dependencies created within its scope.
 ///
 /// A widget that manages the lifecycle of dependencies created within its scope.

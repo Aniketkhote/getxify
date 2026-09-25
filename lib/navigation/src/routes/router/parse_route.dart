@@ -90,29 +90,29 @@ class ParseRouteTree {
     }
 
     final treeBranch = cumulativePaths
-        .map((e) => MapEntry(e, _findRoute(e)))
-        .where((element) => element.value != null)
+        .map((e) => (e, _findRoute(e)))
+        .where((element) => element.$2 != null)
         ///Prevent page be disposed
-        .map((e) => MapEntry(e.key, e.value!.copyWith(key: ValueKey(e.key))))
+        .map((e) => (e.$1, e.$2!.copyWith(key: ValueKey(e.$1))))
         .toList();
 
     final params = Map<String, String>.from(uri.queryParameters);
-    if (treeBranch.isNotEmpty && treeBranch.last.key == cumulativePaths.last) {
+    if (treeBranch.isNotEmpty && treeBranch.last.$1 == cumulativePaths.last) {
       //route is found, do further parsing to get nested query params
       final lastRoute = treeBranch.last;
-      final parsedParams = _parseParams(name, lastRoute.value.name);
+      final parsedParams = _parseParams(name, lastRoute.$2.name);
       if (parsedParams.isNotEmpty) {
         params.addAll(parsedParams);
       }
       //copy parameters to all pages.
       final mappedTreeBranch = treeBranch
           .map(
-            (e) => e.value.copyWith(
+            (e) => e.$2.copyWith(
               parameters: {
-                if (e.value.parameters != null) ...e.value.parameters!,
+                if (e.$2.parameters != null) ...e.$2.parameters!,
                 ...params,
               },
-              name: e.key,
+              name: e.$1,
             ),
           )
           .toList();
