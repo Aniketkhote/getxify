@@ -26,7 +26,7 @@ import 'package:flutter/widgets.dart';
 /// }
 /// ```
 abstract class CustomTransition {
-  Widget buildTransition(
+  Widget buildTransitions(
     BuildContext context,
     Curve? curve,
     Alignment? alignment,

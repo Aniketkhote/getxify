@@ -244,7 +244,7 @@ class _MarkerTransition extends CustomTransition {
   int buildCount = 0;
 
   @override
-  Widget buildTransition(
+  Widget buildTransitions(
     BuildContext context,
     Curve? curve,
     Alignment? alignment,

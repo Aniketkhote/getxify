@@ -2,8 +2,10 @@ import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:material_ui/material_ui.dart';
 
 import 'circular_reveal_clipper.dart';
+import 'custom_transition.dart';
 
-class LeftToRightFadeTransition {
+class LeftToRightFadeTransition implements CustomTransition {
+  @override
   Widget buildTransitions(
     BuildContext context,
     Curve? curve,
@@ -31,7 +33,8 @@ class LeftToRightFadeTransition {
   }
 }
 
-class RightToLeftFadeTransition {
+class RightToLeftFadeTransition implements CustomTransition {
+  @override
   Widget buildTransitions(
     BuildContext context,
     Curve? curve,
@@ -59,11 +62,12 @@ class RightToLeftFadeTransition {
   }
 }
 
-class NoTransition {
+class NoTransition implements CustomTransition {
+  @override
   Widget buildTransitions(
     BuildContext context,
-    Curve curve,
-    Alignment alignment,
+    Curve? curve,
+    Alignment? alignment,
     Animation<double> animation,
     Animation<double> secondaryAnimation,
     Widget child,
@@ -72,7 +76,8 @@ class NoTransition {
   }
 }
 
-class FadeInTransition {
+class FadeInTransition implements CustomTransition {
+  @override
   Widget buildTransitions(
     BuildContext context,
     Curve? curve,
@@ -85,7 +90,8 @@ class FadeInTransition {
   }
 }
 
-class SlideDownTransition {
+class SlideDownTransition implements CustomTransition {
+  @override
   Widget buildTransitions(
     BuildContext context,
     Curve? curve,
@@ -104,7 +110,8 @@ class SlideDownTransition {
   }
 }
 
-class SlideLeftTransition {
+class SlideLeftTransition implements CustomTransition {
+  @override
   Widget buildTransitions(
     BuildContext context,
     Curve? curve,
@@ -123,7 +130,8 @@ class SlideLeftTransition {
   }
 }
 
-class SlideRightTransition {
+class SlideRightTransition implements CustomTransition {
+  @override
   Widget buildTransitions(
     BuildContext context,
     Curve? curve,
@@ -142,7 +150,8 @@ class SlideRightTransition {
   }
 }
 
-class SlideTopTransition {
+class SlideTopTransition implements CustomTransition {
+  @override
   Widget buildTransitions(
     BuildContext context,
     Curve? curve,
@@ -161,7 +170,8 @@ class SlideTopTransition {
   }
 }
 
-class ZoomInTransition {
+class ZoomInTransition implements CustomTransition {
+  @override
   Widget buildTransitions(
     BuildContext context,
     Curve? curve,
@@ -174,10 +184,11 @@ class ZoomInTransition {
   }
 }
 
-class SizeTransitions {
+class SizeTransitions implements CustomTransition {
+  @override
   Widget buildTransitions(
     BuildContext context,
-    Curve curve,
+    Curve? curve,
     Alignment? alignment,
     Animation<double> animation,
     Animation<double> secondaryAnimation,
@@ -186,14 +197,18 @@ class SizeTransitions {
     return Align(
       alignment: Alignment.center,
       child: SizeTransition(
-        sizeFactor: CurvedAnimation(parent: animation, curve: curve),
+        sizeFactor: CurvedAnimation(
+          parent: animation,
+          curve: curve ?? Curves.linear,
+        ),
         child: child,
       ),
     );
   }
 }
 
-class CircularRevealTransition {
+class CircularRevealTransition implements CustomTransition {
+  @override
   Widget buildTransitions(
     BuildContext context,
     Curve? curve,

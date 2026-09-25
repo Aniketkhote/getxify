@@ -8,6 +8,7 @@ import 'package:material_ui/material_ui.dart';
 
 import '../../../../getxify.dart';
 import '../../root/get_root.dart';
+import 'transition_strategy.dart';
 
 const double _kBackGestureWidth = 20.0;
 
@@ -466,26 +467,33 @@ Cannot read the previousTitle for a route that has not yet been installed''');
         child: child,
       );
     } else {
+      final currentTransition = route.transition ?? Get.defaultTransition;
+      final flipDirection =
+          currentTransition == Transition.leftToRight ||
+          currentTransition == Transition.leftToRightWithFade;
+
+      final wrappedChild = GetBackGestureDetector<T>(
+        popGestureEnable: () =>
+            _isPopGestureEnabled(route, canSwipe(route), context),
+        onStartPopGesture: () {
+          assert(_isPopGestureEnabled(route, canSwipe(route), context));
+          return _startPopGesture(route);
+        },
+        limitedSwipe: limitedSwipe,
+        gestureWidth: route.gestureWidth?.call(context) ?? _kBackGestureWidth,
+        initialOffset: initialOffset,
+        flipDirection: flipDirection,
+        child: child,
+      );
+
       if (route.customTransition != null) {
-        return route.customTransition!.buildTransition(
+        return route.customTransition!.buildTransitions(
           context,
           finalCurve,
           route.alignment,
           animation,
           secondaryAnimation,
-          GetBackGestureDetector<T>(
-            popGestureEnable: () =>
-                _isPopGestureEnabled(route, canSwipe(route), context),
-            onStartPopGesture: () {
-              assert(_isPopGestureEnabled(route, canSwipe(route), context));
-              return _startPopGesture(route);
-            },
-            limitedSwipe: limitedSwipe,
-            gestureWidth:
-                route.gestureWidth?.call(context) ?? _kBackGestureWidth,
-            initialOffset: initialOffset,
-            child: child,
-          ),
+          wrappedChild,
         );
       }
 
@@ -493,384 +501,76 @@ Cannot read the previousTitle for a route that has not yet been installed''');
       final iosAnimation = animation;
       animation = CurvedAnimation(parent: animation, curve: finalCurve);
 
-      switch (route.transition ?? Get.defaultTransition) {
-        case Transition.leftToRight:
-          return SlideLeftTransition().buildTransitions(
-            context,
-            route.curve,
-            route.alignment,
-            animation,
-            secondaryAnimation,
-            GetBackGestureDetector<T>(
-              popGestureEnable: () =>
-                  _isPopGestureEnabled(route, canSwipe(route), context),
-              onStartPopGesture: () {
-                assert(_isPopGestureEnabled(route, canSwipe(route), context));
-                return _startPopGesture(route);
-              },
-              limitedSwipe: limitedSwipe,
-              gestureWidth:
-                  route.gestureWidth?.call(context) ?? _kBackGestureWidth,
-              initialOffset: initialOffset,
-              flipDirection: true,
-              child: child,
-            ),
-          );
+      final strategy = getTransitionStrategy(currentTransition);
+      if (strategy != null) {
+        return strategy.buildTransitions(
+          context,
+          route.curve,
+          route.alignment,
+          animation,
+          secondaryAnimation,
+          wrappedChild,
+        );
+      }
 
-        case Transition.downToUp:
-          return SlideDownTransition().buildTransitions(
-            context,
-            route.curve,
-            route.alignment,
-            animation,
-            secondaryAnimation,
-            GetBackGestureDetector<T>(
-              popGestureEnable: () =>
-                  _isPopGestureEnabled(route, canSwipe(route), context),
-              onStartPopGesture: () {
-                assert(_isPopGestureEnabled(route, canSwipe(route), context));
-                return _startPopGesture(route);
-              },
-              limitedSwipe: limitedSwipe,
-              gestureWidth:
-                  route.gestureWidth?.call(context) ?? _kBackGestureWidth,
-              initialOffset: initialOffset,
-              child: child,
-            ),
-          );
-
-        case Transition.upToDown:
-          return SlideTopTransition().buildTransitions(
-            context,
-            route.curve,
-            route.alignment,
-            animation,
-            secondaryAnimation,
-            GetBackGestureDetector<T>(
-              popGestureEnable: () =>
-                  _isPopGestureEnabled(route, canSwipe(route), context),
-              onStartPopGesture: () {
-                assert(_isPopGestureEnabled(route, canSwipe(route), context));
-                return _startPopGesture(route);
-              },
-              limitedSwipe: limitedSwipe,
-              gestureWidth:
-                  route.gestureWidth?.call(context) ?? _kBackGestureWidth,
-              initialOffset: initialOffset,
-              child: child,
-            ),
-          );
-
-        case Transition.noTransition:
-          return GetBackGestureDetector<T>(
-            popGestureEnable: () =>
-                _isPopGestureEnabled(route, canSwipe(route), context),
-            onStartPopGesture: () {
-              assert(_isPopGestureEnabled(route, canSwipe(route), context));
-              return _startPopGesture(route);
-            },
-            limitedSwipe: limitedSwipe,
-            gestureWidth:
-                route.gestureWidth?.call(context) ?? _kBackGestureWidth,
-            initialOffset: initialOffset,
-            child: child,
-          );
-
-        case Transition.rightToLeft:
-          return SlideRightTransition().buildTransitions(
-            context,
-            route.curve,
-            route.alignment,
-            animation,
-            secondaryAnimation,
-            GetBackGestureDetector<T>(
-              popGestureEnable: () =>
-                  _isPopGestureEnabled(route, canSwipe(route), context),
-              onStartPopGesture: () {
-                assert(_isPopGestureEnabled(route, canSwipe(route), context));
-                return _startPopGesture(route);
-              },
-              limitedSwipe: limitedSwipe,
-              gestureWidth:
-                  route.gestureWidth?.call(context) ?? _kBackGestureWidth,
-              initialOffset: initialOffset,
-              child: child,
-            ),
-          );
-
-        case Transition.zoom:
-          return ZoomInTransition().buildTransitions(
-            context,
-            route.curve,
-            route.alignment,
-            animation,
-            secondaryAnimation,
-            GetBackGestureDetector<T>(
-              popGestureEnable: () =>
-                  _isPopGestureEnabled(route, canSwipe(route), context),
-              onStartPopGesture: () {
-                assert(_isPopGestureEnabled(route, canSwipe(route), context));
-                return _startPopGesture(route);
-              },
-              limitedSwipe: limitedSwipe,
-              gestureWidth:
-                  route.gestureWidth?.call(context) ?? _kBackGestureWidth,
-              initialOffset: initialOffset,
-              child: child,
-            ),
-          );
-
-        case Transition.fadeIn:
-          return FadeInTransition().buildTransitions(
-            context,
-            route.curve,
-            route.alignment,
-            animation,
-            secondaryAnimation,
-            GetBackGestureDetector<T>(
-              popGestureEnable: () =>
-                  _isPopGestureEnabled(route, canSwipe(route), context),
-              onStartPopGesture: () {
-                assert(_isPopGestureEnabled(route, canSwipe(route), context));
-                return _startPopGesture(route);
-              },
-              limitedSwipe: limitedSwipe,
-              gestureWidth:
-                  route.gestureWidth?.call(context) ?? _kBackGestureWidth,
-              initialOffset: initialOffset,
-              child: child,
-            ),
-          );
-
-        case Transition.rightToLeftWithFade:
-          return RightToLeftFadeTransition().buildTransitions(
-            context,
-            route.curve,
-            route.alignment,
-            animation,
-            secondaryAnimation,
-            GetBackGestureDetector<T>(
-              popGestureEnable: () =>
-                  _isPopGestureEnabled(route, canSwipe(route), context),
-              onStartPopGesture: () {
-                assert(_isPopGestureEnabled(route, canSwipe(route), context));
-                return _startPopGesture(route);
-              },
-              limitedSwipe: limitedSwipe,
-              gestureWidth:
-                  route.gestureWidth?.call(context) ?? _kBackGestureWidth,
-              initialOffset: initialOffset,
-              child: child,
-            ),
-          );
-
-        case Transition.leftToRightWithFade:
-          return LeftToRightFadeTransition().buildTransitions(
-            context,
-            route.curve,
-            route.alignment,
-            animation,
-            secondaryAnimation,
-            GetBackGestureDetector<T>(
-              popGestureEnable: () =>
-                  _isPopGestureEnabled(route, canSwipe(route), context),
-              onStartPopGesture: () {
-                assert(_isPopGestureEnabled(route, canSwipe(route), context));
-                return _startPopGesture(route);
-              },
-              limitedSwipe: limitedSwipe,
-              gestureWidth:
-                  route.gestureWidth?.call(context) ?? _kBackGestureWidth,
-              initialOffset: initialOffset,
-              flipDirection: true,
-              child: child,
-            ),
-          );
-
+      switch (currentTransition) {
         case Transition.cupertino:
           return CupertinoPageTransition(
             primaryRouteAnimation: animation,
             secondaryRouteAnimation: secondaryAnimation,
             linearTransition: linearTransition,
-            child: GetBackGestureDetector<T>(
-              popGestureEnable: () =>
-                  _isPopGestureEnabled(route, canSwipe(route), context),
-              onStartPopGesture: () {
-                assert(_isPopGestureEnabled(route, canSwipe(route), context));
-                return _startPopGesture(route);
-              },
-              limitedSwipe: limitedSwipe,
-              gestureWidth:
-                  route.gestureWidth?.call(context) ?? _kBackGestureWidth,
-              initialOffset: initialOffset,
-              child: child,
-            ),
+            child: wrappedChild,
           );
-
-        case Transition.size:
-          return SizeTransitions().buildTransitions(
-            context,
-            route.curve!,
-            route.alignment,
-            animation,
-            secondaryAnimation,
-            GetBackGestureDetector<T>(
-              popGestureEnable: () =>
-                  _isPopGestureEnabled(route, canSwipe(route), context),
-              onStartPopGesture: () {
-                assert(_isPopGestureEnabled(route, canSwipe(route), context));
-                return _startPopGesture(route);
-              },
-              limitedSwipe: limitedSwipe,
-              gestureWidth:
-                  route.gestureWidth?.call(context) ?? _kBackGestureWidth,
-              initialOffset: initialOffset,
-              child: child,
-            ),
-          );
-
         case Transition.fade:
           return const FadeUpwardsPageTransitionsBuilder().buildTransitions(
             route,
             context,
             animation,
             secondaryAnimation,
-            GetBackGestureDetector<T>(
-              popGestureEnable: () =>
-                  _isPopGestureEnabled(route, canSwipe(route), context),
-              onStartPopGesture: () {
-                assert(_isPopGestureEnabled(route, canSwipe(route), context));
-                return _startPopGesture(route);
-              },
-              limitedSwipe: limitedSwipe,
-              gestureWidth:
-                  route.gestureWidth?.call(context) ?? _kBackGestureWidth,
-              initialOffset: initialOffset,
-              child: child,
-            ),
+            wrappedChild,
           );
-
         case Transition.topLevel:
           return const ZoomPageTransitionsBuilder().buildTransitions(
             route,
             context,
             animation,
             secondaryAnimation,
-            GetBackGestureDetector<T>(
-              popGestureEnable: () =>
-                  _isPopGestureEnabled(route, canSwipe(route), context),
-              onStartPopGesture: () {
-                assert(_isPopGestureEnabled(route, canSwipe(route), context));
-                return _startPopGesture(route);
-              },
-              limitedSwipe: limitedSwipe,
-              gestureWidth:
-                  route.gestureWidth?.call(context) ?? _kBackGestureWidth,
-              initialOffset: initialOffset,
-              child: child,
-            ),
+            wrappedChild,
           );
-
         case Transition.native:
           return Theme.of(context).pageTransitionsTheme.buildTransitions(
             route,
             context,
             iosAnimation,
             secondaryAnimation,
-            GetBackGestureDetector<T>(
-              popGestureEnable: () =>
-                  _isPopGestureEnabled(route, canSwipe(route), context),
-              onStartPopGesture: () {
-                assert(_isPopGestureEnabled(route, canSwipe(route), context));
-                return _startPopGesture(route);
-              },
-              limitedSwipe: limitedSwipe,
-              gestureWidth:
-                  route.gestureWidth?.call(context) ?? _kBackGestureWidth,
-              initialOffset: initialOffset,
-              child: child,
-            ),
+            wrappedChild,
           );
-
         case Transition.predictiveBack:
           return const PredictiveBackPageTransitionsBuilder().buildTransitions(
             route,
             context,
             iosAnimation,
             secondaryAnimation,
-            GetBackGestureDetector<T>(
-              popGestureEnable: () =>
-                  _isPopGestureEnabled(route, canSwipe(route), context),
-              onStartPopGesture: () {
-                assert(_isPopGestureEnabled(route, canSwipe(route), context));
-                return _startPopGesture(route);
-              },
-              limitedSwipe: limitedSwipe,
-              gestureWidth:
-                  route.gestureWidth?.call(context) ?? _kBackGestureWidth,
-              initialOffset: initialOffset,
-              child: child,
-            ),
+            wrappedChild,
           );
-
-        case Transition.circularReveal:
-          return CircularRevealTransition().buildTransitions(
-            context,
-            route.curve,
-            route.alignment,
-            animation,
-            secondaryAnimation,
-            GetBackGestureDetector<T>(
-              popGestureEnable: () =>
-                  _isPopGestureEnabled(route, canSwipe(route), context),
-              onStartPopGesture: () {
-                assert(_isPopGestureEnabled(route, canSwipe(route), context));
-                return _startPopGesture(route);
-              },
-              limitedSwipe: limitedSwipe,
-              gestureWidth:
-                  route.gestureWidth?.call(context) ?? _kBackGestureWidth,
-              initialOffset: initialOffset,
-              child: child,
-            ),
-          );
-
         default:
           final customTransition = GetRoot.of(context).config.customTransition;
-
           if (customTransition != null) {
-            return customTransition.buildTransition(
+            return customTransition.buildTransitions(
               context,
               route.curve,
               route.alignment,
               animation,
               secondaryAnimation,
-              child,
+              child, // Using original child here as it was in original code
             );
           }
-
-          PageTransitionsTheme pageTransitionsTheme = Theme.of(
-            context,
-          ).pageTransitionsTheme;
-
-          return pageTransitionsTheme.buildTransitions(
+          return Theme.of(context).pageTransitionsTheme.buildTransitions(
             route,
             context,
             iosAnimation,
             secondaryAnimation,
-            GetBackGestureDetector<T>(
-              popGestureEnable: () =>
-                  _isPopGestureEnabled(route, canSwipe(route), context),
-              onStartPopGesture: () {
-                assert(_isPopGestureEnabled(route, canSwipe(route), context));
-                return _startPopGesture(route);
-              },
-              limitedSwipe: limitedSwipe,
-              gestureWidth:
-                  route.gestureWidth?.call(context) ?? _kBackGestureWidth,
-              initialOffset: initialOffset,
-              child: child,
-            ),
+            wrappedChild,
           );
       }
     }
