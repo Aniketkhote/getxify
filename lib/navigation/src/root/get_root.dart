@@ -321,6 +321,12 @@ class GetRoot extends StatefulWidget {
 class GetRootState extends State<GetRoot> with WidgetsBindingObserver {
   static GetRootState? _controller;
 
+  GlobalKey _appContentKey = GlobalKey(debugLabel: 'getxify-app-content');
+
+  Widget preserveAppContent(Widget child) {
+    return KeyedSubtree(key: _appContentKey, child: child);
+  }
+
   /// Detached placeholder returned by [controller] before a [GetRoot] is
   /// inserted in the tree. It allows key-based APIs such as `Get.key` to be
   /// evaluated while the app widget is still being constructed (for example
@@ -541,6 +547,7 @@ class GetRootState extends State<GetRoot> with WidgetsBindingObserver {
   }
 
   void restartApp() {
+    _appContentKey = GlobalKey(debugLabel: 'getxify-app-content');
     config = config.copyWith(unikey: UniqueKey());
     update();
   }

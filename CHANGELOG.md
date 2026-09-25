@@ -1,3 +1,18 @@
+## 5.1.0
+
+### Refactoring & Architecture
+
+- **State Management**: Reorganized state manager by architectural components.
+- **Dependency Injection**: Decoupled DI lifecycle from UI bindings, split instance extensions, and extracted `InstanceBuilderFactory` and `InstanceInfo` from `extension_instance.dart`.
+- **Reactive (Rx)**:
+  - Modernized `Worker` class to properly await stream cancellations.
+  - Removed unsafe dynamic serialization in `Rx` `toJson`.
+  - Extracted `.obs` extensions to dedicated files and eliminated `part` directives in rx core modules.
+- **Navigation & Routing**: Applied Strategy pattern to `GetTransitionMixin` to reduce boilerplate and decouple transitions. Removed redundant prefixes and reorganized overlays.
+- **Modernization**: Upgraded codebase to utilize Dart 3 pattern matching and records.
+
+---
+
 ## 5.0.5
 
 - **Conditional Debounce**: Added the `condition` parameter to the `debounce` worker, bringing it to feature parity with `ever`, `once`, and `interval`. This allows developers to conditionally trigger debounced callbacks (e.g., waiting for >3 characters in a search field).

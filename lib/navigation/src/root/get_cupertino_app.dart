@@ -257,7 +257,7 @@ class GetCupertinoApp extends StatelessWidget {
               onUnknownRoute: onUnknownRoute,
               builder: (context, child) {
                 final effectiveBuilder = builder;
-                return Directionality(
+                final content = Directionality(
                   textDirection:
                       textDirection ??
                       (rtlLanguages.contains(Get.locale?.languageCode)
@@ -267,6 +267,7 @@ class GetCupertinoApp extends StatelessWidget {
                       ? (child ?? const Material())
                       : effectiveBuilder(context, child ?? const Material()),
                 );
+                return controller.preserveAppContent(content);
               },
               title: title,
               onGenerateTitle: onGenerateTitle,
@@ -294,7 +295,7 @@ class GetCupertinoApp extends StatelessWidget {
                   key: controller.config.unikey,
                   builder: (context, child) {
                     final effectiveBuilder = builder;
-                    return Directionality(
+                    final content = Directionality(
                       textDirection:
                           textDirection ??
                           (rtlLanguages.contains(Get.locale?.languageCode)
@@ -307,6 +308,7 @@ class GetCupertinoApp extends StatelessWidget {
                               child ?? const Material(),
                             ),
                     );
+                    return controller.preserveAppContent(content);
                   },
                   title: title,
                   onGenerateTitle: onGenerateTitle,
@@ -336,7 +338,7 @@ class GetCupertinoApp extends StatelessWidget {
                   key: controller.config.unikey,
                   builder: (context, child) {
                     final effectiveBuilder = builder;
-                    return Directionality(
+                    final content = Directionality(
                       textDirection:
                           textDirection ??
                           (rtlLanguages.contains(Get.locale?.languageCode)
@@ -349,6 +351,7 @@ class GetCupertinoApp extends StatelessWidget {
                               child ?? const Material(),
                             ),
                     );
+                    return controller.preserveAppContent(content);
                   },
                   title: title,
                   onGenerateTitle: onGenerateTitle,
