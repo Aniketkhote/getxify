@@ -167,29 +167,34 @@ class Notifier {
 
   /// Adds a disposer callback to the current notification data.
   void add(VoidCallback listener) {
-    _notifyData?.disposers.add(listener);
+    if (_notifyData?.unmountDisposers != null) {
+      _notifyData!.unmountDisposers!.add(listener);
+    } else {
+      _notifyData?.disposers.add(listener);
+    }
   }
 
   /// Reads a notifier and sets up automatic listener tracking.
   void read(Listenable updaters) {
     final data = _notifyData;
-    final listener = data?.updater;
-    if (listener != null && !data!._subscribedNotifiers.contains(updaters)) {
+    if (data != null) {
       data._subscribedNotifiers.add(updaters);
-      updaters.addListener(listener);
-      add(() => updaters.removeListener(listener));
     }
   }
 
   /// Executes a builder function with reactive tracking.
   T append<T>(NotifyData data, T Function() builder) {
+    final prev = _notifyData;
     _notifyData = data;
-    final result = builder();
-    if (data.disposers.isEmpty && data.throwException) {
-      throw const ObxError();
+    try {
+      final result = builder();
+      if (data._subscribedNotifiers.isEmpty && data.throwException) {
+        throw const ObxError();
+      }
+      return result;
+    } finally {
+      _notifyData = prev;
     }
-    _notifyData = null;
-    return result;
   }
 }
 
@@ -197,12 +202,16 @@ class Notifier {
 class NotifyData {
   NotifyData({
     required this.updater,
-    required this.disposers,
+    this.disposers = const <VoidCallback>[],
+    this.unmountDisposers,
     this.throwException = true,
   });
 
   final GetStateUpdate updater;
   final List<VoidCallback> disposers;
+  final List<VoidCallback>? unmountDisposers;
   final bool throwException;
   final Set<Listenable> _subscribedNotifiers = Set<Listenable>.identity();
+
+  Set<Listenable> get readNotifiers => _subscribedNotifiers;
 }

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 
 import '../controllers/list_notifier.dart';
@@ -126,40 +127,79 @@ abstract class ObxStatelessWidget extends StatelessWidget {
 /// This mixin automatically tracks reactive variables used during
 /// the build process and sets up listeners to rebuild when they change.
 mixin StatelessObserverComponent on StatelessElement {
-  /// List of disposers for cleanup.
-  List<Disposer>? disposers = <Disposer>[];
+  /// Active subscriptions mapped by notifier.
+  final Map<Listenable, VoidCallback> _subscriptions =
+      Map<Listenable, VoidCallback>.identity();
+
+  /// Disposers for lifetime cleanup (e.g. bound streams created during build).
+  final List<VoidCallback> _unmountDisposers = <VoidCallback>[];
+
+  bool _isDisposed = false;
+
+  /// Disposers for backwards compatibility.
+  List<Disposer>? get disposers => _subscriptions.values.toList();
 
   /// Schedules a rebuild when reactive dependencies change.
   void getUpdate() {
-    if (disposers != null) {
-      scheduleMicrotask(() {
-        if (mounted) {
-          markNeedsBuild();
-        }
-      });
+    if (!_isDisposed) {
+      if (SchedulerBinding.instance.schedulerPhase ==
+          SchedulerPhase.persistentCallbacks) {
+        scheduleMicrotask(() {
+          if (mounted && !_isDisposed) {
+            markNeedsBuild();
+          }
+        });
+      } else {
+        markNeedsBuild();
+      }
     }
   }
 
   @override
   Widget build() {
-    for (final disposer in disposers!) {
-      disposer();
-    }
-    disposers!.clear();
-
-    return Notifier.instance.append(
-      NotifyData(disposers: disposers!, updater: getUpdate),
-      super.build,
+    final notifyData = NotifyData(
+      updater: getUpdate,
+      unmountDisposers: _unmountDisposers,
+      throwException: true,
     );
+
+    final result = Notifier.instance.append(notifyData, super.build);
+
+    final currentNotifiers = notifyData.readNotifiers;
+
+    // Unsubscribe from notifiers that are no longer read
+    _subscriptions.removeWhere((notifier, disposer) {
+      if (!currentNotifiers.contains(notifier)) {
+        disposer();
+        return true;
+      }
+      return false;
+    });
+
+    // Subscribe to newly read notifiers
+    for (final notifier in currentNotifiers) {
+      if (!_subscriptions.containsKey(notifier)) {
+        notifier.addListener(getUpdate);
+        _subscriptions[notifier] = () => notifier.removeListener(getUpdate);
+      }
+    }
+
+    return result;
   }
 
   @override
   void unmount() {
-    for (final disposer in disposers!) {
+    _isDisposed = true;
+    for (final disposer in _subscriptions.values) {
       disposer();
     }
-    disposers!.clear();
-    disposers = null;
+    _subscriptions.clear();
+
+    for (final disposer in _unmountDisposers) {
+      disposer();
+    }
+    _unmountDisposers.clear();
+
     super.unmount();
   }
 }
