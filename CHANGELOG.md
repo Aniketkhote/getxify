@@ -1,3 +1,11 @@
+## 5.1.1
+
+### Bug Fixes & Refactoring
+
+- **State Management**: Fixed a critical regression in `Obx` where it stopped reacting to state changes and streams after its first rebuild. Replaced the pre-build teardown loop with identity-based dependency reconciliation to prevent memory leaks and stream drops.
+
+---
+
 ## 5.1.0
 
 ### Refactoring & Architecture
