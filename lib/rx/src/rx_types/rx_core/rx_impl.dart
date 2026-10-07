@@ -130,8 +130,13 @@ mixin RxObjectMixin<T> on GetListenable<T> {
     return subscription;
   }
 
+  /// Adds an error to the underlying stream controller.
+  void addError(Object error, [StackTrace? stackTrace]) {
+    subject.addError(error, stackTrace);
+  }
+
   /// Streams bound by [bindStream]/[bindStreamBuilder]. Cancelled when this
-  /// Rx is closed, or paused when its listener count drops to zero.
+  /// Rx is closed, or paused when its listener count drops to zero (builder-only).
   final List<_BoundStream<T>> _boundStreams = <_BoundStream<T>>[];
 
   /// Binds an existing `Stream<T>` to this `Rx<T>` to keep the values in sync.
@@ -139,26 +144,26 @@ mixin RxObjectMixin<T> on GetListenable<T> {
   ///
   /// Set [cancelPrevious] to `true` to cancel any subscriptions created by
   /// earlier [bindStream]/[bindStreamBuilder] calls before binding the new
-  /// [stream]. This is useful when rebinding to a fresh source (e.g.
-  /// re-entering a page) so stale streams stop overwriting the value.
+  /// [stream].
   ///
-  /// Returns the [StreamSubscription], so callers can pause or cancel the
-  /// binding manually. All active subscriptions are cancelled automatically
-  /// when this Rx is closed, and are also unsubscribed whenever this Rx's
-  /// listener count drops to zero (e.g. no more `Obx`/`GetX` widgets or
-  /// `listen` callbacks are watching it); when [bindStream] is called during
-  /// an observer (`GetX` or `Obx`) build, the subscription is also cancelled
-  /// when that Widget gets unmounted from the Widget tree.
+  /// All active subscriptions are cancelled automatically when this Rx is closed.
   StreamSubscription<T> bindStream(
     Stream<T> stream, {
     bool cancelPrevious = false,
   }) {
+    if (isDisposed) {
+      return Stream<T>.empty().listen(null);
+    }
     if (cancelPrevious) _cancelBoundStreams();
+
     final bound = _BoundStream<T>(null);
-    final sub = stream.listen((va) => value = va);
+    final sub = stream.listen(
+      (va) => value = va,
+      onError: addError,
+      onDone: () => _boundStreams.remove(bound),
+    );
     bound.subscription = sub;
     _boundStreams.add(bound);
-    reportAdd(sub.cancel);
     return sub;
   }
 
@@ -168,47 +173,63 @@ mixin RxObjectMixin<T> on GetListenable<T> {
   /// Whenever this Rx's listener count drops to zero, the current stream is
   /// unsubscribed; once a new listener is added, [builder] is called again
   /// to recreate and rebind the stream. This is useful for sources that
-  /// can't simply be re-listened to (e.g. single-subscription streams) once
-  /// dropped.
+  /// shouldn't run when inactive (e.g. cold streams, sensor feeds, queries).
   StreamSubscription<T> bindStreamBuilder(
     Stream<T> Function() builder, {
     bool cancelPrevious = false,
   }) {
+    if (isDisposed) {
+      return Stream<T>.empty().listen(null);
+    }
     if (cancelPrevious) _cancelBoundStreams();
+
     final bound = _BoundStream<T>(builder);
-    final sub = builder().listen((va) => value = va);
+    final sub = builder().listen(
+      (va) => value = va,
+      onError: addError,
+      onDone: () {
+        bound.subscription = null;
+      },
+    );
     bound.subscription = sub;
     _boundStreams.add(bound);
-    reportAdd(sub.cancel);
     return sub;
   }
 
   void _cancelBoundStreams() {
     for (final bound in _boundStreams) {
       bound.subscription?.cancel();
+      bound.subscription = null;
     }
     _boundStreams.clear();
   }
 
-  /// Unsubscribes every bound stream. Builder-based bindings are kept around
-  /// (with a `null` subscription) so [_resumeBoundStreams] can recreate them.
+  /// Pauses builder-based streams by cancelling their active subscriptions.
+  /// Static streams (bound without a builder) are kept alive so the Rx state
+  /// remains synchronized with its upstream source.
   void _pauseBoundStreams() {
-    _boundStreams.removeWhere((bound) {
-      bound.subscription?.cancel();
-      bound.subscription = null;
-      return bound.factory == null;
-    });
+    for (final bound in _boundStreams) {
+      if (bound.factory != null) {
+        bound.subscription?.cancel();
+        bound.subscription = null;
+      }
+    }
   }
 
-  /// Recreates and resubscribes every builder-based binding left dangling by
+  /// Recreates and resubscribes every builder-based binding paused by
   /// [_pauseBoundStreams].
   void _resumeBoundStreams() {
     for (final bound in _boundStreams) {
       final factory = bound.factory;
       if (bound.subscription != null || factory == null) continue;
-      final sub = factory().listen((va) => value = va);
+      final sub = factory().listen(
+        (va) => value = va,
+        onError: addError,
+        onDone: () {
+          bound.subscription = null;
+        },
+      );
       bound.subscription = sub;
-      reportAdd(sub.cancel);
     }
   }
 
@@ -247,10 +268,6 @@ class _BoundStream<T> {
 /// Base Rx class that manages all the stream logic for any Type.
 abstract class _RxImpl<T> extends GetListenable<T> with RxObjectMixin<T> {
   _RxImpl(super.initial);
-
-  void addError(Object error, [StackTrace? stackTrace]) {
-    subject.addError(error, stackTrace);
-  }
 
   Stream<R> map<R>(R Function(T? data) mapper) => stream.map(mapper);
 
