@@ -394,33 +394,39 @@ void main() {
   });
 
   group('bindStream/bindStreamBuilder pause and resume on listener count', () {
-    test('bindStream unsubscribes once the last listener is removed', () async {
-      var cancelled = false;
-      final source = StreamController<int>(
-        onCancel: () {
-          cancelled = true;
-        },
-      );
-      final rx = 0.obs;
+    test(
+      'bindStream stays subscribed when downstream listeners drop to zero',
+      () async {
+        var cancelled = false;
+        final source = StreamController<int>(
+          onCancel: () {
+            cancelled = true;
+          },
+        );
+        final rx = 0.obs;
 
-      final listenerSub = rx.listen((_) {});
-      rx.bindStream(source.stream);
-      source.add(1);
-      await Future.delayed(Duration.zero);
-      expect(rx.value, 1);
-      expect(cancelled, false);
+        final listenerSub = rx.listen((_) {});
+        rx.bindStream(source.stream);
+        source.add(1);
+        await Future.delayed(Duration.zero);
+        expect(rx.value, 1);
+        expect(cancelled, false);
 
-      await listenerSub.cancel();
-      await Future.delayed(Duration.zero);
-      expect(cancelled, true);
+        await listenerSub.cancel();
+        await Future.delayed(Duration.zero);
+        expect(cancelled, false);
 
-      source.add(2);
-      await Future.delayed(Duration.zero);
-      expect(rx.value, 1);
+        source.add(2);
+        await Future.delayed(Duration.zero);
+        expect(rx.value, 2);
 
-      await source.close();
-      rx.close();
-    });
+        rx.close();
+        await Future.delayed(Duration.zero);
+        expect(cancelled, true);
+
+        await source.close();
+      },
+    );
 
     test('bindStreamBuilder rebuilds and rebinds the stream when a listener '
         'returns after dropping to zero', () async {

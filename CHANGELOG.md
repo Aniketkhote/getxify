@@ -1,3 +1,15 @@
+## 5.1.2
+
+### Bug Fixes
+
+- **Reactive (Rx)**: Fixed `bindStream` permanently dropping the upstream connection when downstream listeners drop to zero (e.g., navigating away, tab switches, or `Obx` widget unmounts). Static streams bound via `bindStream` now stay alive across listener count transitions — only builder-based streams (`bindStreamBuilder`) pause and re-instantiate on demand.
+- **Reactive (Rx)**: Removed `reportAdd(sub.cancel)` from all `bindStream` paths to prevent `Obx` widgets from hijacking and prematurely cancelling stream subscriptions upon unmount.
+- **Reactive (Rx)**: Forwarded upstream stream errors through `onError: addError`, routing them cleanly through the `Rx` subject instead of throwing unhandled zone exceptions. Moved `addError` from `_RxImpl` into `RxObjectMixin` so `RxList`, `RxMap`, and `RxSet` also benefit.
+- **Reactive (Rx)**: Added an `isDisposed` guard on `bindStream`/`bindStreamBuilder` that returns a no-op subscription when called on an already-closed `Rx`.
+- **Reactive (Rx)**: Added `onDone` callbacks to clean up finished finite streams from `_boundStreams` automatically.
+
+---
+
 ## 5.1.1
 
 ### Bug Fixes & Refactoring
@@ -11,6 +23,7 @@
 ### Refactoring & Architecture
 
 - **State Management**: Reorganized state manager by architectural components.
+
 - **Dependency Injection**: Decoupled DI lifecycle from UI bindings, split instance extensions, and extracted `InstanceBuilderFactory` and `InstanceInfo` from `extension_instance.dart`.
 - **Reactive (Rx)**:
   - Modernized `Worker` class to properly await stream cancellations.
