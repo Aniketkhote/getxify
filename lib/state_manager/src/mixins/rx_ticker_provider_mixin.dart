@@ -11,7 +11,7 @@ import '../../state_manager.dart';
 /// the [TickerMode] of the widget subtree that forwards its dependency
 /// changes to [didChangeDependencies].
 ///
-/// [GetX], [GetBuilder] and [Bind] check for this interface once instead of
+/// `GetX`, [GetBuilder] and [Bind] check for this interface once instead of
 /// dispatching on each concrete mixin.
 abstract interface class GetTickerProvider implements TickerProvider {
   /// Binds the tickers created by this provider to the [TickerMode] that
@@ -80,7 +80,7 @@ mixin GetSingleTickerProviderStateMixin on GetxController
   /// disabled in that subtree (for example while the route that shows the
   /// widget is covered by another route).
   ///
-  /// [GetX], [GetBuilder] and [Bind] call this automatically for the
+  /// `GetX`, [GetBuilder] and [Bind] call this automatically for the
   /// controllers they manage; it only needs to be called manually when the
   /// controller is used with a custom widget that provides its own
   /// [BuildContext].
@@ -190,7 +190,7 @@ mixin GetTickerProviderStateMixin on GetxController
   /// that subtree (for example while the route that shows the widget is
   /// covered by another route).
   ///
-  /// [GetX], [GetBuilder] and [Bind] call this automatically for the
+  /// `GetX`, [GetBuilder] and [Bind] call this automatically for the
   /// controllers they manage; it only needs to be called manually when the
   /// controller is used with a custom widget that provides its own
   /// [BuildContext].

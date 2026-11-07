@@ -78,37 +78,34 @@ void main() {
     },
   );
 
-  testWidgets(
-    'GetBuilder forwards TickerMode to a GetTickerProviderStateMixin controller '
-    'through the single GetTickerProvider dispatch',
-    (tester) async {
-      await tester.pumpWidget(
-        TickerMode(
-          enabled: false,
-          child: GetBuilder<_MultiController>(
-            init: _MultiController(),
-            builder: (c) =>
-                Text('${c.count.value}', textDirection: TextDirection.ltr),
-          ),
+  testWidgets('GetBuilder forwards TickerMode to a GetTickerProviderStateMixin controller '
+      'through the single GetTickerProvider dispatch', (tester) async {
+    await tester.pumpWidget(
+      TickerMode(
+        enabled: false,
+        child: GetBuilder<_MultiController>(
+          init: _MultiController(),
+          builder: (c) =>
+              Text('${c.count.value}', textDirection: TextDirection.ltr),
         ),
-      );
+      ),
+    );
 
-      final controller = Get.find<_MultiController>();
-      expect(controller.ticker.muted, isTrue);
+    final controller = Get.find<_MultiController>();
+    expect(controller.ticker.muted, isTrue);
 
-      await tester.pumpWidget(
-        TickerMode(
-          enabled: true,
-          child: GetBuilder<_MultiController>(
-            builder: (c) =>
-                Text('${c.count.value}', textDirection: TextDirection.ltr),
-          ),
+    await tester.pumpWidget(
+      TickerMode(
+        enabled: true,
+        child: GetBuilder<_MultiController>(
+          builder: (c) =>
+              Text('${c.count.value}', textDirection: TextDirection.ltr),
         ),
-      );
-      expect(controller.ticker.muted, isFalse);
+      ),
+    );
+    expect(controller.ticker.muted, isFalse);
 
-      await tester.pumpWidget(const SizedBox());
-      expect(Get.isRegistered<_MultiController>(), isFalse);
-    },
-  );
+    await tester.pumpWidget(const SizedBox());
+    expect(Get.isRegistered<_MultiController>(), isFalse);
+  });
 }

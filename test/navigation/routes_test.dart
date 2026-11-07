@@ -1,8 +1,10 @@
 import 'dart:async';
+
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:getxify/getxify.dart';
+
 import 'utils/wrapper.dart';
 
 final log = <String>[];
@@ -1585,8 +1587,7 @@ void main() {
         expect(
           cornerButtonTaps,
           1,
-          reason:
-              'a tap beside the width-constrained snackbar must reach the button',
+          reason: 'a tap beside the width-constrained snackbar must reach the button',
         );
         expect(Get.isSnackbarOpen, true);
 
@@ -2458,6 +2459,20 @@ void main() {
         );
       },
     );
+
+    test('GetPage.copyWith supports heterogeneous children and settings', () {
+      final page = GetPage<int>(name: '/parent', page: Container.new);
+      final child = GetPage<String>(name: '/child', page: Container.new);
+      final copied = page.copyWith(
+        children: [child],
+        settings: const RouteSettings(name: '/new-name', arguments: 'arg1'),
+      );
+
+      expect(copied.children.length, 1);
+      expect(copied.children.first.name, '/child');
+      expect(copied.name, '/new-name');
+      expect(copied.arguments, 'arg1');
+    });
 
     test('GetPageRoute honors an explicit allowSnapshotting argument', () {
       expect(GetPageRoute(page: Container.new).allowSnapshotting, isTrue);

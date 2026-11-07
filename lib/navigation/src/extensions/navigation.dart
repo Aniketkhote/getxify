@@ -21,7 +21,7 @@ extension GetNavigationExt on GetInterface {
   /// If you want the same behavior of ios that pops a route when the user drag,
   /// you can set [popGesture] to true
   ///
-  /// If you're using the [BindingsInterface] api, you must define it here
+  /// If you're using the [Binding] api, you must define it here
   ///
   /// By default, GetX will prevent you from push a route that you already in,
   /// if you want to push anyway, set [preventDuplicates] to false
@@ -219,14 +219,13 @@ extension GetNavigationExt on GetInterface {
       final uri = Uri(path: page, queryParameters: parameters);
       page = uri.toString();
     }
-    return searchDelegate(
-      id,
-    ).backAndtoNamed(page, arguments: arguments, result: result);
+    return searchDelegate(id)
+        .backAndtoNamed(page, arguments: arguments, result: result);
   }
 
   /// **Navigation.removeRoute()** shortcut.<br><br>
   ///
-  /// Remove a specific [route] from the stack
+  /// Remove a specific route by [name] from the stack
   ///
   /// [id] is for when you are using nested navigation,
   /// as explained in documentation
@@ -546,7 +545,7 @@ extension GetNavigationExt on GetInterface {
   /// If you want the same behavior of ios that pops a route when the user drag,
   /// you can set [popGesture] to true
   ///
-  /// If you're using the [BindingsInterface] api, you must define it here
+  /// If you're using the [Binding] api, you must define it here
   ///
   /// By default, GetX will prevent you from push a route that you already in,
   /// if you want to push anyway, set [preventDuplicates] to false
@@ -627,7 +626,7 @@ extension GetNavigationExt on GetInterface {
   /// If you want the same behavior of ios that pops a route when the user drag,
   /// you can set [popGesture] to true
   ///
-  /// If you're using the [BindingsInterface] api, you must define it here
+  /// If you're using the [Binding] api, you must define it here
   ///
   /// By default, GetX will prevent you from push a route that you already in,
   /// if you want to push anyway, set [preventDuplicates] to false

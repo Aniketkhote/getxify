@@ -110,7 +110,7 @@ mixin RxObjectMixin<T> on GetListenable<T> {
 
   /// Returns a [StreamSubscription] similar to [listen], but with the
   /// added benefit that it primes the stream with the current [value], rather
-  /// than waiting for the next [value]. This should not be called in [onInit]
+  /// than waiting for the next [value]. This should not be called in `onInit`
   /// or anywhere else during the build process.
   StreamSubscription<T> listenAndPump(
     void Function(T event) onData, {

@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_classes_with_only_static_members
 
 import 'dart:io';
+
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -635,31 +636,28 @@ void main() {
   });
 
   group('GetBuilder initState callback controller access and mutation', () {
-    testWidgets(
-      'GetBuilder initState callback accesses state.controller during init (variant 1) '
-      'the controller comes from init',
-      (tester) async {
-        Issue2354Controller? captured;
+    testWidgets('GetBuilder initState callback accesses state.controller during init (variant 1) '
+        'the controller comes from init', (tester) async {
+      Issue2354Controller? captured;
 
-        await tester.pumpWidget(
-          MaterialApp(
-            home: GetBuilder<Issue2354Controller>(
-              init: Issue2354Controller(),
-              initState: (state) {
-                captured = state.controller;
-              },
-              builder: (controller) => Text('counter: ${controller.counter}'),
-            ),
+      await tester.pumpWidget(
+        MaterialApp(
+          home: GetBuilder<Issue2354Controller>(
+            init: Issue2354Controller(),
+            initState: (state) {
+              captured = state.controller;
+            },
+            builder: (controller) => Text('counter: ${controller.counter}'),
           ),
-        );
+        ),
+      );
 
-        expect(captured, isNotNull);
-        expect(captured, same(Get.find<Issue2354Controller>()));
-        expect(find.text('counter: 0'), findsOneWidget);
+      expect(captured, isNotNull);
+      expect(captured, same(Get.find<Issue2354Controller>()));
+      expect(find.text('counter: 0'), findsOneWidget);
 
-        await tester.pumpWidget(const SizedBox());
-      },
-    );
+      await tester.pumpWidget(const SizedBox());
+    });
 
     testWidgets(
       'GetBuilder initState callback can access state.controller when '
@@ -779,40 +777,37 @@ void main() {
     _TickerModeHostState hostState(WidgetTester tester) =>
         tester.state<_TickerModeHostState>(find.byType(_TickerModeHost));
 
-    testWidgets(
-      'GetSingleTickerProviderStateMixin ticker is muted when TickerMode is disabled '
-      'disables tickers under GetBuilder',
-      (tester) async {
-        await tester.pumpWidget(
-          MaterialApp(
-            home: _TickerModeHost(
-              child: GetBuilder<SingleTickController>(
-                init: SingleTickController(),
-                builder: (controller) => const SizedBox(),
-              ),
+    testWidgets('GetSingleTickerProviderStateMixin ticker is muted when TickerMode is disabled '
+        'disables tickers under GetBuilder', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: _TickerModeHost(
+            child: GetBuilder<SingleTickController>(
+              init: SingleTickController(),
+              builder: (controller) => const SizedBox(),
             ),
           ),
-        );
+        ),
+      );
 
-        final controller = Get.find<SingleTickController>();
-        expect(controller.ticker.muted, isFalse);
-        expect(controller.ticker.isTicking, isTrue);
+      final controller = Get.find<SingleTickController>();
+      expect(controller.ticker.muted, isFalse);
+      expect(controller.ticker.isTicking, isTrue);
 
-        hostState(tester).setEnabled(false);
-        await tester.pump();
+      hostState(tester).setEnabled(false);
+      await tester.pump();
 
-        expect(controller.ticker.muted, isTrue);
-        expect(controller.ticker.isTicking, isFalse);
+      expect(controller.ticker.muted, isTrue);
+      expect(controller.ticker.isTicking, isFalse);
 
-        hostState(tester).setEnabled(true);
-        await tester.pump();
+      hostState(tester).setEnabled(true);
+      await tester.pump();
 
-        expect(controller.ticker.muted, isFalse);
-        expect(controller.ticker.isTicking, isTrue);
+      expect(controller.ticker.muted, isFalse);
+      expect(controller.ticker.isTicking, isTrue);
 
-        await tester.pumpWidget(const SizedBox());
-      },
-    );
+      await tester.pumpWidget(const SizedBox());
+    });
 
     testWidgets('GetTickerProviderStateMixin tickers are muted when TickerMode '
         'disables tickers under GetBuilder', (tester) async {

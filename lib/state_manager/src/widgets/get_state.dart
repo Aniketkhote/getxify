@@ -9,8 +9,9 @@ import '../controllers/list_notifier.dart';
 
 typedef InitBuilder<T> = T Function();
 
-typedef GetControllerBuilder<T extends GetLifeCycleMixin> =
-    Widget Function(T controller);
+typedef GetControllerBuilder<T extends GetLifeCycleMixin> = Widget Function(
+  T controller,
+);
 
 extension WatchExt on BuildContext {
   T listen<T>() {
@@ -219,7 +220,7 @@ abstract class Bind<T> extends StatelessWidget {
   /// Replaces the registered instance of type [P] with a new [child]
   /// instance.
   ///
-  /// Delegates to [Get.replace], so registrations that a plain [delete]
+  /// Delegates to `Get.replace`, so registrations that a plain [delete]
   /// keeps alive (a `fenix` factory, a [GetxService], or an entry with a
   /// pending `lateRemove` disposal) are evicted and the new [child] always
   /// takes their place.
@@ -231,7 +232,7 @@ abstract class Bind<T> extends StatelessWidget {
   /// Replaces the registered dependency of type [P] with a new lazy
   /// factory [builder].
   ///
-  /// Delegates to [Get.lazyReplace], so registrations that a plain
+  /// Delegates to `Get.lazyReplace`, so registrations that a plain
   /// [delete] keeps alive (a `fenix` factory, a [GetxService], or an entry
   /// with a pending `lateRemove` disposal) are evicted and the new
   /// [builder] always takes their place.
@@ -249,7 +250,7 @@ abstract class Bind<T> extends StatelessWidget {
   /// Injects an instance of [S] built asynchronously by [builder] into the
   /// dependency manager, returning a [Bind] for the registered instance.
   ///
-  /// Delegates to [Get.putAsync]: the [builder] future is awaited and the
+  /// Delegates to `Get.putAsync`: the [builder] future is awaited and the
   /// resulting instance is registered like [put], so the regular lifecycle
   /// (`onInit`/`onReady`) runs on the ready instance. Perform any
   /// asynchronous setup inside [builder] **before** returning the instance.
@@ -379,7 +380,7 @@ class Binds extends StatelessWidget {
 }
 
 class Binder<T> extends InheritedWidget {
-  /// Create an inherited widget that updates its dependents when [controller]
+  /// Create an inherited widget that updates its dependents when `controller`
   /// sends notifications.
   ///
   /// The [child] argument is required

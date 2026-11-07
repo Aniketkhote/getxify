@@ -528,15 +528,15 @@ void main() {
       expect(rx, {'a': 1});
 
       expect(
-        () => RxMap<String, int>(
-          NaiveUnmodifiableMap<String, int>({'a': 1}),
-        ).clear(),
+        () =>
+            RxMap<String, int>(NaiveUnmodifiableMap<String, int>({'a': 1}))
+                .clear(),
         throwsUnsupportedError,
       );
       expect(
-        () => RxMap<String, int>(
-          NaiveUnmodifiableMap<String, int>({'a': 1}),
-        ).remove('a'),
+        () =>
+            RxMap<String, int>(NaiveUnmodifiableMap<String, int>({'a': 1}))
+                .remove('a'),
         throwsUnsupportedError,
       );
     });

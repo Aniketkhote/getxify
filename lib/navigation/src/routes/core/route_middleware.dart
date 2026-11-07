@@ -55,7 +55,7 @@ abstract class GetMiddleware {
   /// if this returns null, the navigation is stopped,
   /// and no new routes are pushed.
   ///
-  /// The incoming route's arguments are available through [route.args]
+  /// The incoming route's arguments are available through `route.args`
   /// and can be forwarded to the redirect target with
   /// `RouteDecoder.fromRoute(target, arguments: route.args)`.
   /// {@tool snippet}

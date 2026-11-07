@@ -573,8 +573,11 @@ extension PagesListExt on List<GetPage> {
   }
 }
 
-typedef NavigatorItemBuilderBuilder =
-    Widget Function(BuildContext context, List<String> routes, int index);
+typedef NavigatorItemBuilderBuilder = Widget Function(
+  BuildContext context,
+  List<String> routes,
+  int index,
+);
 
 class IndexedRouteBuilder<T> extends StatelessWidget {
   const IndexedRouteBuilder({

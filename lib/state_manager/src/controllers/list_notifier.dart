@@ -5,7 +5,7 @@ import 'package:getxify/common/obx_error.dart';
 
 /// Callback function to remove a listener.
 ///
-/// This is returned by [addListener] and can be called to remove
+/// This is returned when adding a listener and can be called to remove
 /// the listener from the notifier.
 typedef Disposer = void Function();
 

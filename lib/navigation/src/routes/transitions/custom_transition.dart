@@ -3,14 +3,14 @@ import 'package:flutter/widgets.dart';
 /// Abstract class for defining custom page transitions.
 ///
 /// Implement this class to create custom transition animations for navigation.
-/// The [buildTransition] method should return a widget that applies the desired
+/// The [buildTransitions] method should return a widget that applies the desired
 /// transition effect to the [child] widget.
 ///
 /// Example implementation:
 /// ```dart
 /// class FadeInTransition extends CustomTransition {
 ///   @override
-///   Widget buildTransition(
+///   Widget buildTransitions(
 ///     BuildContext context,
 ///     Curve? curve,
 ///     Alignment? alignment,

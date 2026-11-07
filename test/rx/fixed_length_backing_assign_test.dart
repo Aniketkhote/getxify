@@ -88,9 +88,8 @@ void main() {
 
   group('RxMap with unmodifiable backing', () {
     test('assign replaces an unmodifiable backing', () {
-      final RxMap<String, int> map = Map<String, int>.unmodifiable({
-        'a': 1,
-      }).obs;
+      final RxMap<String, int> map = Map<String, int>.unmodifiable({'a': 1})
+          .obs;
 
       map.assign('b', 2);
 

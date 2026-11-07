@@ -2,6 +2,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:getxify/getxify.dart';
+
 import 'utils/wrapper.dart';
 
 // back button arrives as a route information report handled by
@@ -360,9 +361,8 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('second'), findsOneWidget);
 
-      Navigator.of(
-        Get.context!,
-      ).push(MaterialPageRoute(builder: (_) => const Text('pageless')));
+      Navigator.of(Get.context!)
+          .push(MaterialPageRoute(builder: (_) => const Text('pageless')));
       await tester.pumpAndSettle();
       expect(find.text('pageless'), findsOneWidget);
 
@@ -392,9 +392,8 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      Navigator.of(
-        Get.context!,
-      ).push(MaterialPageRoute(builder: (_) => const Text('pageless')));
+      Navigator.of(Get.context!)
+          .push(MaterialPageRoute(builder: (_) => const Text('pageless')));
       await tester.pumpAndSettle();
       expect(find.text('pageless'), findsOneWidget);
 
@@ -422,9 +421,8 @@ void main() {
       Get.toNamed('/second');
       await tester.pumpAndSettle();
 
-      Navigator.of(
-        Get.context!,
-      ).push(MaterialPageRoute(builder: (_) => const Text('pageless')));
+      Navigator.of(Get.context!)
+          .push(MaterialPageRoute(builder: (_) => const Text('pageless')));
       await tester.pumpAndSettle();
       expect(find.text('pageless'), findsOneWidget);
 
