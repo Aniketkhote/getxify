@@ -44,8 +44,7 @@ class DemoProduct {
       oldPrice: 4999.00,
       rating: 4.8,
       reviewCount: 342,
-      description:
-          'High-fidelity wireless sound with ultra-low latency and dynamic spatial audio for immersive listening.',
+      description: 'High-fidelity wireless sound with ultra-low latency and dynamic spatial audio for immersive listening.',
       badge: 'Best Seller',
       iconData: Icons.headphones,
       themeColor: Colors.deepPurple,
@@ -59,8 +58,7 @@ class DemoProduct {
       oldPrice: 6999.00,
       rating: 4.9,
       reviewCount: 512,
-      description:
-          'Track workouts, monitor health metrics, and stay connected with a vibrant AMOLED display.',
+      description: 'Track workouts, monitor health metrics, and stay connected with a vibrant AMOLED display.',
       badge: 'Hot Deal',
       iconData: Icons.watch_outlined,
       themeColor: Colors.indigo,
@@ -74,8 +72,7 @@ class DemoProduct {
       oldPrice: 3199.00,
       rating: 4.7,
       reviewCount: 189,
-      description:
-          'Customizable RGB backlighting with hot-swappable tactile mechanical switches for typing speed.',
+      description: 'Customizable RGB backlighting with hot-swappable tactile mechanical switches for typing speed.',
       badge: 'Top Rated',
       iconData: Icons.keyboard_alt_outlined,
       themeColor: Colors.teal,
@@ -89,8 +86,7 @@ class DemoProduct {
       oldPrice: 15999.00,
       rating: 4.6,
       reviewCount: 97,
-      description:
-          'Compact drone with 4K HDR camera, obstacle sensing, and intelligent flight modes.',
+      description: 'Compact drone with 4K HDR camera, obstacle sensing, and intelligent flight modes.',
       badge: 'New Arrival',
       iconData: Icons.camera_indoor_outlined,
       themeColor: Colors.orange,
@@ -104,8 +100,7 @@ class DemoProduct {
       oldPrice: 2499.00,
       rating: 4.5,
       reviewCount: 230,
-      description:
-          'Crafted from genuine full-grain leather with dedicated 15-inch laptop compartment.',
+      description: 'Crafted from genuine full-grain leather with dedicated 15-inch laptop compartment.',
       badge: 'Trending',
       iconData: Icons.card_travel,
       themeColor: Colors.brown,
@@ -119,8 +114,7 @@ class DemoProduct {
       oldPrice: 1999.00,
       rating: 4.8,
       reviewCount: 410,
-      description:
-          'Waterproof IPX7 speaker with 24-hour battery life and deep bass performance.',
+      description: 'Waterproof IPX7 speaker with 24-hour battery life and deep bass performance.',
       badge: 'Sale',
       iconData: Icons.speaker,
       themeColor: Colors.pink,
