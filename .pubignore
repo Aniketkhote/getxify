@@ -1,0 +1,33 @@
+# Build and cache artifacts
+.dart_tool/
+**/build/
+build/
+*.lock
+doc/api/
+
+# Example platform & build files (only example code is needed on pub.dev)
+example/build/
+example/.dart_tool/
+example/android/
+example/ios/
+example/windows/
+example/macos/
+example/linux/
+example/web/
+
+# Tests & fixtures (excluded to reduce pub.dev archive size for downstream users)
+test/
+
+# Tooling and IDE configuration
+.github/
+.vscode/
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Local logs and temporary files
+*.log
+.buildlog/
+migrate_working_dir/
+coverage/

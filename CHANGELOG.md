@@ -1,3 +1,19 @@
+## 5.2.0
+
+### Features & Ergonomics
+- **State Management (`GetView` & `GetResponsiveView`)**: Added `tag` support directly to constructors (`GetView({super.key, this.tag})` and `GetResponsiveView({super.tag, ...})`), enabling clean instantiation of tagged controller views without custom field overrides.
+- **Context Extensions**: Added `context.colorScheme` shortcut for Material 3 theme styling alongside existing `context.theme` and `context.textTheme`.
+
+### Navigation & Routing
+- Fixed `GetPage.copyWith` to accept heterogeneous child routes (`List<GetPage>`) and forward settings `name` and `arguments` cleanly.
+
+### Dependencies & Tooling
+- Updated `material_ui` to `^1.11.0` and migrated navigation inspector tests to standalone design packages.
+- Added `.pubignore` to exclude test suites and development fixtures from the pub archive, reducing package download size for consumers.
+- Streamlined `analysis_options.yaml` to leverage Flutter's recommended lint sets without duplication.
+
+---
+
 ## 5.1.2
 
 ### Bug Fixes

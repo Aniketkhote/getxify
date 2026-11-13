@@ -59,6 +59,9 @@ extension ContextExt on BuildContext {
   /// similar to [MediaQuery.of(context).padding]
   ThemeData get theme => Theme.of(this);
 
+  /// Quick access to [ThemeData.colorScheme]
+  ColorScheme get colorScheme => theme.colorScheme;
+
   /// Check if dark mode theme is enable
   bool get isDarkMode => (theme.brightness == Brightness.dark);
 

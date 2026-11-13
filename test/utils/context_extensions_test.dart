@@ -27,7 +27,10 @@ void main() {
     );
 
     expect(savedContext.theme, isA<ThemeData>());
+    expect(savedContext.colorScheme, isA<ColorScheme>());
     expect(savedContext.isDarkMode, isFalse);
+    expect(savedContext.isLandscape, isTrue);
+    expect(savedContext.isPortrait, isFalse);
     expect(savedContext.mediaQuerySize, isA<Size>());
     expect(savedContext.height, equals(savedContext.mediaQuerySize.height));
     expect(savedContext.width, equals(savedContext.mediaQuerySize.width));

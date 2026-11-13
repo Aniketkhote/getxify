@@ -13,7 +13,7 @@ import '../../../instance/instance.dart';
 /// }
 ///
 /// class AwesomeView extends GetView<AwesomeController> {
-///   const AwesomeView({super.key});
+///   const AwesomeView({super.key, super.tag});
 ///
 ///   @override
 ///   Widget build(BuildContext context) {
@@ -25,10 +25,10 @@ import '../../../instance/instance.dart';
 /// }
 /// ```
 abstract class GetView<T> extends StatelessWidget {
-  const GetView({super.key});
+  const GetView({super.key, this.tag});
 
   /// Optional tag parameter for tag-registered controllers (`Get.find<T>(tag: tag)`).
-  final String? tag = null;
+  final String? tag;
 
   /// Gets the controller instance from the dependency injection container.
   T get controller => Get.find<T>(tag: tag)!;

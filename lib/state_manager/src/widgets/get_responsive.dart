@@ -74,6 +74,7 @@ class GetResponsiveView<T> extends GetView<T> with GetResponsiveMixin {
     this.alwaysUseBuilder = false,
     ResponsiveScreenSettings settings = const ResponsiveScreenSettings(),
     super.key,
+    super.tag,
   }) : screen = ResponsiveScreen(settings);
 }
 
