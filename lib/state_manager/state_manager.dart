@@ -2,6 +2,7 @@ export 'src/controllers/rx_notifier.dart';
 export 'src/widgets/rx_obx_widget.dart';
 export 'src/mixins/rx_ticker_provider_mixin.dart';
 export 'src/controllers/get_controllers.dart';
+export 'src/extensions/future_extensions.dart';
 export 'src/widgets/get_responsive.dart';
 export 'src/mixins/get_restoration.dart';
 export 'src/widgets/get_state.dart';

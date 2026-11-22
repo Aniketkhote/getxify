@@ -1,6 +1,14 @@
 ## Unreleased
 
+### Features & Capabilities
+- **Dependency Injection (GetContainer)**: Introduced `GetContainer` class for isolated dependency registration and lifecycle management, enabling concurrent unit testing, modular subtrees, and multi-window environments without global singleton collision.
+- **Reactive (rxComputed)**: Introduced `rxComputed<T>(T Function() compute)` providing memoized, auto-tracking derived reactivity that updates automatically when observed reactive inputs change.
+- **State Management (Future.toRx)**: Added `Future<T>.toRx()` extension converting async futures into self-updating `Rx<GetStatus<T>>` managing loading, success, and error states.
+- **Architecture (Internationalization)**: Added dedicated `lib/internationalization/internationalization.dart` module unifying translations and string extensions.
+- **Architecture (Instance & Modules)**: Exported `Dependencies` and `Module` via instance manager for cohesive dependency injection ergonomics.
+
 ### Refactoring & Modernization
+- **Reactive (Collection Extensions)**: Renamed internal `lib/rx/src/rx_types/extensions/iterable_extensions.dart` to `collection_extensions.dart` to eliminate filename ambiguity with `lib/utils/src/extensions/iterable_extensions.dart`.
 - **Animations (Architecture)**: Standardized `lib/animations/` to follow canonical package layout with a single `animations.dart` barrel file exporting internal implementations from `src/`, eliminating redundant root-level export files (`extensions.dart`, `get_animated_builder.dart`).
 - **State Management (Documentation & RxStatus)**: Added `typedef RxStatus<T> = GetStatus<T>` for seamless backward compatibility with GetX v4 code, and updated documentation examples in `StateController`, `SuperController`, and `GetMiddleware.redirect` to match actual API contracts.
 - **Context Extensions (Text Scaling)**: Added `context.textScaler` (returning modern Flutter `TextScaler`) and restored `context.textScaleFactor` as a `double` (`textScaler.scale(1.0)`), resolving type mismatch where `textScaleFactor` improperly returned `TextScaler`.
