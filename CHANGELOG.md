@@ -1,3 +1,10 @@
+## Unreleased
+
+### Bug Fixes
+- **Navigation (Routing / URL Strategy)**: Fixed an unconditional infinite recursion crash in `removeLastHistory` by wiring it through platform-delegated implementations (`web`, `io`, and `stub`). On Web, history updates now delegate safely to `package:web` (`window.history.replaceState`).
+
+---
+
 ## 5.2.0
 
 ### Features & Ergonomics

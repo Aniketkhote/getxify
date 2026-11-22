@@ -7,5 +7,5 @@ void setUrlStrategy() {
 }
 
 void removeLastHistory(String? url) {
-  removeLastHistory(url);
+  removeHistory(url);
 }

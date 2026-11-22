@@ -17,8 +17,8 @@ screenshots:
     path: assets/getxify.png
 
 environment:
-  sdk: ^3.13.7
-  flutter: ">=3.47.9"
+  sdk: ^3.14.0
+  flutter: ">=3.50.1"
 
 dependencies:
   flutter:
@@ -27,8 +27,8 @@ dependencies:
     sdk: flutter
   web: ">=1.1.2 <2.0.0"
 
-  cupertino_ui: ^1.1.6
-  material_ui: ^1.11.0
+  cupertino_ui: ^1.1.7
+  material_ui: ^1.11.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
