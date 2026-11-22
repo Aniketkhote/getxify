@@ -120,16 +120,12 @@ class _DelegateBinding implements Binding {
   @override
   void dependencies() {
     final builder = _builder;
-    if (builder is void Function(GetInterface)) {
+    if (builder is Function(GetInterface)) {
       builder(Get);
-    } else if (builder is void Function()) {
+    } else if (builder is Function()) {
       builder();
     } else {
-      try {
-        (builder as dynamic)();
-      } catch (_) {
-        (builder as dynamic)(Get);
-      }
+      (builder as dynamic)();
     }
   }
 }

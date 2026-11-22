@@ -3,8 +3,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:getxify/getxify.dart';
 
 void main() {
-  testWidgets('context.settings returns null when context has no ModalRoute',
-      (tester) async {
+  testWidgets('context.settings returns null when context has no ModalRoute', (
+    tester,
+  ) async {
     RouteSettings? settings;
     PageSettings? pageSettings;
     Object? arguments;

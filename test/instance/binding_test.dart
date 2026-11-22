@@ -61,4 +61,19 @@ void main() {
       expect(Get.isRegistered<SampleController>(), isTrue);
     },
   );
+
+  test('Binding.builder with GetInterface argument works', () {
+    final b = Binding.builder((GetInterface i) {
+      i.put(SampleController());
+    });
+    b.dependencies();
+    expect(Get.isRegistered<SampleController>(), isTrue);
+  });
+
+  test('Binding.builder does not swallow user exceptions', () {
+    final b = Binding.builder(() {
+      throw const FormatException('Invalid user setup');
+    });
+    expect(() => b.dependencies(), throwsA(isA<FormatException>()));
+  });
 }

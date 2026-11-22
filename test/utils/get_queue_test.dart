@@ -74,10 +74,14 @@ void main() {
 
       expect(queue.isJobInProgress, isTrue);
 
-      final future2Expect =
-          expectLater(future2, throwsA(isA<GetQueueCancelledException>()));
-      final future3Expect =
-          expectLater(future3, throwsA(isA<GetQueueCancelledException>()));
+      final future2Expect = expectLater(
+        future2,
+        throwsA(isA<GetQueueCancelledException>()),
+      );
+      final future3Expect = expectLater(
+        future3,
+        throwsA(isA<GetQueueCancelledException>()),
+      );
 
       // Cancel queued jobs
       queue.cancelAllJobs();

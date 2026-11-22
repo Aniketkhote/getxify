@@ -1,6 +1,7 @@
 ## Unreleased
 
 ### Bug Fixes
+- **Dependency Injection (Bindings)**: Fixed unsound exception handling in `Binding.builder` where user exceptions were previously swallowed by a fallback `try-catch` block.
 - **Performance (GetQueue)**: Upgraded internal job queue from `List` to `ListQueue` for $O(1)$ FIFO dequeue performance, and replaced untyped string errors with typed `GetQueueCancelledException`.
 - **Reactive (Workers)**: Fixed a bug where `interval` worker would still fire its callback after being disposed if the delay duration was already in flight.
 - **Navigation (Routing / PageSettings)**: Made `context.settings` null-safe (`ModalRoute.of(this)?.settings`) to prevent unhandled `Null check operator used on a null value` exceptions when accessed from contexts without an enclosing `ModalRoute`.
