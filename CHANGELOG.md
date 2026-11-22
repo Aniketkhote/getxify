@@ -1,6 +1,7 @@
 ## Unreleased
 
 ### Refactoring & Modernization
+- **State Management (Documentation & RxStatus)**: Added `typedef RxStatus<T> = GetStatus<T>` for seamless backward compatibility with GetX v4 code, and updated documentation examples in `StateController`, `SuperController`, and `GetMiddleware.redirect` to match actual API contracts.
 - **Context Extensions (Text Scaling)**: Added `context.textScaler` (returning modern Flutter `TextScaler`) and restored `context.textScaleFactor` as a `double` (`textScaler.scale(1.0)`), resolving type mismatch where `textScaleFactor` improperly returned `TextScaler`.
 - **Core (Typo Fixes)**: Corrected grammatical and spelling errors: renamed `notifyGroupChildrens` to `notifyGroupChildren` in `ListNotifier` (with `@Deprecated` alias) and fixed `onUnknow` parameter name to `onUnknown` in `RouteDecoder.routeOrUnknown`.
 - **Navigation (Conventions)**: Standardized `backAndtoNamed` to standard camelCase `backAndToNamed` across `GetDelegate`, `IGetNavigation`, `GetNavigationExt`, and `ContextNavigationExt`, while retaining `@Deprecated` aliases for full backward compatibility.

@@ -60,9 +60,9 @@ abstract class GetMiddleware {
   /// `RouteDecoder.fromRoute(target, arguments: route.args)`.
   /// {@tool snippet}
   /// ```dart
-  /// GetNavConfig? redirect(GetNavConfig route) {
+  /// RouteSettings? redirect(String? route) {
   ///   final authService = Get.find<AuthService>();
-  ///   return authService.authed.value ? null : RouteSettings(name: '/login');
+  ///   return authService.authed.value ? null : const RouteSettings(name: '/login');
   /// }
   /// ```
   /// {@end-tool}

@@ -279,6 +279,9 @@ extension StateExt<T> on StateMixin<T> {
 
 typedef NotifierBuilder<T> = Widget Function(T state);
 
+/// Alias for [GetStatus] providing backward compatibility with GetX v4.
+typedef RxStatus<T> = GetStatus<T>;
+
 /// Sealed class representing different states of a notifier.
 sealed class GetStatus<T> with Equality {
   const GetStatus();

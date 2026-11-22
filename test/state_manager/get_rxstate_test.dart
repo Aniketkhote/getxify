@@ -53,6 +53,19 @@ void main() {
     expect(find.text("lazy 0"), findsOneWidget);
     expect(find.text("single 0"), findsOneWidget);
   });
+
+  test('RxStatus typedef works as alias for GetStatus', () {
+    final loading = RxStatus<String>.loading();
+    expect(loading.isLoading, isTrue);
+
+    final success = RxStatus<String>.success('hello');
+    expect(success.isSuccess, isTrue);
+    expect(success.data, 'hello');
+
+    final error = RxStatus<String>.error('something failed');
+    expect(error.isError, isTrue);
+    expect(error.errorMessage, 'something failed');
+  });
 }
 
 class Controller2 extends GetxController {

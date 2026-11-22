@@ -143,12 +143,12 @@ abstract class RxController with GetLifeCycleMixin {}
 /// ```dart
 /// class UserController extends StateController<User> {
 ///   Future<void> fetchUser() async {
-///     change(null, status: RxStatus.loading());
+///     change(null, status: GetStatus.loading());
 ///     try {
 ///       final user = await userRepository.getUser();
-///       change(user, status: RxStatus.success());
+///       change(user, status: GetStatus.success(user));
 ///     } catch (e) {
-///       change(state, status: RxStatus.error(e.toString()));
+///       change(state, status: GetStatus.error(e.toString()));
 ///     }
 ///   }
 /// }
@@ -174,12 +174,12 @@ abstract class StateController<T> extends GetxController with StateMixin<T> {}
 ///   }
 ///
 ///   Future<void> fetchData() async {
-///     change(state, status: RxStatus.loading());
+///     change(state, status: GetStatus.loading());
 ///     try {
 ///       final data = await repository.getData();
-///       change(HomeState(data: data), status: RxStatus.success());
+///       change(HomeState(data: data), status: GetStatus.success(HomeState(data: data)));
 ///     } catch (e) {
-///       change(state, status: RxStatus.error(e.toString()));
+///       change(state, status: GetStatus.error(e.toString()));
 ///     }
 ///   }
 /// }
