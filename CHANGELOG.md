@@ -1,4 +1,4 @@
-## Unreleased
+## 5.3.0
 
 ### Features & Capabilities
 - **Dependency Injection (GetContainer)**: Introduced `GetContainer` class for isolated dependency registration and lifecycle management, enabling concurrent unit testing, modular subtrees, and multi-window environments without global singleton collision.
