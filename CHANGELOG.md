@@ -1,6 +1,7 @@
 ## Unreleased
 
 ### Refactoring & Modernization
+- **Core (Engine)**: Modernized `Engine` as an `abstract final class` utility namespace in alignment with Dart 3 class modifiers.
 - **Navigation (Dialogs)**: Migrated deprecated `DialogTheme.of(context).backgroundColor` in `Get.defaultDialog` to `Theme.of(context).dialogTheme.backgroundColor ?? Theme.of(context).colorScheme.surfaceContainerHigh`, aligning with Flutter Material 3 design tokens.
 
 ### Bug Fixes
