@@ -1,7 +1,17 @@
 import 'dart:async';
+import 'dart:collection';
+
+/// Exception thrown when a queued job is cancelled before execution.
+class GetQueueCancelledException implements Exception {
+  final String message;
+  const GetQueueCancelledException([this.message = 'Canceled']);
+
+  @override
+  String toString() => 'GetQueueCancelledException: $message';
+}
 
 class GetQueue {
-  final List<_Item<dynamic>> _queue = [];
+  final ListQueue<_Item<dynamic>> _queue = ListQueue<_Item<dynamic>>();
   bool _active = false;
 
   bool get isJobInProgress => _active || _queue.isNotEmpty;
@@ -16,7 +26,7 @@ class GetQueue {
   void cancelAllJobs() {
     for (final item in _queue) {
       if (!item.completer.isCompleted) {
-        item.completer.completeError('Canceled');
+        item.completer.completeError(const GetQueueCancelledException());
       }
     }
     _queue.clear();
@@ -26,7 +36,7 @@ class GetQueue {
     if (_active) return;
     _active = true;
     while (_queue.isNotEmpty) {
-      var item = _queue.removeAt(0);
+      var item = _queue.removeFirst();
       try {
         var result = await item.job();
         if (!item.completer.isCompleted) {
