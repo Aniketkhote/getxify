@@ -220,8 +220,40 @@ extension GetNavigationExt on GetInterface {
       page = uri.toString();
     }
     return searchDelegate(id)
-        .backAndtoNamed(page, arguments: arguments, result: result);
+        .backAndToNamed(page, arguments: arguments, result: result);
   }
+
+  /// Alias for [offAndToNamed] matching RouterDelegate convention.
+  Future<T?>? backAndToNamed<T>(
+    String page, {
+    Object? arguments,
+    String? id,
+    Object? result,
+    Map<String, String>? parameters,
+  }) => offAndToNamed<T>(
+    page,
+    arguments: arguments,
+    id: id,
+    result: result,
+    parameters: parameters,
+  );
+
+  @Deprecated(
+    'Use backAndToNamed or offAndToNamed instead. Deprecated since 5.3.0.',
+  )
+  Future<T?>? backAndtoNamed<T>(
+    String page, {
+    Object? arguments,
+    String? id,
+    Object? result,
+    Map<String, String>? parameters,
+  }) => offAndToNamed<T>(
+    page,
+    arguments: arguments,
+    id: id,
+    result: result,
+    parameters: parameters,
+  );
 
   /// **Navigation.removeRoute()** shortcut.<br><br>
   ///

@@ -71,7 +71,7 @@ class GetDelegate extends RouterDelegate<RouteDecoder>
   ///
   /// Replace-style navigations ([off], [offAll], [offAllNamed],
   /// [offNamed], [offNamedUntil], [offUntil], [toNamedAndOffUntil] and
-  /// [backAndtoNamed]) mark the delegate so that
+  /// [backAndToNamed]) mark the delegate so that
   /// [GetRouteInformationProvider] reports the resulting URL update to the
   /// engine with `replace: true`, keeping the browser history on Flutter Web
   /// in sync with [activePages].
@@ -901,7 +901,7 @@ class GetDelegate extends RouterDelegate<RouteDecoder>
   }
 
   @override
-  Future<R?> backAndtoNamed<T, R>(
+  Future<R?> backAndToNamed<T, R>(
     String page, {
     T? result,
     Object? arguments,
@@ -913,6 +913,14 @@ class GetDelegate extends RouterDelegate<RouteDecoder>
     _popWithResult<T>(result);
     return _push<R>(route);
   }
+
+  @override
+  @Deprecated('Use backAndToNamed instead. Deprecated since 5.3.0.')
+  Future<R?> backAndtoNamed<T, R>(
+    String page, {
+    T? result,
+    Object? arguments,
+  }) => backAndToNamed<T, R>(page, result: result, arguments: arguments);
 
   /// Removes routes according to [PopMode]
   /// until it reaches the specific [fullRoute],

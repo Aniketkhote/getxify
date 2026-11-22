@@ -274,6 +274,30 @@ void main() {
     expect(find.byType(FirstScreen), findsNothing);
   });
 
+  testWidgets("Get.backAndToNamed navigates and removes previous route", (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      WrapperNamed(
+        initialRoute: '/first',
+        namedRoutes: [
+          GetPage(page: () => const FirstScreen(), name: '/first'),
+          GetPage(page: () => const SecondScreen(), name: '/second'),
+          GetPage(page: () => const ThirdScreen(), name: '/third'),
+        ],
+      ),
+    );
+
+    Get.backAndToNamed('/second');
+
+    await tester.pumpAndSettle();
+    expect(find.byType(SecondScreen), findsOneWidget);
+
+    Get.back();
+    await tester.pumpAndSettle();
+    expect(find.byType(FirstScreen), findsNothing);
+  });
+
   testWidgets("Get.offUntil navigates to provided route", (tester) async {
     await tester.pumpWidget(Wrapper(child: Container()));
 

@@ -152,6 +152,9 @@ mixin IGetNavigation {
 
   void back<T>([T? result]);
 
+  Future<R?> backAndToNamed<T, R>(String page, {T? result, Object? arguments});
+
+  @Deprecated('Use backAndToNamed instead. Deprecated since 5.3.0.')
   Future<R?> backAndtoNamed<T, R>(String page, {T? result, Object? arguments});
 
   void backUntil(bool Function(GetPage) predicate);
