@@ -89,6 +89,21 @@ void main() {
     expect(result, 5);
   });
 
+  test('interval cancelled during delay does not fire callback', () async {
+    final count = 0.obs;
+    var fired = false;
+    final worker = interval<int>(count, (v) {
+      fired = true;
+    }, time: const Duration(milliseconds: 100));
+
+    count.value++;
+    await Future.delayed(const Duration(milliseconds: 20));
+    await worker.dispose();
+    await Future.delayed(const Duration(milliseconds: 120));
+
+    expect(fired, isFalse);
+  });
+
   test('bindStream test', () async {
     int? count = 0;
     final controller = StreamController<int>();
