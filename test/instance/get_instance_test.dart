@@ -746,6 +746,22 @@ void main() {
         Get.reset();
       },
     );
+
+    test(
+      'resetInstance calls onDelete on active controllers and clears registry',
+      () {
+        final controller = Controller();
+        Get.put(controller);
+        expect(controller.init, 1);
+        expect(controller.close, 0);
+        expect(Get.isRegistered<Controller>(), isTrue);
+
+        Get.resetInstance();
+
+        expect(controller.close, 1);
+        expect(Get.isRegistered<Controller>(), isFalse);
+      },
+    );
   });
 }
 

@@ -8,9 +8,29 @@ import 'instance_info.dart';
 extension ResetInstance on GetInterface {
   /// Clears all registered instances (and/or tags).
   /// Even the persistent ones.
+  /// Calls `onDelete()` on all active instances before clearing the registry.
   /// This should be used at the end or tearDown of unit tests.
   ///
   bool resetInstance({bool clearRouteBindings = true}) {
+    final keys = GetInstanceExt.factories.keys.toList();
+    for (final key in keys) {
+      final dep = GetInstanceExt.factories[key];
+      if (dep != null) {
+        var stale = dep.lateRemove;
+        while (stale != null) {
+          final staleDep = stale.dependency;
+          if (staleDep is GetLifeCycleMixin) {
+            staleDep.onDelete();
+          }
+          stale = stale.lateRemove;
+        }
+
+        final i = dep.dependency;
+        if (i is GetLifeCycleMixin) {
+          i.onDelete();
+        }
+      }
+    }
     GetInstanceExt.factories.clear();
 
     return true;

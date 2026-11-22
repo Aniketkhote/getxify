@@ -1,6 +1,7 @@
 ## Unreleased
 
 ### Bug Fixes
+- **Dependency Injection (Lifecycle)**: Ensured `Get.resetInstance()` and `Get.reset()` properly invoke `onDelete()`/`onClose()` on all active instances and superseded factory chains before clearing the registry, preventing leaked controller resources in tests.
 - **Dependency Injection (Bindings)**: Fixed unsound exception handling in `Binding.builder` where user exceptions were previously swallowed by a fallback `try-catch` block.
 - **Performance (GetQueue)**: Upgraded internal job queue from `List` to `ListQueue` for $O(1)$ FIFO dequeue performance, and replaced untyped string errors with typed `GetQueueCancelledException`.
 - **Reactive (Workers)**: Fixed a bug where `interval` worker would still fire its callback after being disposed if the delay duration was already in flight.
