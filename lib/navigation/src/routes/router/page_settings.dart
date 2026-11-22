@@ -4,7 +4,7 @@ import '../../../../navigation/navigation.dart';
 
 extension PageArgExt on BuildContext {
   RouteSettings? get settings {
-    return ModalRoute.of(this)!.settings;
+    return ModalRoute.of(this)?.settings;
   }
 
   PageSettings? get pageSettings {

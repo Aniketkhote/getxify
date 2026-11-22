@@ -1,6 +1,7 @@
 ## Unreleased
 
 ### Bug Fixes
+- **Navigation (Routing / PageSettings)**: Made `context.settings` null-safe (`ModalRoute.of(this)?.settings`) to prevent unhandled `Null check operator used on a null value` exceptions when accessed from contexts without an enclosing `ModalRoute`.
 - **Navigation (Routing / URL Strategy)**: Fixed an unconditional infinite recursion crash in `removeLastHistory` by wiring it through platform-delegated implementations (`web`, `io`, and `stub`). On Web, history updates now delegate safely to `package:web` (`window.history.replaceState`).
 
 ---
