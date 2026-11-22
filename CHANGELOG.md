@@ -1,5 +1,8 @@
 ## Unreleased
 
+### Refactoring & Modernization
+- **Navigation (Dialogs)**: Migrated deprecated `DialogTheme.of(context).backgroundColor` in `Get.defaultDialog` to `Theme.of(context).dialogTheme.backgroundColor ?? Theme.of(context).colorScheme.surfaceContainerHigh`, aligning with Flutter Material 3 design tokens.
+
 ### Bug Fixes
 - **Dependency Injection (Lifecycle)**: Ensured `Get.resetInstance()` and `Get.reset()` properly invoke `onDelete()`/`onClose()` on all active instances and superseded factory chains before clearing the registry, preventing leaked controller resources in tests.
 - **Dependency Injection (Bindings)**: Fixed unsound exception handling in `Binding.builder` where user exceptions were previously swallowed by a fallback `try-catch` block.

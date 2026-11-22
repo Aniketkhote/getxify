@@ -253,7 +253,9 @@ extension ExtensionDialog on GetInterface {
           scrollable: scrollable,
 
           backgroundColor:
-              backgroundColor ?? DialogTheme.of(context).backgroundColor,
+              backgroundColor ??
+              Theme.of(context).dialogTheme.backgroundColor ??
+              Theme.of(context).colorScheme.surfaceContainerHigh,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(radius)),
           ),

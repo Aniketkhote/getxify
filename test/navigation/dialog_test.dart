@@ -414,5 +414,27 @@ void main() {
       final alertDialog = tester.widget<AlertDialog>(find.byType(AlertDialog));
       expect(alertDialog.scrollable, false);
     });
+
+    testWidgets(
+      "Get.defaultDialog uses Material 3 surfaceContainerHigh fallback",
+      (tester) async {
+        await tester.pumpWidget(Wrapper(child: Container()));
+        await tester.pump();
+
+        Get.defaultDialog(middleText: "Test dialog theme");
+        await tester.pumpAndSettle();
+
+        final alertDialog = tester.widget<AlertDialog>(
+          find.byType(AlertDialog),
+        );
+        final element = tester.element(find.byType(AlertDialog));
+        final theme = Theme.of(element);
+        expect(
+          alertDialog.backgroundColor,
+          theme.dialogTheme.backgroundColor ??
+              theme.colorScheme.surfaceContainerHigh,
+        );
+      },
+    );
   });
 }
