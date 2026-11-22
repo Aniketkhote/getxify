@@ -34,7 +34,12 @@ mixin GetResponsiveMixin on Widget {
       widget = phone() ?? tablet() ?? desktop();
       if (widget != null) return widget;
     }
-    return watch() ?? phone() ?? tablet() ?? desktop() ?? builder()!;
+    return watch() ??
+        phone() ??
+        tablet() ??
+        desktop() ??
+        builder() ??
+        const SizedBox.shrink();
   }
 
   /// Builds the widget using the builder method.
@@ -107,15 +112,30 @@ class ResponsiveScreenSettings {
 /// This class determines the screen type based on the device width
 /// and the configured breakpoints.
 class ResponsiveScreen {
-  late BuildContext context;
+  BuildContext? _context;
   final ResponsiveScreenSettings settings;
 
-  late bool _isPlatformDesktop;
+  /// Creates a new [ResponsiveScreen] with the given settings and optional [BuildContext].
+  ResponsiveScreen(this.settings, [BuildContext? context]) : _context = context;
 
-  /// Creates a new [ResponsiveScreen] with the given settings.
-  ResponsiveScreen(this.settings) {
-    _isPlatformDesktop = GetPlatform.isDesktop;
+  /// Returns the current [BuildContext].
+  ///
+  /// Throws a descriptive [StateError] if accessed before a [BuildContext] is attached.
+  BuildContext get context {
+    final ctx = _context;
+    if (ctx == null) {
+      throw StateError(
+        'ResponsiveScreen context has not been initialized. '
+        'Ensure the widget has been built before accessing context-dependent screen properties.',
+      );
+    }
+    return ctx;
   }
+
+  set context(BuildContext value) => _context = value;
+
+  /// Returns whether a [BuildContext] is currently attached.
+  bool get hasContext => _context != null;
 
   /// The height of the screen.
   double get height => context.height;
@@ -124,44 +144,87 @@ class ResponsiveScreen {
   double get width => context.width;
 
   /// Whether the screen type is [ScreenType.desktop].
-  bool get isDesktop => (screenType == ScreenType.desktop);
+  bool get isDesktop => isDesktopOf(context);
 
   /// Whether the screen type is [ScreenType.tablet].
-  bool get isTablet => (screenType == ScreenType.tablet);
+  bool get isTablet => isTabletOf(context);
 
   /// Whether the screen type is [ScreenType.phone].
-  bool get isPhone => (screenType == ScreenType.phone);
+  bool get isPhone => isPhoneOf(context);
 
   /// Whether the screen type is [ScreenType.watch].
-  bool get isWatch => (screenType == ScreenType.watch);
+  bool get isWatch => isWatchOf(context);
 
-  /// Gets the device width, accounting for platform differences.
-  double get _getDeviceWidth {
-    if (_isPlatformDesktop) {
-      return width;
+  /// Returns whether the screen for [context] is [ScreenType.desktop].
+  bool isDesktopOf(BuildContext context) =>
+      screenTypeOf(context) == ScreenType.desktop;
+
+  /// Returns whether the screen for [context] is [ScreenType.tablet].
+  bool isTabletOf(BuildContext context) =>
+      screenTypeOf(context) == ScreenType.tablet;
+
+  /// Returns whether the screen for [context] is [ScreenType.phone].
+  bool isPhoneOf(BuildContext context) =>
+      screenTypeOf(context) == ScreenType.phone;
+
+  /// Returns whether the screen for [context] is [ScreenType.watch].
+  bool isWatchOf(BuildContext context) =>
+      screenTypeOf(context) == ScreenType.watch;
+
+  /// Gets the device width for the given [context], accounting for platform differences.
+  double _deviceWidthFor(BuildContext context) {
+    if (GetPlatform.isDesktop) {
+      return context.width;
     }
     return context.mediaQueryShortestSide;
   }
 
   /// The current screen type based on the device width.
-  ScreenType get screenType {
-    final deviceWidth = _getDeviceWidth;
+  ScreenType get screenType => screenTypeOf(context);
+
+  /// Calculates the [ScreenType] for the given [context].
+  ScreenType screenTypeOf(BuildContext context) {
+    final deviceWidth = _deviceWidthFor(context);
     if (deviceWidth >= settings.desktopChangePoint) return ScreenType.desktop;
     if (deviceWidth >= settings.tabletChangePoint) return ScreenType.tablet;
     if (deviceWidth < settings.watchChangePoint) return ScreenType.watch;
     return ScreenType.phone;
   }
 
-  /// Returns a value based on the current screen type.
+  /// Returns a value based on the screen type of the given [context].
   ///
-  /// If the [screenType] is [ScreenType.desktop] and `desktop` is null,
+  /// If the screen type is [ScreenType.desktop] and `desktop` is null,
   /// the `tablet` value will be returned. If `tablet` is also null,
   /// the `mobile` value will be returned, and so on.
+  T? responsiveValueOf<T>(
+    BuildContext context, {
+    T? mobile,
+    T? tablet,
+    T? desktop,
+    T? watch,
+  }) {
+    final type = screenTypeOf(context);
+    switch (type) {
+      case ScreenType.desktop:
+        return desktop ?? tablet ?? mobile ?? watch;
+      case ScreenType.tablet:
+        return tablet ?? desktop ?? mobile ?? watch;
+      case ScreenType.phone:
+        return mobile ?? tablet ?? desktop ?? watch;
+      case ScreenType.watch:
+        return watch ?? mobile ?? tablet ?? desktop;
+    }
+  }
+
+  /// Returns a value based on the current screen type.
   T? responsiveValue<T>({T? mobile, T? tablet, T? desktop, T? watch}) {
-    if (isDesktop && desktop != null) return desktop;
-    if (isTablet && tablet != null) return tablet;
-    if (isPhone && mobile != null) return mobile;
-    return watch;
+    return responsiveValueOf(
+      context,
+      mobile: mobile,
+      tablet: tablet,
+      desktop: desktop,
+      watch: watch,
+    );
   }
 }
 

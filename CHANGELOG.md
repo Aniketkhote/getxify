@@ -1,6 +1,7 @@
 ## Unreleased
 
 ### Refactoring & Modernization
+- **State Management (ResponsiveScreen)**: Eliminated uninitialized `late BuildContext` runtime hazards by making `context` safely managed with `hasContext` checks and added context-based query helpers (`screenTypeOf`, `isDesktopOf`, `responsiveValueOf`). Replaced forced unwrap in `GetResponsiveMixin.build` with safe fallback to prevent crashes when builders return null.
 - **State Management (GetView)**: Removed redundant null assertion operator on `GetView.controller` (`Get.find<T>(tag: tag)`), supporting nullable controller generic type arguments cleanly.
 - **Core (Engine)**: Modernized `Engine` as an `abstract final class` utility namespace in alignment with Dart 3 class modifiers.
 - **Navigation (Dialogs)**: Migrated deprecated `DialogTheme.of(context).backgroundColor` in `Get.defaultDialog` to `Theme.of(context).dialogTheme.backgroundColor ?? Theme.of(context).colorScheme.surfaceContainerHigh`, aligning with Flutter Material 3 design tokens.
