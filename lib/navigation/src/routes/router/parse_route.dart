@@ -28,8 +28,8 @@ class RouteDecoder {
   GetPage? get route =>
       currentTreeBranch.isEmpty ? null : currentTreeBranch.last;
 
-  GetPage routeOrUnknown(GetPage onUnknow) =>
-      currentTreeBranch.isEmpty ? onUnknow : currentTreeBranch.last;
+  GetPage routeOrUnknown(GetPage onUnknown) =>
+      currentTreeBranch.isEmpty ? onUnknown : currentTreeBranch.last;
 
   set route(GetPage? getPage) {
     if (getPage == null) return;

@@ -1,6 +1,7 @@
 ## Unreleased
 
 ### Refactoring & Modernization
+- **Core (Typo Fixes)**: Corrected grammatical and spelling errors: renamed `notifyGroupChildrens` to `notifyGroupChildren` in `ListNotifier` (with `@Deprecated` alias) and fixed `onUnknow` parameter name to `onUnknown` in `RouteDecoder.routeOrUnknown`.
 - **Navigation (Conventions)**: Standardized `backAndtoNamed` to standard camelCase `backAndToNamed` across `GetDelegate`, `IGetNavigation`, `GetNavigationExt`, and `ContextNavigationExt`, while retaining `@Deprecated` aliases for full backward compatibility.
 - **Core (Types & Contracts)**: Adopted Dart 3 class modifiers (`abstract interface class` for `RxInterface` and `IEquality`, `abstract final class` for `WebPlatformDetect` static utility namespace) to reinforce interface segregation without breaking mockability.
 - **State Management (ResponsiveScreen)**: Eliminated uninitialized `late BuildContext` runtime hazards by making `context` safely managed with `hasContext` checks and added context-based query helpers (`screenTypeOf`, `isDesktopOf`, `responsiveValueOf`). Replaced forced unwrap in `GetResponsiveMixin.build` with safe fallback to prevent crashes when builders return null.

@@ -212,4 +212,17 @@ void main() {
     expect(Get.parameters['a'], 'b');
     expect(Get.parameters['c'], 'd');
   });
+
+  test('RouteDecoder.routeOrUnknown returns unknown route on empty tree', () {
+    final decoder = RouteDecoder(
+      [],
+      PageSettings(Uri.parse('/unmatched'), null),
+    );
+    final fallback = GetPage(name: '/404', page: () => Container());
+    expect(decoder.routeOrUnknown(fallback), same(fallback));
+
+    final actual = GetPage(name: '/home', page: () => Container());
+    decoder.route = actual;
+    expect(decoder.routeOrUnknown(fallback), same(actual));
+  });
 }

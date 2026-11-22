@@ -105,11 +105,18 @@ mixin ListNotifierGroupMixin on ChangeNotifier {
 
   /// Reports that a listener group was read.
   @protected
-  void notifyGroupChildrens(Object id) {
+  void notifyGroupChildren(Object id) {
     if (_updatersGroupIds?[id] case final group?) {
       Notifier.instance.read(group);
     }
   }
+
+  /// Reports that a listener group was read.
+  @Deprecated(
+    'Use notifyGroupChildren instead of misspelled notifyGroupChildrens. Deprecated since 5.3.0.',
+  )
+  @protected
+  void notifyGroupChildrens(Object id) => notifyGroupChildren(id);
 
   /// Checks if a listener group with the given ID exists.
   bool containsId(Object id) {
