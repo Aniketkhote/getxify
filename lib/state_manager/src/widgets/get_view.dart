@@ -31,7 +31,7 @@ abstract class GetView<T> extends StatelessWidget {
   final String? tag;
 
   /// Gets the controller instance from the dependency injection container.
-  T get controller => Get.find<T>(tag: tag)!;
+  T get controller => Get.find<T>(tag: tag);
 
   @override
   Widget build(BuildContext context);

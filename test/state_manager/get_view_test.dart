@@ -77,4 +77,21 @@ void main() {
 
     expect(find.byType(SampleResponsiveView), findsOneWidget);
   });
+
+  testWidgets('GetView works with nullable controller type argument', (
+    tester,
+  ) async {
+    final controller = TestViewController('Nullable Controller');
+    Get.put<TestViewController?>(controller);
+
+    final view = _NullableSampleView();
+    expect(view.controller, same(controller));
+  });
+}
+
+class _NullableSampleView extends GetView<TestViewController?> {
+  const _NullableSampleView();
+
+  @override
+  Widget build(BuildContext context) => const SizedBox.shrink();
 }
