@@ -36,6 +36,9 @@ void main() {
     expect(savedContext.width, equals(savedContext.mediaQuerySize.width));
     expect(savedContext.isPhoneOrLess, isFalse);
     expect(savedContext.isPhoneOrWider, isTrue);
+    expect(savedContext.textScaler, isA<TextScaler>());
+    expect(savedContext.textScaleFactor, isA<double>());
+    expect(savedContext.textScaleFactor, equals(1.0));
   });
 
   testWidgets('ContextExt find dependency lookup works', (tester) async {

@@ -95,8 +95,14 @@ extension ContextExt on BuildContext {
   /// similar to [MediaQuery.devicePixelRatioOf(context)]
   double get devicePixelRatio => MediaQuery.devicePixelRatioOf(this);
 
-  /// similar to [MediaQuery.textScaleFactorOf(context)]
-  TextScaler get textScaleFactor => MediaQuery.textScalerOf(this);
+  /// Returns the [TextScaler] from the nearest [MediaQuery] ancestor.
+  TextScaler get textScaler => MediaQuery.textScalerOf(this);
+
+  /// Approximate linear text scale factor evaluated at font size 1.0.
+  ///
+  /// Retained as a [double] for backward-compatibility with scalar math.
+  /// For modern Flutter text layout, prefer using [textScaler].
+  double get textScaleFactor => textScaler.scale(1.0);
 
   /// get the shortestSide from screen
   double get mediaQueryShortestSide => mediaQuerySize.shortestSide;
