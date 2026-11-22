@@ -1,6 +1,7 @@
 ## Unreleased
 
 ### Refactoring & Modernization
+- **Animations (Architecture)**: Standardized `lib/animations/` to follow canonical package layout with a single `animations.dart` barrel file exporting internal implementations from `src/`, eliminating redundant root-level export files (`extensions.dart`, `get_animated_builder.dart`).
 - **State Management (Documentation & RxStatus)**: Added `typedef RxStatus<T> = GetStatus<T>` for seamless backward compatibility with GetX v4 code, and updated documentation examples in `StateController`, `SuperController`, and `GetMiddleware.redirect` to match actual API contracts.
 - **Context Extensions (Text Scaling)**: Added `context.textScaler` (returning modern Flutter `TextScaler`) and restored `context.textScaleFactor` as a `double` (`textScaler.scale(1.0)`), resolving type mismatch where `textScaleFactor` improperly returned `TextScaler`.
 - **Core (Typo Fixes)**: Corrected grammatical and spelling errors: renamed `notifyGroupChildrens` to `notifyGroupChildren` in `ListNotifier` (with `@Deprecated` alias) and fixed `onUnknow` parameter name to `onUnknown` in `RouteDecoder.routeOrUnknown`.

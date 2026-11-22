@@ -1,4 +1,4 @@
-export 'animations/index.dart';
+export 'animations/animations.dart';
 export 'common/get_reset.dart';
 export 'core/core.dart';
 export 'instance/instance.dart';
