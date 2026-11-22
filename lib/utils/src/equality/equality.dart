@@ -20,7 +20,7 @@ mixin Equality {
 const int _hashMask = 0x7fffffff;
 
 /// A generic equality relation on objects.
-abstract class IEquality<E> {
+abstract interface class IEquality<E> {
   const factory IEquality() = DefaultEquality<E>;
 
   /// Compare two elements for being equal.

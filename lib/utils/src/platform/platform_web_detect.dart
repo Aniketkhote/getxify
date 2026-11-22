@@ -3,8 +3,7 @@
 ///
 /// The matching logic lives here, decoupled from `package:web`, so it can be
 /// unit tested on the Dart VM where browser bindings are unavailable.
-// ignore: avoid_classes_with_only_static_members
-abstract class WebPlatformDetect {
+abstract final class WebPlatformDetect {
   static final RegExp _iosPlatformPattern = RegExp(r'iPad|iPhone|iPod');
 
   /// Whether the given navigator values identify a macOS browser.

@@ -7,7 +7,7 @@ import 'package:flutter/foundation.dart';
 ///
 /// This interface is the contract that `_RxImpl<T>` uses in all its
 /// subclasses.
-abstract class RxInterface<T> implements ValueListenable<T> {
+abstract interface class RxInterface<T> implements ValueListenable<T> {
   /// Closes the reactive variable and cleans up resources.
   void close();
 
